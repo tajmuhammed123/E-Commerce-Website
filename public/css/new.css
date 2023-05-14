@@ -1,0 +1,24 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+.head{
+    padding-bottom: 15px;
+    border-bottom: 3px solid rgb(0, 0, 0);
+}
+.login{
+    padding-top: 100px;
+    padding-left: 200px;
+    display: flex;
+    align-items: center;
+}
+.field{
+    border:none;
+    border-bottom: 1px solid #535353 ;
+    outline: none;
+}
+.form{
+    width: 200%;
+    height: 200%;
+    font-size: x-large;
+}
