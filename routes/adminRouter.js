@@ -42,11 +42,11 @@ admin_route.get('/dashboard',adminController.loadDashboard)
 
 admin_route.get('/addproduct',adminController.loadAddProduct)
 
-admin_route.post('/addproduct',upload.single('product_img'),adminController.addProduct)
+admin_route.post('/addproduct',upload.array('product_img'),adminController.addProduct)
 
 admin_route.get('/editproducts',adminController.editProduct)
 
-admin_route.post("/editproducts",upload.single('product_img'), adminController.updateProduct);
+admin_route.post("/editproducts",upload.array('product_img'), adminController.updateProduct);
 
 admin_route.get('/deleteproduct',adminController.deleteProduct)
 

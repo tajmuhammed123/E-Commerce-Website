@@ -42,5 +42,7 @@ user_route.get('/dashboard',userController.loadHome)
 
 user_route.get('/filter',userController.filterUser)
 
+user_route.get('/product-detail',userController.productDetail)
+
 
 module.exports = user_route;

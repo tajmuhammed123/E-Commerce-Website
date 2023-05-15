@@ -150,7 +150,22 @@ const filterUser= async(req,res)=>{
     }
 }
 
-
+const productDetail = async(req,res)=>{
+    try{
+        const id = req.query.id;
+      const productData = await Products.findById({ _id: id });
+  
+      if (productData) {
+        console.log(productData);
+        const adminData = await User.findOne({ is_admin: 1 });
+        res.render("product-detail", { product: productData, admin: adminData });
+      } else {
+        res.redirect("/dashboard");
+      }
+    }catch(err){
+        console.log(err.message);
+    }
+}
 
 const loadCart = async (req,res)=>{
     try{
@@ -160,6 +175,8 @@ const loadCart = async (req,res)=>{
     }
 }
 
+
+
 module.exports ={
     loginLoad,
     loadSignup,
@@ -167,5 +184,6 @@ module.exports ={
     verifyLogin,
     loadHome,
     loadCart,
-    filterUser
+    filterUser,
+    productDetail
 }

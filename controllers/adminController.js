@@ -105,13 +105,15 @@ const loadAddProduct = async(req,res)=>{
 
 const addProduct = async(req,res)=>{
     try{
+        const productFiles = req.files.map((file) => file.filename);
         const products = new Products({
             product_name: req.body.product_name,
             product_price: req.body.product_price,
             product_discription: req.body.product_discription,
-            product_img: res.req.file.filename,
+            product_img: productFiles,
             product_category: req.body.product_category,
-            product_brand:req.body.product_brand
+            product_brand:req.body.product_brand,
+            product_size:req.body.product_size
           });
           const adminData = await User.findOne({ is_admin: 1 });
           const productsData = await products.save();
@@ -146,6 +148,7 @@ const editProduct = async (req, res) => {
 
   const updateProduct = async (req, res) => {
     try {
+        const productFiles = req.files.map((file) => file.filename);
       const productData = await Products.findByIdAndUpdate(
         { _id: req.query.id },
         {
@@ -153,9 +156,10 @@ const editProduct = async (req, res) => {
             product_name: req.body.product_name,
             product_price: req.body.product_price,
             product_discription: req.body.product_discription,
-            product_img: res.req.file.filename,
+            product_img: productFiles,
             product_category: req.body.product_category,
-            product_brand:req.body.product_brand
+            product_brand:req.body.product_brand,
+            product_size:req.body.product_size
           },
         }
       );

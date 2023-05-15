@@ -17,8 +17,12 @@ product_discription:{
 },
 product_img:{
 
-    type:String,
+    type:Array,
     required:true
+},
+product_size:{
+
+    type:Array
 },
 product_category:{
 

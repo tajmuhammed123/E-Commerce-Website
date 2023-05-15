@@ -2043,6 +2043,11 @@ input.num-product::-webkit-inner-spin-button {
 .block2-pic {
   position: relative;
 }
+.imgsize{
+  width: 270px !important;
+  height: 334px !important;
+}
+
 
 .block2-btn {
   position: absolute;
