@@ -33,8 +33,11 @@ product_brand:{
 
     type:String,
     required:true
+},
+id_disable:{
+    type:Boolean,
+    required:true
 }
-  
 
 });
 

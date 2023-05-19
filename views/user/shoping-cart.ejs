@@ -28,6 +28,15 @@
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 <!--===============================================================================================-->
+
+	<script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/alertify.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/alertify.min.css"/>
+  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/themes/default.min.css"/>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
+
+
 </head>
 <body class="animsition">
 	
@@ -343,62 +352,61 @@
 				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
 					<div class="m-l-25 m-r--38 m-lr-0-xl">
 						<div class="wrap-table-shopping-cart">
-							<table class="table-shopping-cart">
+							<table class="table-shopping-cart product_data">
 								<tr class="table_head">
 									<th class="column-1">Product</th>
 									<th class="column-2"></th>
 									<th class="column-3">Price</th>
-									<th class="column-4">Quantity</th>
-									<th class="column-5">Total</th>
+									<th class="column-4">Brand</th>
+									<th class="column-5">Quantity</th>
+									<th class="column-6">Total</th>
 								</tr>
+							<%
+							let total = 0; // Initialize the total variable
+							let prid
+							if (products.length > 0) {
+								for (let i = 0; i < products.length; i++) {
+							%>
+							<tr class="table_row ">
+								<td class="column-1">
+								  <a href="/deleteproduct?id=<%= products[i]._id %>">
+									<div class="how-itemcart1">
+									  <img src="/admin/images/<%= products[i].product_img %>" alt="IMG">
+									</div>
+								  </a>
+								</td>
+								<td class="column-2"><%= products[i].product_name %></td>
+								<td class="column-3">$<%= products[i].product_price %></td>
+								<td class="column-4" style="text-transform: uppercase"><%= products[i].product_brand %></td>
+								<td class="column-5">
+								  <div class="wrap-num-product flex-w m-l-auto m-r-0">
+									<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m changeQuantity" data-product-id="<%= products[i]._id %>">
+									  <i class="fs-16 zmdi zmdi-minus"></i>
+									</div>
+									<input class="mtext-104 cl3 txt-center num-product qty-input" type="number" name="product_quantity" value="<%= products[i].product_quantity %>" data-product-id="<%= products[i]._id %>">
+									<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m changeQuantity" data-product-id="<%= products[i]._id %>">
+									  <i class="fs-16 zmdi zmdi-plus"></i>
+									</div>
+								  </div>
+								</td>
+								<td class="column-6">$<%= parseFloat(products[i].product_price) * parseFloat(products[i].product_quantity) %></td>
+							  </tr>
+							  <input type="hidden" name="total" value="<%= total += parseFloat(products[i].product_price) * parseFloat(products[i].product_quantity) %>">
+								<input type="hidden" name="prid" value="<%= prid = products[i].user_id %>">
+							  
+							<%
+								}
+							%>
+							<%
+							} else {
+							%>
+							<tr>
+								<td colspan="5">Products Not found</td>
+							</tr>
+							<%
+							}
+							%>
 
-								<tr class="table_row">
-									<td class="column-1">
-										<div class="how-itemcart1">
-											<img src="images/item-cart-04.jpg" alt="IMG">
-										</div>
-									</td>
-									<td class="column-2">Fresh Strawberries</td>
-									<td class="column-3">$ 36.00</td>
-									<td class="column-4">
-										<div class="wrap-num-product flex-w m-l-auto m-r-0">
-											<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-												<i class="fs-16 zmdi zmdi-minus"></i>
-											</div>
-
-											<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product1" value="1">
-
-											<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-												<i class="fs-16 zmdi zmdi-plus"></i>
-											</div>
-										</div>
-									</td>
-									<td class="column-5">$ 36.00</td>
-								</tr>
-
-								<tr class="table_row">
-									<td class="column-1">
-										<div class="how-itemcart1">
-											<img src="images/item-cart-05.jpg" alt="IMG">
-										</div>
-									</td>
-									<td class="column-2">Lightweight Jacket</td>
-									<td class="column-3">$ 16.00</td>
-									<td class="column-4">
-										<div class="wrap-num-product flex-w m-l-auto m-r-0">
-											<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m">
-												<i class="fs-16 zmdi zmdi-minus"></i>
-											</div>
-
-											<input class="mtext-104 cl3 txt-center num-product" type="number" name="num-product2" value="1">
-
-											<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m">
-												<i class="fs-16 zmdi zmdi-plus"></i>
-											</div>
-										</div>
-									</td>
-									<td class="column-5">$ 16.00</td>
-								</tr>
 							</table>
 						</div>
 
@@ -424,7 +432,7 @@
 							Cart Totals
 						</h4>
 
-						<div class="flex-w flex-t bor12 p-b-13">
+						<!-- <div class="flex-w flex-t bor12 p-b-13">
 							<div class="size-208">
 								<span class="stext-110 cl2">
 									Subtotal:
@@ -432,13 +440,13 @@
 							</div>
 
 							<div class="size-209">
-								<span class="mtext-110 cl2">
-									$79.65
+								<span class="mtext-110 cl2 cart__price total">
+									$<%= total.toFixed(2) %>
 								</span>
 							</div>
-						</div>
+						</div> -->
 
-						<div class="flex-w flex-t bor12 p-t-15 p-b-30">
+						<!-- <div class="flex-w flex-t bor12 p-t-15 p-b-30">
 							<div class="size-208 w-full-ssm">
 								<span class="stext-110 cl2">
 									Shipping:
@@ -480,7 +488,7 @@
 										
 								</div>
 							</div>
-						</div>
+						</div> -->
 
 						<div class="flex-w flex-t p-t-27 p-b-33">
 							<div class="size-208">
@@ -490,15 +498,15 @@
 							</div>
 
 							<div class="size-209 p-t-1">
-								<span class="mtext-110 cl2">
-									$79.65
+								<span class="mtext-110 cl2 total">
+									$<%= total.toFixed(2) %>
 								</span>
 							</div>
 						</div>
 
-						<button class="flex-c-m stext-101 cl0 size-116 bg3 bor14 hov-btn3 p-lr-15 trans-04 pointer">
-							Proceed to Checkout
-						</button>
+						<a href="/checkout?id=<%= prid %>">
+							<div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
+							Proceed to Checkout</div></a>
 					</div>
 				</div>
 			</div>
@@ -699,6 +707,35 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 	</script>
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
+	<script>
+		$('.changeQuantity').click(function (e) {
+  e.preventDefault();
+
+  var product_id = $(this).data('product-id');
+  var quantityInput = $(this).closest('.table_row').find('.qty-input');
+  var product_qty = parseInt(quantityInput.val());
+
+  $.ajax({
+    method: "POST",
+    url: "/update_cart",
+    data: {
+      'product_id': product_id,
+      'product_qty': product_qty
+    },
+    success: function (response) {
+      console.log(response);
+      alertify.success(response.status);
+      var timestamp = new Date().getTime();
+      $('.total').load(location.href + " .total");
+    },
+    error: function (error) {
+      console.log(error);
+      alertify.error('Error occurred while updating quantity');
+    }
+  });
+});	
+		</script>
+		
 
 </body>
 </html>

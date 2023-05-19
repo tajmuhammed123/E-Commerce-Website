@@ -3,11 +3,10 @@ const admin_route= express()
 
 const session = require("express-session");
 const config = require("../config/config");
+// admin_route.use(session({secret:config.sessionSecret}))
 
-const bodyParser=require('body-parser')
-
-admin_route.use(bodyParser.json())
-admin_route.use(bodyParser.urlencoded({extended:true}))
+admin_route.use(express.json())
+admin_route.use(express.urlencoded({ extended: true }))
 
 const path=require('path')
 const multer= require('multer')
@@ -58,6 +57,10 @@ admin_route.get('/editusers',adminController.editUser)
 
 admin_route.post("/editusers", adminController.updateUser);
 
-admin_route.get('/deleteusers',adminController.deleteUser)
+// admin_route.get('/deleteusers',adminController.deleteUser)
+
+admin_route.get('/id_disable',adminController.disableProduct)
+
+admin_route.get('/id_undisable',adminController.enableProduct)
 
 module.exports = admin_route

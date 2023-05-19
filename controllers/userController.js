@@ -3,8 +3,6 @@ const Products=require('../models/productModels')
 const bcrypt = require("bcrypt");
 
 
-
-
 const securePassword = async(password) =>{
     try {
 
@@ -21,7 +19,8 @@ const securePassword = async(password) =>{
 
 const loginLoad = async(req,res)=>{
     try{
-        res.render('login')
+        message=null
+        res.render('login',{message})
     }catch(err){
         console.log(err.message);
     }
@@ -29,7 +28,8 @@ const loginLoad = async(req,res)=>{
 
 const loadSignup = async(req,res)=>{
     try{
-        res.render('signup')
+        message=null
+        res.render('signup',{message})
     }catch(err){
         console.log(err.message);
     }
@@ -123,10 +123,11 @@ const verifyLogin = async(req,res) => {
 const loadHome = async (req,res)=> {
 
         try {
-            const productData = await Products.find({ });
+            const productData = await Products.find({ id_disable:false });
+            const id=req.session.user_id
             const userData = await User.findById({_id : req.session.user_id});
-            console.log(productData);
-            res.render('home',{products:productData});
+            console.log(userData);
+            res.render('home',{products:productData, user:userData});
 
         } catch (error) {
 
@@ -134,9 +135,8 @@ const loadHome = async (req,res)=> {
         }
 }
 
-const filterUser= async(req,res)=>{
+const filterProduct= async(req,res)=>{
     try{
-        console.log('ghjgkhkg');
         const filterproduct=req.query.filterproduct
         console.log(filterproduct);
         const productData = await Products.find({ product_brand: filterproduct });
@@ -154,24 +154,18 @@ const productDetail = async(req,res)=>{
     try{
         const id = req.query.id;
       const productData = await Products.findById({ _id: id });
+      const userid= req.session.user_id
   
       if (productData) {
         console.log(productData);
-        const adminData = await User.findOne({ is_admin: 1 });
-        res.render("product-detail", { product: productData, admin: adminData });
+        // const adminData = await User.findOne({ is_admin: 1 });
+        const userData = await User.findById({ _id: userid })
+        res.render("product-detail", { product: productData, userData: userData });
       } else {
         res.redirect("/dashboard");
       }
     }catch(err){
         console.log(err.message);
-    }
-}
-
-const loadCart = async (req,res)=>{
-    try{
-        res.render('shoping-cart')
-    }catch(err){
-        console.log(err);
     }
 }
 
@@ -183,7 +177,6 @@ module.exports ={
     insertUser,
     verifyLogin,
     loadHome,
-    loadCart,
-    filterUser,
+    filterProduct,
     productDetail
 }

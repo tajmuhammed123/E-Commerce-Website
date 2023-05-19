@@ -468,13 +468,19 @@
                                                     <i class="zmdi zmdi-edit"></i>
                                                 </button></a>
                                             </div>
-                                            <div class="item">
-                                                <a href="/admin/deleteproduct?id=<%= products[i]._id %>"><button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
-                                                    <i class="zmdi zmdi-delete"></i>
-                                                </button></a>
-                                            </div>
                                         </div>
                                     </td>
+                                    <td><div class="item">
+                                        <% if(products[i].id_disable===false) {%>
+                                            <a href="/admin/id_disable?id=<%= products[i]._id%>&id_disable=false" class="btn btn-danger">Block</a>
+                                            <%}else{%>
+                                              <a href="/admin/id_undisable?id=<%= products[i]._id%>&id_disable=true"
+                                                class="btn btn-success">Unblock</a>
+                                              <% } %>
+                                        <!-- <a href="/admin/deleteproduct?id=<%= products[i]._id %>"><button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                            <i class="zmdi zmdi-delete"></i>
+                                        </button></a> -->
+                                    </div></td>
                                 </tr>
                             </tr>
                             <tr class="spacer"></tr>

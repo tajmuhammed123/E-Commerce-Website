@@ -214,15 +214,41 @@
 
     /*==================================================================
     [ +/- num product ]*/
-    $('.btn-num-product-down').on('click', function(){
-        var numProduct = Number($(this).next().val());
-        if(numProduct > 0) $(this).next().val(numProduct - 1);
-    });
-
-    $('.btn-num-product-up').on('click', function(){
-        var numProduct = Number($(this).prev().val());
-        $(this).prev().val(numProduct + 1);
-    });
+    $('.btn-num-product-down').on('click', function() {
+        var quantityInput = $(this).siblings('.num-product');
+        var numProduct = Number(quantityInput.val());
+        if (numProduct > 0) {
+          quantityInput.val(numProduct - 1);
+          updateQuantity(quantityInput);
+        }
+      });
+      
+      $('.btn-num-product-up').on('click', function() {
+        var quantityInput = $(this).siblings('.num-product');
+        var numProduct = Number(quantityInput.val());
+        quantityInput.val(numProduct + 1);
+        updateQuantity(quantityInput);
+      });
+      
+      function updateQuantity(quantityInput) {
+        var productId = quantityInput.attr('data-product-id');
+        var quantity = quantityInput.val();
+      
+        $.ajax({
+          url: '/products/' + productId + '/update',
+          type: 'POST',
+          data: { quantity: quantity },
+          success: function(response) {
+            console.log(response);
+            // Refresh the page or update the UI as needed
+          },
+          error: function(error) {
+            console.log(error);
+            // Display an error message or handle the error scenario
+          }
+        });
+      }
+      
 
     /*==================================================================
     [ Rating ]*/

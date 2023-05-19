@@ -379,7 +379,7 @@
                                                     <h5 class="name">
                                                         <a href="#"><%= admin.name %></a>
                                                     </h5>
-                                                    <span class="email">johndoe@example.com</span>
+                                                    <span class="email"><%= admin.email %></span>
                                                 </div>
                                             </div>
                                             <div class="account-dropdown__body">
@@ -512,8 +512,13 @@
                                                     <i class="fa fa-dot-circle-o"></i> Submit
                                                 </button>
                                             </div>
-                                            </div>  
+                                            <div class="mb-3">
+                                                <% if(message) { %>
+                                                    <p class="text-danger"><%= message %></p>
+                                                <% } %>
+                                            </div>
                                         </form>
+                                        
                                     </div>
                                 </div>
                             </div>

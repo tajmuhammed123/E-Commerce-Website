@@ -21,9 +21,14 @@
             <input type="password" class="field" id="exampleInputPassword1" placeholder="Password" name="password">
             </div>
             <div class="mb-3 mt-2">
-                <a href="/signup"><h6><small>Forgot Password?</small></h6></a>
+                <a href="/signup"><h6><small>Dont have an Account?</small></h6></a>
             </div>
             <button type="submit" class="btn btn-dark pb-2 rounded-5 px-4 ms-5 mt-4 fs-4">Login</button>
+            <div class="mb-3">
+              <% if(message) { %>
+                  <p class="text-danger"><%= message %></p>
+              <% } %>
+          </div>
         </form>
       </div>
       <div class="col-6">
