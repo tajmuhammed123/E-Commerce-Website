@@ -11,6 +11,8 @@ admin_route.use(express.urlencoded({ extended: true }))
 const path=require('path')
 const multer= require('multer')
 
+const auth=require('../middleware/adminAuth')
+
 const storage =multer.diskStorage({
     destination:function(req,file,cb){
         cb(null,path.join(__dirname,'../public/admin/images'))
@@ -29,38 +31,40 @@ admin_route.set('views','./views/admin')
 const adminController=require('../controllers/adminController');
 // const { path } = require('./userRouter');
 
-admin_route.get('/',adminController.loadLogin)
+admin_route.get('/',auth.isLogout,adminController.loadLogin)
 
 admin_route.post('/',adminController.verifyLogin)
 
-admin_route.get('/user-details',adminController.loadUser)
+admin_route.get('/logout',auth.isLogin,adminController.logout)
 
-admin_route.get('/product-details',adminController.loadProducts)
+admin_route.get('/user-details',auth.isLogin,adminController.loadUser)
 
-admin_route.get('/dashboard',adminController.loadDashboard)
+admin_route.get('/product-details',auth.isLogin,adminController.loadProducts)
 
-admin_route.get('/addproduct',adminController.loadAddProduct)
+admin_route.get('/dashboard',auth.isLogin,adminController.loadDashboard)
+
+admin_route.get('/addproduct',auth.isLogin,adminController.loadAddProduct)
 
 admin_route.post('/addproduct',upload.array('product_img'),adminController.addProduct)
 
-admin_route.get('/editproducts',adminController.editProduct)
+admin_route.get('/editproducts',auth.isLogin,adminController.editProduct)
 
 admin_route.post("/editproducts",upload.array('product_img'), adminController.updateProduct);
 
 admin_route.get('/deleteproduct',adminController.deleteProduct)
 
-admin_route.get('/adduser',adminController.loadAddUser)
+admin_route.get('/adduser',auth.isLogin,adminController.loadAddUser)
 
 admin_route.post('/adduser',upload.single('product_img'),adminController.addUser)
 
-admin_route.get('/editusers',adminController.editUser)
+admin_route.get('/editusers',auth.isLogin,adminController.editUser)
 
 admin_route.post("/editusers", adminController.updateUser);
 
 // admin_route.get('/deleteusers',adminController.deleteUser)
 
-admin_route.get('/id_disable',adminController.disableProduct)
+admin_route.get('/id_disable',auth.isLogin,adminController.disableProduct)
 
-admin_route.get('/id_undisable',adminController.enableProduct)
+admin_route.get('/id_undisable',auth.isLogin,adminController.enableProduct)
 
 module.exports = admin_route

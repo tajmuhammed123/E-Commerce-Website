@@ -7,7 +7,7 @@ product_name:{
     required:true
 },
 product_price:{
-    type:String,
+    type:Number,
     required:true
 },
 product_discription:{
@@ -36,6 +36,10 @@ product_brand:{
 },
 id_disable:{
     type:Boolean,
+    required:true
+},
+product_stock:{
+    type:Number,
     required:true
 }
 

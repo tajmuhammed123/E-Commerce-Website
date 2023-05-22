@@ -52,6 +52,16 @@ const verifyLogin = async (req, res) => {
     console.log(error.message);
   }
 };
+const logout=async(req,res)=>{
+  try{
+
+      req.session.destroy()
+      res.redirect('/admin')
+
+  }catch(err){
+      console.log(err.message);
+  }
+}
 
 const loadDashboard = async (req, res) => {
   try {
@@ -66,8 +76,9 @@ const loadDashboard = async (req, res) => {
 
 const loadUser = async (req, res) => {
   try {
+    const id=req.query.id
     const userData = await User.find({ is_admin: 0 });
-    const adminData = await User.findOne({ is_admin: 1 });
+    const adminData = await User.findOne({ _id:id });
     console.log(adminData);
     res.render("user-details", { user: userData, admin: adminData });
   } catch (err) {
@@ -77,8 +88,9 @@ const loadUser = async (req, res) => {
 
 const loadProducts = async (req, res) => {
   try {
+    const id=req.query.id
     const productsData = await Products.find({ });
-    const adminData = await User.findOne({ is_admin: 1 });
+    const adminData = await User.findOne({ _id:id });
     res.render("product-details", { products: productsData, admin: adminData });
   } catch (err) {
     console.log(err.message);
@@ -87,7 +99,8 @@ const loadProducts = async (req, res) => {
 
 const loadAddProduct = async (req, res) => {
   try {
-    const adminData = await User.findOne({ is_admin: 1 });
+    const id = req.query.id;
+    const adminData = await User.findOne({ _id:id })
     message = null;
     res.render("addproduct", { admin: adminData, message });
   } catch (err) {
@@ -106,9 +119,11 @@ const addProduct = async (req, res) => {
       product_category: req.body.product_category,
       product_brand: req.body.product_brand,
       product_size: req.body.product_size,
-      id_disable:false
+      id_disable:false,
+      product_stock: req.body.product_stock
     });
-    const adminData = await User.findOne({ is_admin: 1 });
+    const adminid =req.query.adminid
+    const adminData = await User.findOne({ _id:adminid });
     const productsData = await products.save();
     if (productsData) {
       res.render("addproduct", {
@@ -130,12 +145,13 @@ const addProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   try {
+    const adminid =req.query.adminid
     const id = req.query.id;
     const productData = await Products.findById({ _id: id });
 
     if (productData) {
       console.log(productData);
-      const adminData = await User.findOne({ is_admin: 1 });
+      const adminData = await User.findOne({ _id:adminid });
       res.render("editproducts", { product: productData, admin: adminData });
     } else {
       res.redirect("/admin/product-details");
@@ -159,7 +175,8 @@ const updateProduct = async (req, res) => {
           product_category: req.body.product_category,
           product_brand: req.body.product_brand,
           product_size: req.body.product_size,
-          id_disable: false
+          id_disable: false,
+          product_stock: req.body.product_stock
         },
       }
     );
@@ -181,8 +198,9 @@ const deleteProduct = async (req, res) => {
 
 const loadAddUser = async (req, res) => {
   try {
+    const id = req.query.id;
     message = null;
-    const adminData = await User.findOne({ is_admin: 1 });
+    const adminData = await User.findOne({ _id:id })
     res.render("adduser", { admin: adminData, message });
   } catch (err) {
     console.log(err.message);
@@ -191,7 +209,8 @@ const loadAddUser = async (req, res) => {
 
 const addUser = async (req, res) => {
   try {
-    const adminData = await User.findOne({ is_admin: 1 });
+    const id = req.query.id;
+    const adminData = await User.findOne({ _id:id })
     const spassword = await securePassword(req.body.password);
 
     const existingUser = await User.findOne({ email: req.body.email });
@@ -239,12 +258,13 @@ const addUser = async (req, res) => {
 
 const editUser = async (req, res) => {
   try {
+    const adminid = req.query.adminid
     const id = req.query.id;
     const userData = await User.findById({ _id: id });
 
     if (userData) {
       console.log(userData);
-      const adminData = await User.findOne({ is_admin: 1 });
+      const adminData = await User.findOne({ _id:adminid });
       res.render("editusers", { user: userData, admin: adminData });
     } else {
       res.redirect("/admin/user-details");
@@ -309,6 +329,7 @@ const disableProduct = async(req,res)=>{
 module.exports = {
   loadLogin,
   verifyLogin,
+  logout,
   loadDashboard,
   loadProducts,
   loadUser,

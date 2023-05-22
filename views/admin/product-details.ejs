@@ -65,11 +65,11 @@
                                 <i class="fas fa-chart-bar"></i>Charts</a>
                         </li>
                         <li>
-                            <a href="/admin/user-details">
+                            <a href="/admin/user-details?id=<%= admin._id %>">
                                 <i class="fas fa-table"></i>Users</a>
                         </li>
                         <li>
-                            <a href="/admin/product-details">
+                            <a href="/admin/product-details?id=<%= admin._id %>">
                                 <i class="far fa-check-square"></i>Products</a>
                         </li>
                         <li>
@@ -159,11 +159,11 @@
                                 <i class="fas fa-chart-bar"></i>Charts</a>
                         </li>
                         <li>
-                            <a href="/admin/user-details">
+                            <a href="/admin/user-details?id=<%= admin._id %>">
                                 <i class="fas fa-table"></i>Users</a>
                         </li>
                         <li class="active">
-                            <a href="/admin/product-details">
+                            <a href="/admin/product-details?id=<%= admin._id %>">
                                 <i class="far fa-check-square"></i>Products</a>
                         </li>
                         <li>
@@ -397,7 +397,7 @@
                                                 </div>
                                             </div>
                                             <div class="account-dropdown__footer">
-                                                <a href="#">
+                                                <a href="/admin/logout">
                                                     <i class="zmdi zmdi-power"></i>Logout</a>
                                             </div>
                                         </div>
@@ -421,7 +421,7 @@
                                 <h3 class="title-5 m-b-35">Product Details</h3>
                                 <div class="table-data__tool">
                                     <div class="table-data__tool-right">
-                                        <a href="/admin/addproduct"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                                        <a href="/admin/addproduct?id=<%= admin._id %>"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
                                             <i class="zmdi zmdi-plus"></i>Add Product</button></a>
                                     </div>
                                 </div>
@@ -456,14 +456,12 @@
                                     </td>
                                     <td class="desc">$<%= products[i].product_price %></td>
                                     <td><%= products[i].product_category %></td>
-                                    <td>
-                                        <span class="status--process">Processed</span>
-                                    </td>
+                                    <td><%= products[i].product_stock %></td>
                                     <td><%= products[i].product_brand %></td>
                                     <td>
                                         <div class="table-data-feature">
                                             <div class="item">
-                                                <a href="/admin/editproducts?id=<%= products[i]._id %>">
+                                                <a href="/admin/editproducts?id=<%= products[i]._id %>&adminid=<%= admin._id %>">
                                                     <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
                                                     <i class="zmdi zmdi-edit"></i>
                                                 </button></a>

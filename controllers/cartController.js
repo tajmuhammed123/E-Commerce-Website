@@ -77,17 +77,16 @@ const updateCart = async (req, res) => {
 
   const checkOut=async(req,res)=>{
     try{
-      console.log(req.query.id);
-      const id = req.query.id;
-      const productData = await Cart.find({ user_id: id });
-      const customer = await User.findOne({ _id: id });
-      console.log(productData);
-      
-      console.log('dfgh');
+      console.log(req.query.userid);
+      const userid = req.query.userid;
+      const cartData = await Cart.find({ user_id: userid });
+      const customer = await User.findOne({ _id: userid });
+      const addressid = req.body.address
       
       // Iterate over each cart item in the productData array
-      for (const cartItem of productData) {
+      for (const cartItem of cartData) {
         const order = new Order({
+          addressId: addressid,
           customer_id: cartItem.user_id,
           customer_name: customer.name,
           product_id: cartItem.product_id,
@@ -96,19 +95,91 @@ const updateCart = async (req, res) => {
           product_img: cartItem.product_img,
           product_size: cartItem.product_size,
           product_quantity: cartItem.product_quantity,
-          product_brand: cartItem.product_brand
+          product_brand: cartItem.product_brand,
         });
       
         const orderData = await order.save();
         console.log(orderData);
       }
-      
-      res.redirect("/cart");
+      for (const productData of cartData) {
+        console.log('jhkgh');
+        const product = await Products.findByIdAndUpdate(
+          { _id: productData.product_id },
+          {
+            $inc: {
+              product_stock: -productData.product_quantity
+            }
+          },
+          { new: true }
+        )
+        const orderData = await product.save();
+        console.log(orderData);
+      }
+
+      await Cart.deleteMany( { user_id: userid } )
+      const add= customer.address.find((addr) => addr._id == addressid)
+      console.log(add);
+      res.render("success",{order:add});
       
     }catch(err){
       console.log(err.message);
     }
   }
+
+  const loadPayment=async(req,res)=>{
+    try{
+      const id=req.query.id
+      const userid = await User.findOne({ _id: id });
+      console.log(userid);
+      res.render('payment',{userid:userid})
+    }catch(err){
+      console.log(err.message);
+    }
+  }
+
+  const loadAddAddress=async(req,res)=>{
+    try{
+      const userid=req.query.userid
+      console.log(userid);
+      res.render('addaddress',{userid:userid})
+    }catch(err){
+      console.log(err.message);
+    }
+  }
+
+
+  const addAddress = async (req, res) => {
+    try {
+      const userId = req.query.userid;
+  
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+  
+      const newAddress = {
+        firstName: req.body.firstName,
+        secondName: req.body.secondName,
+        email: req.body.email,
+        mobNumber: req.body.mobNumber,
+        houseNumber: req.body.houseNumber,
+        city: req.body.city,
+        state: req.body.state,
+        pincode: req.body.pincode
+      };
+  
+      user.address.push(newAddress);
+      await user.save();
+  
+      console.log(user);
+  
+      res.render('payment',{userid:user});
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error' });
+    }
+  };
+  
   
 
 module.exports = {
@@ -116,5 +187,8 @@ module.exports = {
     loadCart,
     deleteCartProduct,
     updateCart,
-    checkOut
+    checkOut,
+    loadAddAddress,
+    loadPayment,
+    addAddress
 }

@@ -159,11 +159,11 @@
                                 <i class="fas fa-chart-bar"></i>Charts</a>
                         </li>
                         <li>
-                            <a href="/admin/user-details">
+                            <a href="/admin/user-details?id=<%= admin._id %>">
                                 <i class="fas fa-table"></i>Users</a>
                         </li>
                         <li class="active">
-                            <a href="/admin/product-details">
+                            <a href="/admin/product-details?id=<%= admin._id %>">
                                 <i class="far fa-check-square"></i>Products</a>
                         </li>
                         <li>
@@ -444,6 +444,14 @@
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <input type="text" id="text-input" name="product_brand" placeholder="Text" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="row form-group">
+                                                <div class="col col-md-5">
+                                                    <label for="text-input" class=" form-control-label">Stock</label>
+                                                </div>
+                                                <div class="col-12 col-md-7">
+                                                    <input type="number" id="text-input" name="product_stock" placeholder="Stock" class="form-control">
                                                 </div>
                                             </div>
                                             <div class="row form-group">

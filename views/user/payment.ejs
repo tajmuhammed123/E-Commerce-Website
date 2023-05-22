@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>Shoping Cart</title>
+	<title>Contact</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 <!--===============================================================================================-->	
@@ -28,15 +28,6 @@
 	<link rel="stylesheet" type="text/css" href="css/util.css">
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 <!--===============================================================================================-->
-
-	<script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/alertify.min.css" />
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/alertify.min.css"/>
-  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/alertifyjs/build/css/themes/default.min.css"/>
-	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/alertifyjs/build/alertify.min.js"></script>
-
-
 </head>
 <body class="animsition">
 	
@@ -75,7 +66,7 @@
 				<nav class="limiter-menu-desktop container">
 					
 					<!-- Logo desktop -->		
-					<a href="/home" class="logo">
+					<a href="#" class="logo">
 						<img src="images/icons/logo-01.png" alt="IMG-LOGO">
 					</a>
 
@@ -107,7 +98,7 @@
 								<a href="about.html">About</a>
 							</li>
 
-							<li>
+							<li class="active-menu">
 								<a href="contact.html">Contact</a>
 							</li>
 						</ul>
@@ -135,7 +126,7 @@
 		<div class="wrap-header-mobile">
 			<!-- Logo moblie -->		
 			<div class="logo-mobile">
-				<a href="/home"><img src="images/icons/logo-01.png" alt="IMG-LOGO"></a>
+				<a href="index.html"><img src="images/icons/logo-01.png" alt="IMG-LOGO"></a>
 			</div>
 
 			<!-- Icon header -->
@@ -330,191 +321,121 @@
 	</div>
 
 
-	<!-- breadcrumb -->
-	<div class="container">
-		<div class="bread-crumb flex-w p-l-25 p-r-15 p-t-30 p-lr-0-lg">
-			<a href="index.html" class="stext-109 cl8 hov-cl1 trans-04">
-				Home
-				<i class="fa fa-angle-right m-l-9 m-r-10" aria-hidden="true"></i>
-			</a>
+	<!-- Title page -->
+	<section class="bg-img1 txt-center p-lr-15 p-tb-92" style="background-image: url('images/bg-01.jpg');">
+		<h2 class="ltext-105 cl0 txt-center">
+			Contact
+		</h2>
+	</section>	
 
-			<span class="stext-109 cl4">
-				Shoping Cart
-			</span>
-		</div>
-	</div>
-		
 
-	<!-- Shoping Cart -->
-	<form class="bg0 p-t-75 p-b-85">
+	<!-- Content page -->
+	<section class="bg0 p-t-104 p-b-116">
 		<div class="container">
-			<div class="row">
-				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
-					<div class="m-l-25 m-r--38 m-lr-0-xl">
-						<div class="wrap-table-shopping-cart">
-							<table class="table-shopping-cart product_data">
-								<tr class="table_head">
-									<th class="column-1">Product</th>
-									<th class="column-2"></th>
-									<th class="column-3">Price</th>
-									<th class="column-4">Brand</th>
-									<th class="column-5">Quantity</th>
-									<th class="column-6">Total</th>
-								</tr>
-							<%
-							let total = 0; // Initialize the total variable
-							let prid
-							if (products.length > 0) {
-								for (let i = 0; i < products.length; i++) {
-							%>
-							<tr class="table_row ">
-								<td class="column-1">
-								  <a href="/deleteproduct?id=<%= products[i]._id %>">
-									<div class="how-itemcart1">
-									  <img src="/admin/images/<%= products[i].product_img %>" alt="IMG">
-									</div>
-								  </a>
-								</td>
-								<td class="column-2"><%= products[i].product_name %></td>
-								<td class="column-3">$<%= products[i].product_price %></td>
-								<td class="column-4" style="text-transform: uppercase"><%= products[i].product_brand %></td>
-								<td class="column-5">
-								  <div class="wrap-num-product flex-w m-l-auto m-r-0">
-									<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m changeQuantity" data-product-id="<%= products[i]._id %>">
-									  <i class="fs-16 zmdi zmdi-minus"></i>
-									</div>
-									<input class="mtext-104 cl3 txt-center num-product qty-input" type="number" name="product_quantity" value="<%= products[i].product_quantity %>" data-product-id="<%= products[i]._id %>">
-									<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m changeQuantity" data-product-id="<%= products[i]._id %>">
-									  <i class="fs-16 zmdi zmdi-plus"></i>
-									</div>
-								  </div>
-								</td>
-								<td class="column-6">$<%= parseFloat(products[i].product_price) * parseFloat(products[i].product_quantity) %></td>
-							  </tr>
-							  <input type="hidden" name="total" value="<%= total += parseFloat(products[i].product_price) * parseFloat(products[i].product_quantity) %>">
-								<input type="hidden" name="prid" value="<%= prid = products[i].user_id %>">
-							  
-							<%
-								}
-							%>
-							<%
-							} else {
-							%>
-							<tr>
-								<td colspan="5">Products Not found</td>
-							</tr>
-							<%
-							}
-							%>
-
-							</table>
-						</div>
-
-						<div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
-							<div class="flex-w flex-m m-r-20 m-tb-5">
-								<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code">
-									
-								<div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5">
-									Apply coupon
-								</div>
-							</div>
-
-							<div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
-								Update Cart
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="col-sm-10 col-lg-7 col-xl-5 m-lr-auto m-b-50">
-					<div class="bor10 p-lr-40 p-t-30 p-b-40 m-l-63 m-r-40 m-lr-0-xl p-lr-15-sm">
-						<h4 class="mtext-109 cl2 p-b-30">
-							Cart Totals
+            <div class="flex-w flex-tr w-full-md m-lr-70 m-t-55 " style="width: 150px;">
+				<a href="/addaddress?userid=<%= userid._id %>"><button class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+					Add Address
+				</button></a>
+			</div>
+				<!-- <div class="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
+					<form action="">
+						<h4 class="mtext-105 cl2 txt-center p-b-30">
+							Add Address
 						</h4>
 
-						<!-- <div class="flex-w flex-t bor12 p-b-13">
-							<div class="size-208">
-								<span class="stext-110 cl2">
-									Subtotal:
-								</span>
-							</div>
-
-							<div class="size-209">
-								<span class="mtext-110 cl2 cart__price total">
-									$<%= total.toFixed(2) %>
-								</span>
-							</div>
+						<div class="bor8 m-b-20 how-pos4-parent">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="firstName" placeholder="First Name">
+						</div>
+						<div class="bor8 m-b-20 how-pos4-parent">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="secondName" placeholder="Second Name">
+						</div>
+						<div class="bor8 m-b-20 how-pos4-parent">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="email" name="email" placeholder="Your Email Address">
+						</div>
+						<div class="bor8 m-b-20 how-pos4-parent">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="number" name="mobNumber" placeholder="Mobile Number">
 						</div> -->
 
-						<!-- <div class="flex-w flex-t bor12 p-t-15 p-b-30">
-							<div class="size-208 w-full-ssm">
-								<span class="stext-110 cl2">
-									Shipping:
-								</span>
-							</div>
-
-							<div class="size-209 p-r-18 p-r-0-sm w-full-ssm">
-								<p class="stext-111 cl6 p-t-2">
-									There are no shipping methods available. Please double check your address, or contact us if you need any help.
-								</p>
-								
-								<div class="p-t-15">
-									<span class="stext-112 cl8">
-										Calculate Shipping
-									</span>
-
-									<div class="rs1-select2 rs2-select2 bor8 bg0 m-b-12 m-t-9">
-										<select class="js-select2" name="time">
-											<option>Select a country...</option>
-											<option>USA</option>
-											<option>UK</option>
-										</select>
-										<div class="dropDownSelect2"></div>
-									</div>
-
-									<div class="bor8 bg0 m-b-12">
-										<input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="state" placeholder="State /  country">
-									</div>
-
-									<div class="bor8 bg0 m-b-22">
-										<input class="stext-111 cl8 plh3 size-111 p-lr-15" type="text" name="postcode" placeholder="Postcode / Zip">
-									</div>
-									
-									<div class="flex-w">
-										<div class="flex-c-m stext-101 cl2 size-115 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer">
-											Update Totals
-										</div>
-									</div>
-										
-								</div>
-							</div>
+						<!-- <div class="bor8 m-b-30">
+							<textarea class="stext-111 cl2 plh3 size-120 p-lr-28 p-tb-25" name="msg" placeholder="How Can We Help?"></textarea>
 						</div> -->
 
-						<div class="flex-w flex-t p-t-27 p-b-33">
-							<div class="size-208">
-								<span class="mtext-101 cl2">
-									Total:
-								</span>
-							</div>
-
-							<div class="size-209 p-t-1">
-								<span class="mtext-110 cl2 total">
-									$<%= total.toFixed(2) %>
-								</span>
-							</div>
+						<!-- <div class="bor8 m-b-20 how-pos4-parent">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="houseNumber" placeholder="House Address">
 						</div>
 
-						<a href="/payment?id=<%= prid %>">
-							<div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
-							Proceed to Checkout</div></a>
-					</div>
-				</div>
-			</div>
+						<div class="bor8 m-b-20 how-pos4-parent">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="city" placeholder="City">
+						</div>
+
+						<div class="bor8 m-b-20 how-pos4-parent">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="state" placeholder="State">
+						</div>
+
+						<div class="bor8 m-b-20 how-pos4-parent">
+							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="number" name="pincode" placeholder="Pincode">
+						</div>
+					</form>
+				</div> -->
+                  
+                <% if (userid && userid.address) { %>
+                    <% for (let i = 0; i < userid.address.length; i++) { %>
+                        <% const address = userid.address[i]; %>
+                    <form action="/confirm?userid=<%= userid._id %>" method="post">
+                        <div class="flex-w flex-tr" style="justify-content: center;">
+                            <div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40" style="width: 300px;">
+                                <div class="flex-w w-full p-b-20">
+                                    <span class="fs-18 cl5 txt-center size-100">
+                                        <span class="lnr lnr-map-marker"></span>
+                                    </span>
+            
+                                    <div class="size-30 p-t-2">
+                                        <span class="mtext-50 cl2">
+                                            Address
+                                        </span>
+                                        <input class="form-check-input" type="radio" name="address" value="<%=userid.address[i]._id%>"
+                                            id="<%=userid.address[i]._id%> required">
+                                        <label class="form-check-label" for="<%=userid.address[i]._id%>">
+                                            <div class="bg-light p-3 border rounded">
+                                                <p class="stext-30 cl6 size-100 p-t-18">
+                                                    <%= address.firstName %>
+                                                    <%= address.secondName %> <br>
+                                                    <%= address.houseNumber %> <br>
+                                                    <%= address.city %> <br>
+                                                    <%= address.state %> <br>
+                                                    <%= address.pincode %> <br>
+                                                  </p>
+                                            </div>
+                            
+                                          </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="size-30 p-t-2">
+                            <p class="stext-30 cl6 size-100 p-t-18">
+                                
+                                <p class="stext-30 cl6 size-100 p-t-18">
+                                    Cash On Delivery
+                                </p>
+                            </p>
+                            <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+                                Confirm
+                            </button>
+                        </div>
+                    </form>
+                <% } %>
+                <% } %>
 		</div>
-	</form>
-		
+	</section>	
 	
-		
+	
+	<!-- Map -->
+	<!-- <div class="map">
+		<div class="size-303" id="google_map" data-map-x="40.691446" data-map-y="-73.886787" data-pin="images/icons/pin.png" data-scrollwhell="0" data-draggable="1" data-zoom="11"></div>
+	</div> -->
+
+
 
 	<!-- Footer -->
 	<footer class="bg3 p-t-75 p-b-32">
@@ -706,36 +627,10 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 		});
 	</script>
 <!--===============================================================================================-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKFWBqlKAGCeS1rMVoaNlwyayu0e0YRes"></script>
+	<script src="js/map-custom.js"></script>
+<!--===============================================================================================-->
 	<script src="js/main.js"></script>
-	<script>
-		$('.changeQuantity').click(function (e) {
-  e.preventDefault();
-
-  var product_id = $(this).data('product-id');
-  var quantityInput = $(this).closest('.table_row').find('.qty-input');
-  var product_qty = parseInt(quantityInput.val());
-
-  $.ajax({
-    method: "POST",
-    url: "/update_cart",
-    data: {
-      'product_id': product_id,
-      'product_qty': product_qty
-    },
-    success: function (response) {
-      console.log(response);
-      alertify.success(response.status);
-      var timestamp = new Date().getTime();
-      $('.total').load(location.href + " .total");
-    },
-    error: function (error) {
-      console.log(error);
-      alertify.error('Error occurred while updating quantity');
-    }
-  });
-});	
-		</script>
-		
 
 </body>
 </html>

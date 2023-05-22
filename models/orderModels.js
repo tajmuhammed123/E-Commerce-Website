@@ -1,6 +1,14 @@
-const mongoose = require('mongoose')
+const { ObjectId } = require("mongodb");
+const mongoose = require("mongoose");
+
 
 const orderSchema = mongoose.Schema({
+
+    addressId:{
+        type:ObjectId,
+        required:true
+    },
+
     customer_id: {
 
         type:String,

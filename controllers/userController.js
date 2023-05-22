@@ -95,7 +95,7 @@ const verifyLogin = async(req,res) => {
                   ){
                 req.session.user_id = userData._id;
 
-                res.redirect('/dashboard')
+                res.redirect('/')
                 }
                 else{
 
@@ -123,11 +123,18 @@ const verifyLogin = async(req,res) => {
 const loadHome = async (req,res)=> {
 
         try {
-            const productData = await Products.find({ id_disable:false });
+            if(req.session.user_id){
+              const session=req.session.user_id
+              const productData = await Products.find({ id_disable:false });
             const id=req.session.user_id
             const userData = await User.findById({_id : req.session.user_id});
             console.log(userData);
-            res.render('home',{products:productData, user:userData});
+            res.render('home',{products:productData, user:userData, session});
+            }else{
+              const session=null
+              const productData = await Products.find({ id_disable:false });
+              res.render('home',{products:productData, session})
+            }
 
         } catch (error) {
 
