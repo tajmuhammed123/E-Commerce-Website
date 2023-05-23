@@ -42,7 +42,7 @@ user_route.get('/dashboard', userController.loadHome)
 
 // user_route.get('/filter',userController.filterProduct)
 
-user_route.get('/product-detail',auth.isLogin, userController.productDetail)
+user_route.get('/product-detail', userController.productDetail)
 
 user_route.post('/addcart', cartController.addToCart)
 
@@ -58,7 +58,7 @@ user_route.get('/addaddress',auth.isLogin, cartController.loadAddAddress);
 
 user_route.post('/payment',auth.isLogin, cartController.addAddress);
 
-user_route.post('/confirm',auth.isLogin, cartController.checkOut);
+user_route.post('/confirm',auth.isLogin, cartController.placeOrder);
 
 
 module.exports = user_route;

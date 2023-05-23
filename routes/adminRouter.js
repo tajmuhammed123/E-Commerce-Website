@@ -67,4 +67,8 @@ admin_route.get('/id_disable',auth.isLogin,adminController.disableProduct)
 
 admin_route.get('/id_undisable',auth.isLogin,adminController.enableProduct)
 
+admin_route.get('/orders',auth.isLogin,adminController.loadOrders)
+
+admin_route.get('/orderaddress',auth.isLogin,adminController.loadOrderAddress)
+
 module.exports = admin_route

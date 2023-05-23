@@ -17,7 +17,7 @@ const addToCart = async(req,res)=>{
             product_price: productData.product_price,
             product_img: productData.product_img[0],
             product_size: req.body.product_size,
-            product_quantity: 1,
+            product_quantity: req.body.product_quantity,
             product_brand: productData.product_brand,
           });
       
@@ -75,7 +75,7 @@ const updateCart = async (req, res) => {
     }
   }
 
-  const checkOut=async(req,res)=>{
+  const placeOrder=async(req,res)=>{
     try{
       console.log(req.query.userid);
       const userid = req.query.userid;
@@ -187,7 +187,7 @@ module.exports = {
     loadCart,
     deleteCartProduct,
     updateCart,
-    checkOut,
+    placeOrder,
     loadAddAddress,
     loadPayment,
     addAddress

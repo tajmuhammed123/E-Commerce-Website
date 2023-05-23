@@ -31,56 +31,18 @@
                                         </thead>
                                         <tbody>
 
-
-                                            <%
-                    if(user.length > 0){
-
-                        for(let i=0; i<user.length; i++){
-                            %>
-
                             <tr>
                                 <tr class="tr-shadow">
-                                    <td><%= user[i].name %></td>
+                                    <td><%= address.firstName %></td>
                                     <td>
-                                        <span class="block-email"><%= user[i].username %></span>
+                                        <span class="block-email"><%= address.houseNumber %></span>
                                     </td>
-                                    <td class="desc"><%= user[i].email %></td>
-                                    <td><%= user[i].mobile %></td>
-                                    <td>
-                                        <span class="status--process">Processed</span>
-                                    </td>
-                                    <td>
-                                        <div class="table-data-feature">
-                                            <div class="item">
-                                                <a href="/admin/editusers?id=<%= user[i]._id %>&adminid=<%= admin._id %>">
-                                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
-                                                        <i class="zmdi zmdi-edit"></i>
-                                                    </button></a>
-                                            </div>
-                                            <div class="item">
-                                                <a href="/admin/deleteusers?id=<%= user[i]._id %>">
-                                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
-                                                        <i class="zmdi zmdi-delete"></i>
-                                                    </button></a>
-                                            </div>
-                                        </div>
-                                    </td>
+                                    <td class="desc"><%= address.city %></td>
+                                    <td><%= address.state %></td>
+                                    <td><%= address.pincode %></td>
                                 </tr>
                             </tr>
                             <tr class="spacer"></tr>
-                        <%
-                        }
-
-                    }
-                    else{
-                        %>
-                            <tr>
-                                <td colspan="5">Users Not found</td>
-                            </tr>
-                        <%
-                    }
-               
-               %>
                                             <!-- <tr class="tr-shadow">
                                                 <td>
                                                     <label class="au-checkbox">
@@ -191,45 +153,4 @@
                                 <!-- END DATA TABLE -->
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="copyright">
-                                    <p>Copyright © 2023 Taj. All rights reserved. Template by <a href="">Taj</a>.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Jquery JS-->
-    <script src="vendor/jquery-3.2.1.min.js"></script>
-    <!-- Bootstrap JS-->
-    <script src="vendor/bootstrap-4.1/popper.min.js"></script>
-    <script src="vendor/bootstrap-4.1/bootstrap.min.js"></script>
-    <!-- Vendor JS       -->
-    <script src="vendor/slick/slick.min.js">
-    </script>
-    <script src="vendor/wow/wow.min.js"></script>
-    <script src="vendor/animsition/animsition.min.js"></script>
-    <script src="vendor/bootstrap-progressbar/bootstrap-progressbar.min.js">
-    </script>
-    <script src="vendor/counter-up/jquery.waypoints.min.js"></script>
-    <script src="vendor/counter-up/jquery.counterup.min.js">
-    </script>
-    <script src="vendor/circle-progress/circle-progress.min.js"></script>
-    <script src="vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="vendor/chartjs/Chart.bundle.min.js"></script>
-    <script src="vendor/select2/select2.min.js">
-    </script>
-
-    <!-- Main JS-->
-    <script src="js/main.js"></script>
-
-</body>
-
-</html>
-<!-- end document-->
+<%-include('../layouts/adminFooter') %>

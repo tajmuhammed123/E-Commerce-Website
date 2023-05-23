@@ -1,5 +1,6 @@
 const User = require("../models/usermodals");
 const Products = require("../models/productModels");
+const Order=require('../models/orderModels')
 const bcrypt = require("bcrypt");
 
 const securePassword = async (password) => {
@@ -325,6 +326,33 @@ const disableProduct = async(req,res)=>{
   }
 }
 
+const loadOrders=async(req,res)=>{
+  try{
+    const adminid = req.query.id
+    const adminData = await User.findOne({ _id:adminid });
+    const orders= await Order.find({})
+    res.render('order-list',{orders:orders, admin: adminData})
+
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+const loadOrderAddress=async(req,res)=>{
+  try {
+    console.log('hgjgfgd');
+    const addid= req.query.addid
+    const userid=req.query.id
+    const adminid = req.query.adminid
+    const adminData = await User.findOne({ _id:adminid });
+    const customer = await User.findOne({ _id: userid });
+    const add= customer.address.find((addr) => addr._id == addid)
+    res.render('order-address',{address:add, admin: adminData})
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
 
 module.exports = {
   loadLogin,
@@ -343,5 +371,7 @@ module.exports = {
   editUser,
   updateUser,
   enableProduct,
-  disableProduct
+  disableProduct,
+  loadOrders,
+  loadOrderAddress
 };
