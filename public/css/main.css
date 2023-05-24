@@ -3315,6 +3315,12 @@ input.num-product::-webkit-inner-spin-button {
   
 }
 
+.addressleft{
+  display: flex !important;
+  float:  left !important;
+  justify-content: center !important;
+}
+
 
 /*//////////////////////////////////////////////////////////////////
 [ SSM ]*/

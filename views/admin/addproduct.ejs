@@ -61,12 +61,25 @@
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <select name="product_category" id="select" class="form-control">
-                                                        <option value="0">Please select</option>
-                                                        <option value="men">Men</option>
-                                                        <option value="women">Women</option>
-                                                        <option value="bag">Bag</option>
-                                                        <option value="shoes">Shoes</option>
-                                                        <option value="watches">Watches</option>
+                                                        <%
+                                                        if(category.length > 0){
+
+                                                        for(let i=0; i<category.length; i++){
+                                                        %>
+                                                        <option value="<%= category[i].product_category %>"><%= category[i].product_category %></option>
+                                                        <%
+                                                        }
+                            
+                                                    }else{
+                                                        %>
+                                                            <tr>
+                                                                <td colspan="5">Category Not found</td>
+                                                            </tr>
+                                                        <%
+                                                    }
+                                               
+                                               %>
+
                                                     </select>
                                                 </div>
                                             </div>

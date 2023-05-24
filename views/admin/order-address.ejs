@@ -11,22 +11,16 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <!-- DATA TABLE -->
-                                <h3 class="title-5 m-b-35">User Details</h3>
-                                <div class="table-data__tool">
-                                    <div class="table-data__tool-right">
-                                        <a href="/admin/adduser?id=<%= admin._id %>"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
-                                            <i class="zmdi zmdi-plus"></i>Add User</button></a>
-                                    </div>
-                                </div>
+                                <h3 class="title-5 m-b-35">Address Details Details</h3>
                                 <div class="table-responsive table-responsive-data2">
                                     <table class="table table-data2">
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
-                                                <th>Username</th>
-                                                <th>Email</th>
-                                                <th>Mobile Number</th>
-                                                <th>Status</th>
+                                                <th>house Number</th>
+                                                <th>City</th>
+                                                <th>State</th>
+                                                <th>Pincode</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -35,9 +29,9 @@
                                 <tr class="tr-shadow">
                                     <td><%= address.firstName %></td>
                                     <td>
-                                        <span class="block-email"><%= address.houseNumber %></span>
+                                        <span><%= address.houseNumber %></span>
                                     </td>
-                                    <td class="desc"><%= address.city %></td>
+                                    <td ><%= address.city %></td>
                                     <td><%= address.state %></td>
                                     <td><%= address.pincode %></td>
                                 </tr>

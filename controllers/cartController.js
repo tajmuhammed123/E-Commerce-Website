@@ -36,7 +36,7 @@ const loadCart =async(req,res)=>{
         const userid = req.query.id
         console.log(userid);
         const cartData = await Cart.find({ user_id: userid });
-        res.render('shoping-cart',{products: cartData})
+        res.render('shoping-cart',{products: cartData, userid:userid })
     }catch(err){
         console.log(err.message);
     }
@@ -45,9 +45,10 @@ const loadCart =async(req,res)=>{
 const deleteCartProduct = async (req, res) => {
   try {
     const id = req.query.id;
+    const userid = req.query.userid;
     console.log(id);
     await Cart.deleteOne({ _id: id });
-    res.redirect("/cart");
+    res.redirect(`/cart?id=${userid}`);
   } catch (error) {
     console.log(error.message);
   }

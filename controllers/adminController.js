@@ -1,5 +1,6 @@
 const User = require("../models/usermodals");
 const Products = require("../models/productModels");
+const Category=require('../models/categoreyModels')
 const Order=require('../models/orderModels')
 const bcrypt = require("bcrypt");
 
@@ -89,9 +90,9 @@ const loadUser = async (req, res) => {
 
 const loadProducts = async (req, res) => {
   try {
-    const id=req.query.id
+    const adminid=req.query.adminid
     const productsData = await Products.find({ });
-    const adminData = await User.findOne({ _id:id });
+    const adminData = await User.findOne({ _id:adminid });
     res.render("product-details", { products: productsData, admin: adminData });
   } catch (err) {
     console.log(err.message);
@@ -102,8 +103,9 @@ const loadAddProduct = async (req, res) => {
   try {
     const id = req.query.id;
     const adminData = await User.findOne({ _id:id })
+    const categoryData = await Category.find({})
     message = null;
-    res.render("addproduct", { admin: adminData, message });
+    res.render("addproduct", { admin: adminData, message, category:categoryData });
   } catch (err) {
     console.log(err.message);
   }
@@ -155,7 +157,7 @@ const editProduct = async (req, res) => {
       const adminData = await User.findOne({ _id:adminid });
       res.render("editproducts", { product: productData, admin: adminData });
     } else {
-      res.redirect("/admin/product-details");
+      res.redirect(`/admin/product-details?adminid=${adminid}&&id=${id}`);
     }
   } catch (error) {
     console.log(error.message);
@@ -304,23 +306,26 @@ const updateUser = async (req, res) => {
 //   }
 // };
 
-const enableProduct = async(req,res)=>{
-  try{
-    const id = req.query.id
-        await Products.findByIdAndUpdate({ _id: id }, { $set: { id_disable: false } })
+const enableProduct = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const adminid = req.query.adminid;
+    await Products.findByIdAndUpdate({ _id: id }, { $set: { id_disable: false } });
 
-        res.redirect('/admin/product-details')
-  }catch(err){
+    res.redirect(`/admin/product-details?adminid=${adminid}&&id=${id}`);
+  } catch (err) {
     console.log(err.message);
   }
 }
 
+
 const disableProduct = async(req,res)=>{
   try{
     const id = req.query.id
+    const adminid = req.query.adminid
         await Products.findByIdAndUpdate({ _id: id }, { $set: { id_disable: true } })
 
-        res.redirect('/admin/product-details')
+    res.redirect(`/admin/product-details?adminid=${adminid}&&id=${id}`);
   }catch(err){
     console.log(err.message);
   }
@@ -353,6 +358,29 @@ const loadOrderAddress=async(req,res)=>{
   }
 }
 
+const loadAddCategorey=async(req,res)=>{
+  try{
+    const adminid = req.query.adminid
+    const adminData = await User.findOne({ _id:adminid });
+      res.render('add-category',{ admin: adminData })
+  }catch(err){
+    console.log(err.message);
+  }
+}
+const addCategorey=async(req,res)=>{
+  try{
+    const adminid = req.query.adminid
+    console.log(req.body.productcategory);
+    const category = new Category({
+      product_category: req.body.productcategory
+    });
+    await category.save();
+    res.redirect(`/admin/product-details?adminid=${adminid}`);
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
 
 module.exports = {
   loadLogin,
@@ -373,5 +401,7 @@ module.exports = {
   enableProduct,
   disableProduct,
   loadOrders,
-  loadOrderAddress
+  loadOrderAddress,
+  loadAddCategorey,
+  addCategorey
 };

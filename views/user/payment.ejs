@@ -143,48 +143,50 @@
 					</form>
 				</div> -->
                     <form action="/confirm?userid=<%= userid._id %>" method="post">
-                        <% if (userid && userid.address) { %>
-                        <% for (let i = 0; i < userid.address.length; i++) { %>
-                        <% const address = userid.address[i]; %>
-                        <div class="flex-w flex-tr" style="justify-content: center;">
-                            <div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40" style="width: 300px;">
-                                <div class="flex-w w-full p-b-20">
-                                    <span class="fs-18 cl5 txt-center size-100">
-                                        <span class="lnr lnr-map-marker"></span>
-                                    </span>
-            
-                                    <div class="size-30 p-t-2">
-                                        <span class="mtext-50 cl2">
-                                            Address
-                                        </span>
-                                        <input class="form-check-input" type="radio" name="address" value="<%=userid.address[i]._id%>"
-                                            id="<%=userid.address[i]._id%> required">
-                                        <label class="form-check-label" for="<%=userid.address[i]._id%>">
-                                            <div class="bg-light p-3 border rounded">
-                                                <p class="stext-30 cl6 size-100 p-t-18">
-                                                    <%= address.firstName %>
-                                                    <%= address.secondName %> <br>
-                                                    <%= address.houseNumber %> <br>
-                                                    <%= address.city %> <br>
-                                                    <%= address.state %> <br>
-                                                    <%= address.pincode %> <br>
-                                                  </p>
+                        <div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40">
+                            <div class="flex-w flex-tr">
+                            <% if (userid && userid.address) { %>
+                                <% for (let i = 0; i < userid.address.length; i++) { %>
+                                <% const address = userid.address[i]; %>
+                                
+                                    <div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40 addressleft" style="width: 300px;">
+                                        <div class="flex-w w-full p-b-20">
+                                            <span class="fs-18 cl5 txt-center size-100">
+                                                <span class="lnr lnr-map-marker"></span>
+                                            </span>
+                    
+                                            <div class="size-30 p-t-2">
+                                                <span class="mtext-50 cl2">
+                                                    Address
+                                                </span>
+                                                <input class="form-check-input" type="radio" name="address" value="<%=userid.address[i]._id%>"
+                                                    id="<%=userid.address[i]._id%> required">
+                                                <label class="form-check-label" for="<%=userid.address[i]._id%>">
+                                                    <div class="bg-light p-3 border rounded">
+                                                        <p class="stext-30 cl6 size-100 p-t-18">
+                                                            <%= address.firstName %>
+                                                            <%= address.secondName %> <br>
+                                                            <%= address.houseNumber %> <br>
+                                                            <%= address.city %> <br>
+                                                            <%= address.state %> <br>
+                                                            <%= address.pincode %> <br>
+                                                          </p>
+                                                    </div>
+                                    
+                                                  </label>
                                             </div>
-                            
-                                          </label>
+                                        </div>
                                     </div>
-                                </div>
+                                
+                                <% } %>
+                                <% } %>
                             </div>
                         </div>
-                        <% } %>
-                        <% } %>
-                        <div class="size-30 p-t-2">
-                            <p class="stext-30 cl6 size-100 p-t-18">
+                        <div class="size-30 p-t-2" style="width: 200px; margin-top: 50px;">
                                 
-                                <p class="stext-30 cl6 size-100 p-t-18">
+                                <p class="stext-30 cl6 size-100 p-t-18 p-b-10">
                                     Cash On Delivery
                                 </p>
-                            </p>
                             <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
                                 Place Order
                             </button>

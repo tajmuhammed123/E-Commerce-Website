@@ -17,6 +17,10 @@
                                         <a href="/admin/addproduct?id=<%= admin._id %>"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
                                             <i class="zmdi zmdi-plus"></i>Add Product</button></a>
                                     </div>
+                                    <div class="table-data__tool-right">
+                                        <a href="/admin/addcategorey?adminid=<%= admin._id %>"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                                            <i class="zmdi zmdi-plus"></i>Add Category</button></a>
+                                    </div>
                                 </div>
                                 <div class="table-responsive table-responsive-data2">
                                     <table class="table table-data2">
@@ -63,9 +67,9 @@
                                     </td>
                                     <td><div class="item">
                                         <% if(products[i].id_disable===false) {%>
-                                            <a href="/admin/id_disable?id=<%= products[i]._id%>&id_disable=false" class="btn btn-danger">Block</a>
+                                            <a href="/admin/id_disable?id=<%= products[i]._id%>&id_disable=false&&adminid=<%= admin._id %>" class="btn btn-danger">Block</a>
                                             <%}else{%>
-                                              <a href="/admin/id_undisable?id=<%= products[i]._id%>&id_disable=true"
+                                              <a href="/admin/id_undisable?id=<%= products[i]._id%>&id_disable=true&&adminid=<%= admin._id %>"
                                                 class="btn btn-success">Unblock</a>
                                               <% } %>
                                         <!-- <a href="/admin/deleteproduct?id=<%= products[i]._id %>"><button class="item" data-toggle="tooltip" data-placement="top" title="Delete">

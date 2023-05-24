@@ -1,5 +1,6 @@
 const User=require('../models/usermodals')
 const Products=require('../models/productModels')
+const Cart=require('../models/cartModels')
 const bcrypt = require("bcrypt");
 
 
@@ -129,7 +130,7 @@ const loadHome = async (req,res)=> {
             const id=req.session.user_id
             const cartData = await Cart.find({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
-            console.log(userData);
+            console.log(cartData);
             res.render('home',{products:productData, user:userData, session, cart: cartData});
             }else{
               const session=null

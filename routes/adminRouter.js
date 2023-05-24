@@ -71,4 +71,8 @@ admin_route.get('/orders',auth.isLogin,adminController.loadOrders)
 
 admin_route.get('/orderaddress',auth.isLogin,adminController.loadOrderAddress)
 
+admin_route.get('/addcategorey',auth.isLogin,adminController.loadAddCategorey)
+
+admin_route.post('/addcategorey',auth.isLogin,adminController.addCategorey)
+
 module.exports = admin_route
