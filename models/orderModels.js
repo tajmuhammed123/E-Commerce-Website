@@ -53,7 +53,15 @@ const orderSchema = mongoose.Schema({
 
         type:String,
         required:true
-    }
+    },
+    product_status:{
+        type:String,
+        default:'Ordered'
+    },
+    // is_delivered:{
+    //     type:Boolean,
+    //     default: false
+    // }
 })
 
 module.exports=mongoose.model("Order",orderSchema);

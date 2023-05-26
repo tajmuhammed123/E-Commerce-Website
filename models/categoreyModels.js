@@ -6,10 +6,10 @@ const CategorySchema = new mongoose.Schema({
         type:String,
         require:true
     },
-    // id_disable:{
-    //     type:Boolean,
-    //     default:false
-    // }
+    id_disable:{
+        type:Boolean,
+        default:false
+    }
 
 
 })

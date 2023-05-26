@@ -29,6 +29,8 @@ admin_route.set('view engine','ejs')
 admin_route.set('views','./views/admin')
 
 const adminController=require('../controllers/adminController');
+
+const orderController=require('../controllers/orderController');
 // const { path } = require('./userRouter');
 
 admin_route.get('/',auth.isLogout,adminController.loadLogin)
@@ -71,8 +73,22 @@ admin_route.get('/orders',auth.isLogin,adminController.loadOrders)
 
 admin_route.get('/orderaddress',auth.isLogin,adminController.loadOrderAddress)
 
+admin_route.post('/orderaddress',auth.isLogin, orderController.productStatus);
+
 admin_route.get('/addcategorey',auth.isLogin,adminController.loadAddCategorey)
 
 admin_route.post('/addcategorey',auth.isLogin,adminController.addCategorey)
+
+admin_route.post('/editcategory',auth.isLogin,adminController.editCategorey)
+
+admin_route.get('/category',auth.isLogin,adminController.loadCategorey)
+
+admin_route.get('/category_disable',auth.isLogin,adminController.disableCategory)
+
+admin_route.get('/category_undisable',auth.isLogin,adminController.enableCategory)
+
+admin_route.get('/user_disable',auth.isLogin,adminController.disableUser)
+
+admin_route.get('/user_undisable',auth.isLogin,adminController.enableUser)
 
 module.exports = admin_route

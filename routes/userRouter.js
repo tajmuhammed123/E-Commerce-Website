@@ -26,7 +26,8 @@ const auth=require('../middleware/Auth')
 
 
 const userController= require('../controllers/userController')
-const cartController=require('../controllers/cartController')
+const cartController=require('../controllers/cartController');
+const orderController = require('../controllers/orderController');
 
 user_route.get('/login',auth.isLogout,userController.loginLoad)
 
@@ -59,6 +60,14 @@ user_route.get('/addaddress',auth.isLogin, cartController.loadAddAddress);
 user_route.post('/payment',auth.isLogin, cartController.addAddress);
 
 user_route.post('/confirm',auth.isLogin, cartController.placeOrder);
+
+user_route.get('/orderhistory',auth.isLogin, orderController.orderHistory);
+
+user_route.get('/userprofile',auth.isLogin, userController.userProfile);
+
+user_route.get('/cancel',auth.isLogin, orderController.cancelProduct);
+
+
 
 
 module.exports = user_route;

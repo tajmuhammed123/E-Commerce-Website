@@ -9,75 +9,45 @@
                     <div class="container-fluid">
                         
                         <div class="row">
-                            <div class="col-md-12">
-                                <!-- DATA TABLE -->
-                                <h3 class="title-5 m-b-35">User Details</h3>
+                            <div class="col-md-6">
                                 <div class="table-data__tool">
                                     <div class="table-data__tool-right">
-                                        <a href="/admin/adduser?id=<%= admin._id %>"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
-                                            <i class="zmdi zmdi-plus"></i>Add User</button></a>
+                                        <a href="/admin/addcategorey"><button class="au-btn au-btn-icon au-btn--green au-btn--small">
+                                            <i class="zmdi zmdi-plus"></i>Add Category</button></a>
                                     </div>
                                 </div>
+                                <!-- DATA TABLE -->
+                                <h3 class="title-5 m-b-35">Order Details</h3>
                                 <div class="table-responsive table-responsive-data2">
                                     <table class="table table-data2">
                                         <thead>
                                             <tr>
-                                                <th>Name</th>
-                                                <th>Username</th>
-                                                <th>Email</th>
-                                                <th>Mobile Number</th>
-                                                <th>Status</th>
+                                                <th></th>
+                                                <th>Categories</th>
                                             </tr>
                                         </thead>
                                         <tbody>
 
 
                                             <%
-                    if(user.length > 0){
+                    if(category.length > 0){
 
-                        for(let i=0; i<user.length; i++){
+                        for(let i=0; i<category.length; i++){
                             %>
-
-                            <tr>
                                 <tr class="tr-shadow">
-                                    <td><%= user[i].name %></td>
-                                    <td>
-                                        <span class="block-email"><%= user[i].username %></span>
-                                    </td>
-                                    <td class="desc"><%= user[i].email %></td>
-                                    <td><%= user[i].mobile %></td>
-                                    <td>
-                                        <span class="status--process">Processed</span>
-                                    </td>
-                                    <!-- <td>
-                                        <div class="table-data-feature">
-                                            <div class="item">
-                                                <a href="/admin/editusers?id=<%=  %>&adminid=<%= %>">
-                                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
-                                                        <i class="zmdi zmdi-edit"></i>
-                                                    </button></a>
-                                            </div>
-                                            <div class="item">
-                                                <a href="/admin/deleteusers?id=<%=  %>">
-                                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
-                                                        <i class="zmdi zmdi-delete"></i>
-                                                    </button></a>
-                                            </div>
-                                        </div>
-                                    </td> -->
+                                    <td><%= category[i].product_category %></td>
                                     <td><div class="item">
-                                        <% if(user[i].id_disable===false) {%>
-                                            <a href="/admin/user_disable?userid=<%= user[i]._id%>&id_disable=false" class="btn btn-danger">Block</a>
+                                        <% if(category[i].id_disable===false) {%>
+                                            <a href="/admin/category_disable?categoryid=<%= category[i]._id%>&id_disable=false" class="btn btn-danger">Block</a>
                                             <%}else{%>
-                                              <a href="/admin/user_undisable?userid=<%= user[i]._id%>&id_disable=true"
+                                              <a href="/admin/category_undisable?categoryid=<%= category[i]._id%>&id_disable=true"
                                                 class="btn btn-success">Unblock</a>
                                               <% } %>
-                                        <!-- <a href="/admin/deleteproduct?id=<%=  %>"><button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
+                                        <!-- <a href="/admin/deleteproduct?id=<%= category[i]._id %>"><button class="item" data-toggle="tooltip" data-placement="top" title="Delete">
                                             <i class="zmdi zmdi-delete"></i>
                                         </button></a> -->
                                     </div></td>
                                 </tr>
-                            </tr>
                             <tr class="spacer"></tr>
                         <%
                         }
@@ -216,31 +186,4 @@
 
     </div>
 
-    <!-- Jquery JS-->
-    <script src="vendor/jquery-3.2.1.min.js"></script>
-    <!-- Bootstrap JS-->
-    <script src="vendor/bootstrap-4.1/popper.min.js"></script>
-    <script src="vendor/bootstrap-4.1/bootstrap.min.js"></script>
-    <!-- Vendor JS       -->
-    <script src="vendor/slick/slick.min.js">
-    </script>
-    <script src="vendor/wow/wow.min.js"></script>
-    <script src="vendor/animsition/animsition.min.js"></script>
-    <script src="vendor/bootstrap-progressbar/bootstrap-progressbar.min.js">
-    </script>
-    <script src="vendor/counter-up/jquery.waypoints.min.js"></script>
-    <script src="vendor/counter-up/jquery.counterup.min.js">
-    </script>
-    <script src="vendor/circle-progress/circle-progress.min.js"></script>
-    <script src="vendor/perfect-scrollbar/perfect-scrollbar.js"></script>
-    <script src="vendor/chartjs/Chart.bundle.min.js"></script>
-    <script src="vendor/select2/select2.min.js">
-    </script>
-
-    <!-- Main JS-->
-    <script src="js/main.js"></script>
-
-</body>
-
-</html>
-<!-- end document-->
+<%-include('../layouts/adminFooter') %>

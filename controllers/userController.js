@@ -1,6 +1,7 @@
 const User=require('../models/usermodals')
 const Products=require('../models/productModels')
 const Cart=require('../models/cartModels')
+const Order=require('../models/orderModels')
 const bcrypt = require("bcrypt");
 
 
@@ -83,7 +84,7 @@ const verifyLogin = async(req,res) => {
         const username = req.body.username;
         const password = req.body.password;
 
-        const userData = await User.findOne({username:username});
+        const userData = await User.findOne({username:username, id_disable:false});
 
         if (userData) {
 
@@ -178,6 +179,17 @@ const productDetail = async(req,res)=>{
     }
 }
 
+const userProfile=async(req,res)=>{
+  try {
+    const userid=req.session.user_id
+    const user= await User.findById({_id: userid})
+        res.render('userprofile',{user:user})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+
 
 
 module.exports ={
@@ -187,5 +199,6 @@ module.exports ={
     verifyLogin,
     loadHome,
     filterProduct,
-    productDetail
+    productDetail,
+    userProfile
 }

@@ -34,7 +34,11 @@
                                     <td ><%= address.city %></td>
                                     <td><%= address.state %></td>
                                     <td><%= address.pincode %></td>
+                                    <td><button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#exampleModal" data-mdb-whatever="@getbootstrap" >
+                                        Edit Status
+                                      </button></td>
                                 </tr>
+                                <!-- product_status -->
                             </tr>
                             <tr class="spacer"></tr>
                                             <!-- <tr class="tr-shadow">
@@ -147,4 +151,65 @@
                                 <!-- END DATA TABLE -->
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="copyright">
+                                    <p>Copyright © 2023 Taj. All rights reserved. Template by <a href="">Taj</a>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="" id="exampleModalLabel">Edit Status</h5>
+              <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form action="" method="post">
+                <div class="mb-3">
+                  <label class="col-form-label">Status:</label>
+                  <select class="form-control" name="product_status" id="select" >
+                    <option value="Shipped">Shipped</option>
+                    <option value="Rached Nearest Hub">Rached Nearest Hub</option>
+                    <option value="Delivered">Delivered</option>
+                  </select>
+                </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+              <button type="submit" class="btn btn-primary" data-mdb-dismiss="modal">Send message</button>
+            </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>  
+               
+
+<script>
+    const exampleModal = document.getElementById('exampleModal');
+exampleModal.addEventListener('show.mdb.modal', (e) => {
+  // Button that triggered the modal
+  const button = e.relatedTarget;
+  // Extract info from data-mdb-* attributes
+  const recipient = button.getAttribute('data-mdb-whatever');
+  // If necessary, you could initiate an AJAX request here
+  // and then do the updating in a callback.
+  //
+  // Update the modal's content.
+  const modalTitle = exampleModal.querySelector('.modal-title');
+  const modalBodyInput = exampleModal.querySelector('.modal-body input');
+
+  modalTitle.textContent = `New message to ${recipient}`;
+  modalBodyInput.value = recipient;
+})
+</script>
+
 <%-include('../layouts/adminFooter') %>

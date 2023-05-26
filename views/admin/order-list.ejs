@@ -22,6 +22,7 @@
                                                 <th>Brand</th>
                                                 <th>Price</th>
                                                 <th>Quantity</th>
+                                                <th>Status</th>
                                                 <th>Address</th>
                                             </tr>
                                         </thead>
@@ -44,8 +45,9 @@
                                     <td style="text-transform: uppercase;"><%= orders[i].product_brand %></td>
                                     <td class="desc"><%= orders[i].product_price %></td>
                                     <td><%= orders[i].product_quantity %></td>
+                                    <td class="text-danger"><%= orders[i].product_status %></td>
                                     <td>
-                                        <a href="/admin/orderaddress?addid=<%= orders[i].addressId %>&&id=<%= orders[i].customer_id %>&&adminid=<%= admin._id %>"><span class="status--process">Address</span></a>
+                                        <a href="/admin/orderaddress?addid=<%= orders[i].addressId %>&&id=<%= orders[i].customer_id %>&&orderid=<%= orders[i]._id %>&&productid=<%= orders[i]._id %>"><span class="status--process">Address</span></a>
                                     </td>
                                 </tr>
                             </tr>
@@ -173,5 +175,18 @@
                                 <!-- END DATA TABLE -->
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="copyright">
+                                    <p>Copyright © 2023 Taj. All rights reserved. Template by <a href="">Taj</a>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 
 <%-include('../layouts/adminFooter') %>

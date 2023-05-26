@@ -58,6 +58,7 @@ const updateCart = async (req, res) => {
     try {
       const product_id = req.body.product_id;
       const product_qty = req.body.product_qty;
+
         console.log(product_qty);
       const updateCart = await Cart.findByIdAndUpdate(
         product_id,

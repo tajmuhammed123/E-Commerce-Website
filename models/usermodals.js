@@ -60,6 +60,10 @@ mobile:{
     type:String,
     required:true
 },
+email:{
+    type:String,
+    required:true
+},
 password:{
 
     type:String,
@@ -68,7 +72,11 @@ password:{
 is_admin: {
     type: Number,
     required: true,
-  }
+},
+id_disable:{
+    type:Boolean,
+    default:false
+}
   
 
 });
