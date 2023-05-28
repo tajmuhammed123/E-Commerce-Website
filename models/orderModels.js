@@ -58,6 +58,10 @@ const orderSchema = mongoose.Schema({
         type:String,
         default:'Ordered'
     },
+    payment_method:{
+        type:String,
+        required:true
+    }
     // is_delivered:{
     //     type:Boolean,
     //     default: false

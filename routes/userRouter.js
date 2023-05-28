@@ -67,6 +67,11 @@ user_route.get('/userprofile',auth.isLogin, userController.userProfile);
 
 user_route.get('/cancel',auth.isLogin, orderController.cancelProduct);
 
+user_route.get('/return',auth.isLogin, orderController.returnProduct);
+
+user_route.post('/search', userController.searchProduct);
+
+user_route.post('/createOrder', orderController.createOrder);
 
 
 

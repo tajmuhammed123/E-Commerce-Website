@@ -36,7 +36,8 @@ const loadCart =async(req,res)=>{
         const userid = req.query.id
         console.log(userid);
         const cartData = await Cart.find({ user_id: userid });
-        res.render('shoping-cart',{products: cartData, userid:userid })
+        const orderData= await Order.find({ customer_id:userid })
+        res.render('shoping-cart',{products: cartData, userid:userid, order:orderData })
     }catch(err){
         console.log(err.message);
     }
@@ -131,9 +132,11 @@ const updateCart = async (req, res) => {
   const loadPayment=async(req,res)=>{
     try{
       const id=req.query.id
-      const userid = await User.findOne({ _id: id });
-      console.log(userid);
-      res.render('payment',{userid:userid})
+      const totalamount=req.query.totalamount
+      const orderid=req.query.orderid
+      const userData = await User.findOne({ _id: id });
+      console.log(userData);
+      res.render('payment',{ userid:userData, totalamount:totalamount, orderid:orderid })
     }catch(err){
       console.log(err.message);
     }

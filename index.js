@@ -16,10 +16,3 @@ app.use(express.static(path.join(__dirname,"/public")))
 app.listen(3000, ()=>{
     console.log('server running');
 })
-
-
-{/* <div class="image-gallery">
-  <% for (let i = 0; i < images.length; i++) { %>
-    <img src="<%= images[i] %>" alt="Image <%= i + 1 %>">
-  <% } %>
-</div> */}

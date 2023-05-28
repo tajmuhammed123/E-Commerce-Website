@@ -34,9 +34,20 @@
                                     <td ><%= address.city %></td>
                                     <td><%= address.state %></td>
                                     <td><%= address.pincode %></td>
-                                    <td><button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#exampleModal" data-mdb-whatever="@getbootstrap" >
-                                        Edit Status
-                                      </button></td>
+                                    <% 
+                                        if(order.product_status != 'Canceled' && order.product_status != 'Return' ){
+                                            %>
+                                            <td><button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#exampleModal" data-mdb-whatever="@getbootstrap" >
+                                                Edit Status
+                                              </button></td>
+                                              <%
+                                        }else{
+                                            %>
+                                                    <td class="text-danger"><%= order.product_status %></td>
+                                            <%
+                                        }
+                                    %>
+                                    
                                 </tr>
                                 <!-- product_status -->
                             </tr>
@@ -165,32 +176,32 @@
 
     </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="" id="exampleModalLabel">Edit Status</h5>
-              <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form action="" method="post">
-                <div class="mb-3">
-                  <label class="col-form-label">Status:</label>
-                  <select class="form-control" name="product_status" id="select" >
-                    <option value="Shipped">Shipped</option>
-                    <option value="Rached Nearest Hub">Rached Nearest Hub</option>
-                    <option value="Delivered">Delivered</option>
-                  </select>
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="" id="exampleModalLabel">Edit Status</h5>
+                      <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <form action="" method="post">
+                        <div class="mb-3">
+                          <label class="col-form-label">Status:</label>
+                          <select class="form-control" name="product_status" id="select" >
+                            <option value="Shipped">Shipped</option>
+                            <option value="Rached Nearest Hub">Rached Nearest Hub</option>
+                            <option value="Delivered">Delivered</option>
+                          </select>
+                        </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-primary" data-mdb-dismiss="modal">Send message</button>
+                    </div>
+                    </form>
+                  </div>
                 </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
-              <button type="submit" class="btn btn-primary" data-mdb-dismiss="modal">Send message</button>
+              </div>
             </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>  
                
 
 <script>

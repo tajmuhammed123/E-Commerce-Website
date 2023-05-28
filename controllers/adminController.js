@@ -352,8 +352,9 @@ const loadOrderAddress=async(req,res)=>{
     const orderid=req.query.orderid
     const adminData = await User.findOne({ _id:adminid });
     const customer = await User.findOne({ _id: userid });
+    const orderData = await Order.findOne({ _id: orderid });
     const add= customer.address.find((addr) => addr._id == addid)
-    res.render('order-address',{address:add, admin: adminData, orderid:orderid })
+    res.render('order-address',{address:add, admin: adminData, order:orderData })
   } catch (err) {
     console.log(err.message);
   }

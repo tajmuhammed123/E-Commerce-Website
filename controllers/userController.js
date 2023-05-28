@@ -189,6 +189,43 @@ const userProfile=async(req,res)=>{
   }
 }
 
+const searchProduct = async (req, res) => {
+  try {
+    var session = req.session.user_id;
+
+    if (session) {
+      const cartData = await Cart.find({ user_id: session });
+      session = null;
+      
+      var search = '';
+      if (req.body.search) {
+        search = req.body.search;
+      }
+
+      const userData = await Products.find({ product_name: { $regex: '.*' + search + '.*', $options: 'i' } });
+
+      res.render('home', { products: userData, cart: cartData, session });
+    } else {
+      const cart = null;
+      session = null;
+      
+      var search = '';
+      if (req.body.search) {
+        search = req.body.search;
+      }
+      console.log(req.body.search);
+
+      const userData = await Products.find({ product_name: { $regex: '.*' + search + '.*', $options: 'i' } });
+
+      res.render('home', { products: userData, cart, session });
+    }
+  } catch (error) {
+    console.log(error.message);
+    // Handle error if needed
+    res.status(500).send('An error occurred during the search.');
+  }
+};
+
 
 
 
@@ -200,5 +237,6 @@ module.exports ={
     loadHome,
     filterProduct,
     productDetail,
-    userProfile
+    userProfile,
+    searchProduct
 }
