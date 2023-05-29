@@ -60,42 +60,38 @@ const orderHistory=async(req,res)=>{
     }
   }
 
-  const createOrder = async(req,res)=>{
+  const createOrder = async (req, res) => {
     try {
-        const amount = req.body.amount*100
-        const options = {
+      const amount = req.body.amount * 100;
+      const options = {
+        amount: amount,
+        currency: 'INR',
+        receipt: 'razorUser@gmail.com'
+      };
+  
+      razorpayInstance.orders.create(options, (err, order) => {
+        if (!err) {
+          res.status(200).send({
+            success: true,
+            msg: 'Order Created',
+            order_id: order.id,
             amount: amount,
-            currency: 'INR',
-            receipt: 'razorUser@gmail.com'
+            key_id: RAZORPAY_ID_KEY,
+            product_name: req.body.name,
+            address: req.body.address,
+            contact: "9895299091",
+            name: "Taj Muhammed",
+            email: "tajmuhammed4969@gmail.com"
+          });
+        } else {
+          res.status(400).send({ success: false, msg: 'Something went wrong!' });
         }
-
-        razorpayInstance.orders.create(options, 
-            (err, order)=>{
-                if(!err){
-                    res.status(200).send({
-                        success:true,
-                        msg:'Order Created',
-                        order_id:order.id,
-                        amount:amount,
-                        key_id:RAZORPAY_ID_KEY,
-                        product_name:req.body.name,
-                        description:req.body.description,
-                        contact:"9895299091",
-                        name: "Taj Muhammed",
-                        email: "tajmuhammed4969@gmail.com"
-                    });
-                    res.redirect('/success')
-                }
-                else{
-                    res.status(400).send({success:false,msg:'Something went wrong!'});
-                }
-            }
-        );
-
+      });
     } catch (error) {
-        console.log(error.message);
+      console.log(error.message);
     }
-}
+  };
+  
 
 
   module.exports = {

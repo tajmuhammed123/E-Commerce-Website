@@ -2,6 +2,7 @@ const User = require("../models/usermodals");
 const Products = require("../models/productModels");
 const Category=require('../models/categoreyModels')
 const Order=require('../models/orderModels')
+const Coupon=require('../models/couponModels')
 const bcrypt = require("bcrypt");
 
 const securePassword = async (password) => {
@@ -460,6 +461,44 @@ const enableUser=async(req,res)=>{
 }
 
 
+const loadAddCoupon=async(req,res)=>{
+  try {
+    message=null
+    const adminid=req.session.admin_id
+    res.render('addcoupon',{admin:adminid, message})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const addCoupon=async(req,res)=>{
+  try {
+      console.log(req.body.coupon_code);
+    const coupon = new Coupon({
+      coupon_code: req.body.coupon_code,
+      coupon_type: req.body.coupon_type,
+      coupon_value: req.body.coupon_value,
+      min_purchase: req.body.min_purchase,
+      max_discount: req.body.max_discount,
+    });
+    await coupon.save();
+    res.redirect('/admin/couponlist')
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const listCoupon=async(req,res)=>{
+  try {
+    const adminid=req.session.admin_id
+    const couponData= await Coupon.find({ });
+    res.render('coupon-list',{ coupon:couponData, admin:adminid})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+
 module.exports = {
   loadLogin,
   verifyLogin,
@@ -487,5 +526,8 @@ module.exports = {
   enableCategory,
   disableCategory,
   disableUser,
-  enableUser
+  enableUser,
+  addCoupon,
+  loadAddCoupon,
+  listCoupon
 };

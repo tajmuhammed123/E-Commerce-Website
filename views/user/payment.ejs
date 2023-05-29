@@ -183,7 +183,7 @@
                             </div>
                         </div>
 						<input type="hidden" name="amount" value="<%= totalamount %>">
-						<input type="hidden" name="name" value="<%= totalamount %>">
+						<input type="hidden" name="name" value="<%= userid.name %>">
                         <div class="size-30 p-t-2" style="width: 200px; margin-top: 50px;">
                                 
                                 <p class="stext-30 cl6 size-100 p-t-18 p-b-10">
@@ -279,7 +279,7 @@ $(document).ready(function(){
 						"amount": ""+res.amount+"",
 						"currency": "USD",
 						"name": "Payment",
-						"description": ""+res.address+"",
+						"address": ""+res.address+"",
 						"image": "https://dummyimage.com/600x400/000/fff",
 						"order_id": ""+res.order_id+"",
 						"handler": function (response){

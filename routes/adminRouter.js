@@ -91,4 +91,10 @@ admin_route.get('/user_disable',auth.isLogin,adminController.disableUser)
 
 admin_route.get('/user_undisable',auth.isLogin,adminController.enableUser)
 
+admin_route.get('/couponlist',auth.isLogin,adminController.listCoupon)
+
+admin_route.get('/addcoupon',auth.isLogin,adminController.loadAddCoupon)
+
+admin_route.post('/addcoupon',adminController.addCoupon)
+
 module.exports = admin_route

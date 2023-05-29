@@ -73,6 +73,8 @@ user_route.post('/search', userController.searchProduct);
 
 user_route.post('/createOrder', orderController.createOrder);
 
+user_route.post('/coupon', cartController.couponCode);
+
 
 
 module.exports = user_route;
