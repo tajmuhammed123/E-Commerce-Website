@@ -49,6 +49,8 @@ user_route.post('/addcart', cartController.addToCart)
 
 user_route.get('/cart',auth.isLogin, cartController.loadCart)
 
+user_route.post('/cart',auth.isLogin, cartController.updateCoupon)
+
 user_route.get('/deleteproduct',cartController.deleteCartProduct)
 
 user_route.post('/update_cart',auth.isLogin, cartController.updateCart );
@@ -74,6 +76,10 @@ user_route.post('/search', userController.searchProduct);
 user_route.post('/createOrder', orderController.createOrder);
 
 user_route.post('/coupon', cartController.couponCode);
+
+user_route.get('/success',auth.isLogin, orderController.paymentSuccess);
+
+user_route.get('/logout',auth.isLogin, userController.userLogout);
 
 
 

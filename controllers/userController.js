@@ -129,10 +129,10 @@ const loadHome = async (req,res)=> {
               const session=req.session.user_id
               const productData = await Products.find({ id_disable:false });
             const id=req.session.user_id
-            const cartData = await Cart.find({ user_id: id })
+            const cartData = await Cart.findOne({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
             console.log(userData);
-            res.render('home',{products:productData, user:userData, session, cart: cartData});
+            res.render('home',{products:productData, user:userData, session, cart: cartData.product});
             }else{
               const session=null
               const productData = await Products.find({ id_disable:false });
@@ -227,6 +227,15 @@ const searchProduct = async (req, res) => {
 };
 
 
+const userLogout=async(req,res)=>{
+  try{
+    req.session.destroy()
+    res.redirect('/')
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
 
 
 module.exports ={
@@ -238,5 +247,6 @@ module.exports ={
     filterProduct,
     productDetail,
     userProfile,
-    searchProduct
+    searchProduct,
+    userLogout
 }

@@ -31,6 +31,9 @@ const productSchema = new mongoose.Schema({
     
         type:String,
         required:true
+    },
+    current_stock:{
+        type:String
     }
 })
 
@@ -40,6 +43,10 @@ const cartSchema = mongoose.Schema({
         type:String,
         required:true
     },
+    cart_amount:{
+        type:String,
+    },
+
 })
 
 

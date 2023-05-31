@@ -4,57 +4,99 @@ const User = require("../models/usermodals");
 const Order=require('../models/orderModels')
 const Coupon=require('../models/couponModels')
 
-const addToCart = async (req, res) => {
-  try {
-    const id = req.query.id;
-    const userid = req.query.userid;
-    const productData = await Products.findById({ _id: id });
-    const userData = await User.findById({ _id: userid });
+  const addToCart = async (req, res) => {
+    try {
+      const id = req.query.id;
+      const userid = req.query.userid;
 
-    const cart = {
-      product_id: productData._id,
-      product_name: productData.product_name,
-      product_price: productData.product_price,
-      product_img: productData.product_img[0],
-      product_size: req.body.product_size,
-      product_quantity: req.body.product_quantity,
-      product_brand: productData.product_brand,
-    };
+      // Retrieve product and user data
+      const productData = await Products.findById(id);
+      const userData = await User.findById(userid);
 
-    const productCart = new Cart({
-      user_id: req.session.user_id,
-    });
-    productCart.product.push(cart)
-    console.log(productCart);
+      // Create a cart item object
+      const cartItem = {
+        product_id: productData._id,
+        product_name: productData.product_name,
+        product_price: productData.product_price,
+        product_img: productData.product_img[0],
+        product_size: req.body.product_size,
+        product_quantity: req.body.product_quantity,
+        product_brand: productData.product_brand,
+      };
 
-    const cartData = await productCart.save();
-    if (cartData) {
-      res.render("product-detail", { message: "Success", product: productData, userData: userData });
+      // Find or create a cart for the user
+      let cart = await Cart.findOne({ user_id: req.session.user_id });
+
+      if (!cart) {
+        // Create a new cart if it doesn't exist
+        cart = new Cart({ user_id: req.session.user_id });
+      }
+
+      // Add the cart item to the cart's product array
+      cart.product.push(cartItem);
+
+      // Save the cart
+      const savedCart = await cart.save();
+
+      if (savedCart) {
+        res.render("product-detail", { message: "Success", product: productData, userData: userData });
+      }
+    } catch (error) {
+      console.log(error.message);
+      // Handle the error and send an appropriate response to the client
+      res.status(500).send("Error adding product to cart.");
     }
-  } catch (error) {
-    console.log(error.message);
+  };
+//   const loadCart =async(req,res)=>{
+//     try{
+//         const userid = req.query.id
+//         console.log(userid);
+//         const cartData = await Cart.findOne({ user_id: userid })
+//         console.log(cartData);
+//         res.render('shoping-cart',{products: cartData, userid:userid })
+
+//     }catch(err){
+//         console.log(err.message);
+//     }
+// }
+
+  const loadCart = async (req, res) => {
+    try {
+      const userid = req.session.user_id;
+      console.log(userid);
+      const cartPrd = await Cart.findOne({ user_id: userid })
+  
+      // Check if cart data exists
+      if (cartPrd) {
+        // Update current_stock only once
+          console.log('vbvcxdfb');
+          for (const cartItem of cartPrd.product) {
+            const productData = await Products.findById(cartItem.product_id);
+            if (productData) {
+              cartItem.current_stock = productData.product_stock;
+            }
+          }
+          // Increment count to indicate update has been performed
+          // cartPrd.count++;
+          await cartPrd.save();
+  
+        res.render('shoping-cart', { products: cartPrd, userid: userid, product:cartPrd.product });
+      } else {
+        // Handle case when cart data is not found
+        // Redirect or render appropriate error message
+      }
+    } catch (error) {
+      console.error(error);
+      // Handle the error appropriately
+    }
   }
-};
-
-
-const loadCart =async(req,res)=>{
-    try{
-        const userid = req.query.id
-        console.log(userid);
-        const cartData = await Cart.findOne({ user_id: userid })
-        console.log(cartData);
-        res.render('shoping-cart',{products: cartData, userid:userid })
-
-    }catch(err){
-        console.log(err.message);
-    }
-}
 
 const couponCode = async (req, res) => {
   try {
     const userid = req.session.user_id;
     console.log(userid);
     const code = req.body.code;
+    req.session.coupon_status =false
     const cartData = await Cart.findOne({ user_id: userid }).populate("product.product_id");
     const orderData = await Order.find({ customer_id: userid });
     console.log(cartData);
@@ -62,7 +104,7 @@ const couponCode = async (req, res) => {
     if (cartData) {
       let totalPrice = cartData.product.map((product) => product.product_price).reduce((acc, cur) => acc += cur);
 
-      await Coupon.findOne({ coupon_code: { $regex: new RegExp(code, 'i') } })
+      await Coupon.findOne({coupon_status:false, coupon_code: { $regex: new RegExp(code, 'i') } })
         .then((coupon) => {
           console.log('Coupon:', coupon);
           if (coupon.coupon_type === "Flat" && coupon.min_purchase < totalPrice) {
@@ -78,6 +120,7 @@ const couponCode = async (req, res) => {
           }
           res.json({ success: coupon });
         });
+
         console.log(req.session.totalPrice);
     } else {
       res.redirect('/cart');
@@ -93,7 +136,11 @@ const deleteCartProduct = async (req, res) => {
     const id = req.query.id;
     const userid = req.query.userid;
     console.log(id);
-    await Cart.deleteOne({ _id: id });
+    await Cart.updateOne(
+      {user_id:userid},
+      { $pull: { product: { _id: id } } }
+    )
+    
     res.redirect(`/cart?id=${userid}`);
   } catch (error) {
     console.log(error.message);
@@ -103,24 +150,28 @@ const deleteCartProduct = async (req, res) => {
 const updateCart = async (req, res) => {
   try {
     console.log('hghfg');
+    const userid=req.session.user_id
     const product_id = req.body.product_id;
     const product_qty = req.body.product_qty;
+    // const Product= await Cart.findOne({user_id: userid, "product._id": product_id})
 
     console.log(product_id);
     console.log(product_qty);
-
     const updatedCart = await Cart.findOneAndUpdate(
-      { "product._id": product_id },
+      { user_id: userid, "product._id": product_id },
       { $set: { "product.$.product_quantity": product_qty } }
     );
 
     console.log(updatedCart);
+    console.log('success');
     res.redirect("/cart");
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ error: 'An error occurred while updating the cart.' });
   }
 }
+
+
 
 
   const placeOrder=async(req,res)=>{
@@ -181,17 +232,13 @@ const updateCart = async (req, res) => {
 
   const loadPayment=async(req,res)=>{
     try{
-      const id=req.query.id
+      console.log(req.session.totalPrice);
+      const prid=req.query.prid
       const orderid=req.query.orderid
-      const userData = await User.findOne({ _id: id });
+      const totalPrice = req.query.totalamount
+      const userData = await User.findOne({ _id: prid });
       console.log(userData);
-      if(req.session.totalPrice){
-        const totalamount=req.session.totalPrice
-        res.render('payment',{ userid:userData, totalamount:totalamount, orderid:orderid })
-      }else{
-        const totalamount=req.query.totalamount
-        res.render('payment',{ userid:userData, totalamount:totalamount, orderid:orderid })
-      }
+      res.render('payment',{ userid:userData, orderid:orderid, totalamount:totalPrice })
     }catch(err){
       console.log(err.message);
     }
@@ -239,6 +286,19 @@ const updateCart = async (req, res) => {
       res.status(500).json({ error: 'Server error' });
     }
   };
+
+  const updateCoupon=async(req,res)=>{
+    try{
+      console.log(req.session.totalPrice);
+      const prid=req.body.prid
+      const orderid=req.body.orderid
+      const totalPrice = req.body.totalamnt
+      // const userData = await User.findOne({ _id: prid });
+      res.redirect(`/payment?prid=${prid}&&orderid=${orderid}&&totalamount=${totalPrice}`)
+    }catch(err){
+      console.log(err.message);
+    }
+  }
   
   
 
@@ -251,5 +311,6 @@ module.exports = {
     loadAddAddress,
     loadPayment,
     addAddress,
-    couponCode
+    couponCode,
+    updateCoupon
 }

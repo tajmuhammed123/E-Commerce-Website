@@ -28,6 +28,7 @@
                                                 <th>Min. Purchase</th>
                                                 <th>Max Discount</th>
                                                 <th>Status</th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -47,6 +48,17 @@
                                     <td class="desc"><%= coupon[i].min_purchase %></td>
                                     <td><%= coupon[i].max_discount %></td>
                                     <td class="text-success"><%= coupon[i].coupon_status %></td>
+                                    <td>
+                                        <div class="table-data-feature">
+                                            <div class="item">
+                                                <a href="/admin/editcoupon?couponid=<%= coupon[i]._id %>">
+                                                    <button class="item" data-toggle="tooltip" data-placement="top" title="Edit">
+                                                        <i class="zmdi zmdi-edit"></i>
+                                                    </button></a>
+                                            </div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             </tr>
                             <tr class="spacer"></tr>

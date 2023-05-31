@@ -97,4 +97,8 @@ admin_route.get('/addcoupon',auth.isLogin,adminController.loadAddCoupon)
 
 admin_route.post('/addcoupon',adminController.addCoupon)
 
+admin_route.get('/editcoupon',adminController.loadeditCoupon)
+
+admin_route.post('/editcoupon',adminController.editCoupon)
+
 module.exports = admin_route

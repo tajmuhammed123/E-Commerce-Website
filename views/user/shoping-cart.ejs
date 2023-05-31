@@ -106,7 +106,7 @@
 		
 
 	<!-- Shoping Cart -->
-	<form class="bg0 p-t-75 p-b-85">
+	<form class="bg0 p-t-75 p-b-85" action="" method="post">
 		<div class="container">
 			<div class="row">
 				<div class="col-lg-10 col-xl-7 m-lr-auto m-b-50">
@@ -114,77 +114,83 @@
 						<div class="wrap-table-shopping-cart">
 							<table class="table-shopping-cart product_data">
 								<tr class="table_head">
-									<th class="column-1">Product</th>
-									<th class="column-2"></th>
-									<th class="column-3">Price</th>
-									<th class="column-4">Brand</th>
-									<th class="column-5">Quantity</th>
-									<th class="column-6">Total</th>
+								  <th class="column-1">Product</th>
+								  <th class="column-2"></th>
+								  <th class="column-3">Price</th>
+								  <th class="column-4">Brand</th>
+								  <th class="column-5">Quantity</th>
+								  <th class="column-6">Total</th>
 								</tr>
-								<script>
-									console.log('<%= products %>');
-								</script>
-								<%
-								let total = 0; // Initialize the total variable
+								<% let total = 0; // Initialize the total variable
 								let prid;
 								let orderid
+								let totalamnt=0
+								let set=true
 								if (products && products.product && products.product.length > 0) {
 								  for (let i = 0; i < products.product.length; i++) {
 									const product = products.product[i];
-							  %>
-							  <tr class="table_row">
+								%>
+								<div class="">
+									<tr class="table_row">
+										<td class="column-1">
+										  <a href="/deleteproduct?id=<%= product._id %>&&userid=<%= userid %>">
+											<div class="how-itemcart1">
+											  <img src="/admin/images/<%= product.product_img %>" alt="IMG">
+											</div>
+										  </a>
+										</td>
+										<td class="column-2"><%= product.product_name %></td>
+										<td class="column-3">$<%= product.product_price %></td>
+										<td class="column-4" style="text-transform: uppercase"><%= product.product_brand %></td>
+										<td class="column-5">
+										  <% if (product.current_stock > 0) { %>
+										  <div class="wrap-num-product flex-w m-l-auto m-r-0">
+											<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m changeQuantity" data-product-id="<%= products.product[i]._id %>">
+											  <i class="fs-16 zmdi zmdi-minus"></i>
+											</div>
+											<input class="mtext-104 cl3 txt-center num-product qty-input" type="number" name="product_quantity" value="<%= product.product_quantity %>" data-product-id="<%= product._id %>">
+											<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m changeQuantity" data-product-id="<%= products.product[i]._id %>">
+											  <i class="fs-16 zmdi zmdi-plus"></i>
+											</div>
+										  </div>
+										  <% } else { %>
+											<input type="hidden" value="<% set=false %>">
+										  <span class="text-danger" colspan="5">Out of Stock</span>
+										  <% } %>
+										</td>
+										<td class="column-6 ">$<%= (parseFloat(product.product_price) * parseFloat(product.product_quantity)).toFixed(2) %></td>
+									  </tr>
+								</div>
+	
 								<script>
-								  console.log('<%= product %>');
+								  console.log('<%= product.current_stock %>');
 								</script>
-								<td class="column-1">
-								  <a href="/deleteproduct?id=<%= product._id %>&&userid=<%= userid %>">
-									<div class="how-itemcart1">
-									  <img src="/admin/images/<%= product.product_img %>" alt="IMG">
-									</div>
-								  </a>
-								</td>
-								<td class="column-2"><%= product.product_name %></td>
-								<td class="column-3">$<%= product.product_price %></td>
-								<td class="column-4" style="text-transform: uppercase"><%= product.product_brand %></td>
-								<td class="column-5">
-								  <div class="wrap-num-product flex-w m-l-auto m-r-0">
-									<div class="btn-num-product-down cl8 hov-btn3 trans-04 flex-c-m changeQuantity" data-product-id="<%= product._id %>">
-									  <i class="fs-16 zmdi zmdi-minus"></i>
-									</div>
-									<input class="mtext-104 cl3 txt-center num-product qty-input" type="number" name="product_quantity" value="<%= product.product_quantity %>" data-product-id="<%= product._id %>">
-									<div class="btn-num-product-up cl8 hov-btn3 trans-04 flex-c-m changeQuantity" data-product-id="<%= product._id %>">
-									  <i class="fs-16 zmdi zmdi-plus"></i>
-									</div>
-								  </div>
-								</td>
-								<td class="column-6 quantitytotal"><span>$<%= parseFloat(product.product_price) * parseFloat(product.product_quantity) %></span></td>
-							  </tr>
-							  <input type="hidden" id="total" name="total" value="<%= total += parseFloat(product.product_price) * parseFloat(product.product_quantity) %>">
-							  <input type="hidden" name="prid" value="<%= prid = products.user_id %>">
-							  <input type="hidden" name="orderid" value="<%= orderid = products._id %>">
-							  <%
-								  }
-								} else {
-							  %>
-							  <tr>
-								<td colspan="5">Products Not found</td>
-							  </tr>
-							  <%
-								}
-							  %>							  
-							
-
-							</table>
+								<input type="hidden" name="total" value="<%= total += parseFloat(product.product_price) * parseFloat(product.product_quantity) %>">
+								<input type="hidden" name="prid" value="<%= prid = products.user_id %>">
+								<input type="hidden" name="orderid" value="<%= orderid = products._id %>">
+								<input type="hidden" id="totalamnt" name="totalamnt" value="<%= total %>">
+								<% } 
+								
+							}else { %>
+								<tr>
+								  <td colspan="5">Products Not found</td>
+								</tr>
+								<% } %>
+							  </table>
+							  
 						</div>
 
 						<div class="flex-w flex-sb-m bor15 p-t-18 p-b-15 p-lr-40 p-lr-15-sm">
 							<div class="flex-w flex-m m-r-20 m-tb-5">
-								<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code" id="coupon">
+								<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code" id="coupon" value=''>
 									
 								<div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5" onclick="couponApply()">
 										Apply coupon
 								</div>
 							</div>
+							<script>
+								
+							</script>
 
 							<div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
 								Update Cart
@@ -264,16 +270,22 @@
 								</span>
 							</div>
 							
-							<div class="size-209 p-t-1">
+							<div class="size-209 p-t-1" >
 								$ <span class="mtext-110 cl2 total" id="totalamount">
-									<%= total %>
+									<%= total.toFixed(2) %>
 								</span>
 							</div>
 						</div>
-
-						<a href="/payment?id=<%= prid %>&&totalamount=<%= total %>&&orderid=<%= orderid %>">
-							<div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
-							Proceed to Checkout</div></a>
+						<% if( set==true ){ %>
+							<button type="submit">
+								<div class="flex-c-m stext-101 cl2 size-119 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-10">
+								Proceed to Checkout</div></button>
+						<%		
+						}else{
+							%>
+							<span class="text-danger">Remove Out of Stock products</span>
+						<%} %>
+						
 					</div>
 				</div>
 			</div>
@@ -284,149 +296,7 @@
 		
 
 	<!-- Footer -->
-	<footer class="bg3 p-t-75 p-b-32">
-		<div class="container">
-			<div class="row">
-				<div class="col-sm-6 col-lg-3 p-b-50">
-					<h4 class="stext-301 cl0 p-b-30">
-						Categories
-					</h4>
-
-					<ul>
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Women
-							</a>
-						</li>
-
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Men
-							</a>
-						</li>
-
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Shoes
-							</a>
-						</li>
-
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Watches
-							</a>
-						</li>
-					</ul>
-				</div>
-
-				<div class="col-sm-6 col-lg-3 p-b-50">
-					<h4 class="stext-301 cl0 p-b-30">
-						Help
-					</h4>
-
-					<ul>
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Track Order
-							</a>
-						</li>
-
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Returns 
-							</a>
-						</li>
-
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								Shipping
-							</a>
-						</li>
-
-						<li class="p-b-10">
-							<a href="#" class="stext-107 cl7 hov-cl1 trans-04">
-								FAQs
-							</a>
-						</li>
-					</ul>
-				</div>
-
-				<div class="col-sm-6 col-lg-3 p-b-50">
-					<h4 class="stext-301 cl0 p-b-30">
-						GET IN TOUCH
-					</h4>
-
-					<p class="stext-107 cl7 size-201">
-						Any questions? Let us know in store at 8th floor, 379 Hudson St, New York, NY 10018 or call us on (+1) 96 716 6879
-					</p>
-
-					<div class="p-t-27">
-						<a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
-							<i class="fa fa-facebook"></i>
-						</a>
-
-						<a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
-							<i class="fa fa-instagram"></i>
-						</a>
-
-						<a href="#" class="fs-18 cl7 hov-cl1 trans-04 m-r-16">
-							<i class="fa fa-pinterest-p"></i>
-						</a>
-					</div>
-				</div>
-
-				<div class="col-sm-6 col-lg-3 p-b-50">
-					<h4 class="stext-301 cl0 p-b-30">
-						Newsletter
-					</h4>
-
-					<form>
-						<div class="wrap-input1 w-full p-b-4">
-							<input class="input1 bg-none plh1 stext-107 cl7" type="text" name="email" placeholder="email@example.com">
-							<div class="focus-input1 trans-04"></div>
-						</div>
-
-						<div class="p-t-18">
-							<button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
-								Subscribe
-							</button>
-						</div>
-					</form>
-				</div>
-			</div>
-
-			<div class="p-t-40">
-				<div class="flex-c-m flex-w p-b-18">
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-01.png" alt="ICON-PAY">
-					</a>
-
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-02.png" alt="ICON-PAY">
-					</a>
-
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-03.png" alt="ICON-PAY">
-					</a>
-
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-04.png" alt="ICON-PAY">
-					</a>
-
-					<a href="#" class="m-all-1">
-						<img src="images/icons/icon-pay-05.png" alt="ICON-PAY">
-					</a>
-				</div>
-
-				<p class="stext-107 cl6 txt-center">
-					<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a> &amp; distributed by <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-
-				</p>
-			</div>
-		</div>
-	</footer>
+	<%-include('../layouts/userFooter') %>
 
 
 	<!-- Back to top -->
@@ -475,69 +345,93 @@ Copyright &copy;<script>document.write(new Date().getFullYear());</script> All r
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
 	<script>
-		$('.changeQuantity').click(function (e) {
-		e.preventDefault();
+		$(document).on('click', '.changeQuantity', function(e) {
+  e.preventDefault();
 
-		var product_id = $(this).data('product-id');
-		var quantityInput = $(this).closest('.table_row').find('.qty-input');
-		var product_qty = parseInt(quantityInput.val());
+  var product_id = $(this).data('product-id');
+  var quantityInput = $(this).closest('.table_row').find('.qty-input');
+  var product_qty = parseInt(quantityInput.val());
 
-		$.ajax({
-			method: "POST",
-			url: "/update_cart?userid=<%= userid %>",
-			data: {
-			'product_id': product_id,
-			'product_qty': product_qty
-			},
-			success: function (response) {
-			console.log(response);
-			alertify.success(response.status);
-			var timestamp = new Date().getTime();
-			$('.total').load(location.href + " .total");
-			$('.quantitytotal').load(location.href + " .quantitytotal");
-			},
-			error: function (error) {
-			console.log(error);
-			alertify.error('Error occurred while updating quantity');
-			}
-		});
-		});
+  $.ajax({
+    method: "POST",
+    url: "/update_cart?userid=<%= userid %>",
+    data: {
+      'product_id': product_id,
+      'product_qty': product_qty
+    },
+    success: function(response) {
+      console.log(response);
+      alertify.success(response.status);
+      var timestamp = new Date().getTime();
+      $('.total').load(location.href + " .total");
+      $('.quantitytotal').load(location.href + " .quantitytotal");
+    },
+    error: function(error) {
+      console.log(error);
+      alertify.error('Error occurred while updating quantity');
+    }
+  });
+});
+
 
 
 		let count = 0;
-		function couponApply(id) {
-		const coupon = document.getElementById("coupon").value;
-		// const totalamount = document.getElementById("total").value;
+		var totalAmount
+    	const coupon = document.getElementById("coupon").value.trim();
+		  
+		function couponApply(id, totalAmount) {
+  const coupon = document.getElementById("coupon").value.trim();
+  console.log(coupon);
 
-		$.ajax({
-			type: "POST",
-			url: "/coupon",
-			data: {
-			code: coupon
-			},
-			success: (response) => {
-				console.log('hjgg');
-			if (response.success) {
-				console.log('FDSHG');
-				const total = document.getElementById("totalamount").innerHTML;
-				count++;
-				if (count == 1) {
-					console.log(total);
-				if (response.success.coupon_type === "Flat" && response.success.min_purchase < total) {
-					document.getElementById("totalamount").innerHTML = Number(total) - Number(response.success.coupon_value);
+  $.ajax({
+    type: "POST",
+    url: "/coupon",
+    data: {
+      code: coupon
+    },
+    success: (response) => {
+      console.log('hjgg');
+      if (response.success) {
+        const total = document.getElementById("totalamount").innerHTML;
+        count++;
+        if (count == 1) {
+          console.log(total);
+          if (response.success.coupon_type === "Flat" && response.success.min_purchase < total) {
+            document.getElementById("totalamount").innerHTML = Number(total) - Number(response.success.coupon_value);
+			document.getElementById("totalamnt").value = document.getElementById("totalamount").innerHTML;
 
-				} else if (response.success.coupon_type === "Percentage" && response.success.min_purchase < total) {
-					document.getElementById("totalamount").innerHTML = Number(total) - (Number(total) * Number(response.success.coupon_value)) / 100;
-				}
-				}else{
-					console.log('already taken');
-				}
-			}else{
-				console.log('success not working');
-			}
-			}
-		})
-		}
+            console.log(coupon);
+          } else if (response.success.coupon_type === "Percentage" && response.success.min_purchase < total) {
+            document.getElementById("totalamount").innerHTML = Number(total) - (Number(total) * Number(response.success.coupon_value)) / 100;
+            document.getElementById("totalamnt").value = document.getElementById("totalamount").innerHTML;
+          }
+        } else {
+          console.log('already taken');
+        }
+      } else {
+        console.log('success not working');
+      }
+    }
+  });
+}
+
+if(coupon){
+	totalAmount=couponApply() 
+}else{
+	totalAmount = 23;
+}
+ 
+
+
+
+$(document).ready(function() {
+  var paymentLink = $('#payment-link');
+  var href = paymentLink.attr('href');
+  href += encodeURIComponent(totalAmount);
+  paymentLink.attr('href', href);
+});
+
+
 
 	</script>
 		

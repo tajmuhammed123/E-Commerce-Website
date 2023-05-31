@@ -499,6 +499,36 @@ const listCoupon=async(req,res)=>{
 }
 
 
+const loadeditCoupon=async(req,res)=>{
+  try{
+      const adminid = req.session.admin_id
+      const couponid =req.query.couponid
+      const couponData=await Coupon.findById({_id:couponid})
+      res.render('couponedit',{admin:adminid, couponid:couponData})
+  }catch(err){
+    log(err.message)
+  }
+}
+
+const editCoupon=async(req,res)=>{
+  try{
+    const couponid=req.body.couponid
+    const couponData=await Coupon.findByIdAndUpdate({_id:couponid},{ $set :{
+      coupon_code: req.body.coupon_code,
+      coupon_type: req.body.coupon_type,
+      coupon_value: req.body.coupon_value,
+      min_purchase: req.body.min_purchase,
+      max_discount: req.body.max_discount
+    }})
+    couponData.save()
+    res.redirect('couponlist')
+    
+  }catch(err){
+    log(err.message)
+  }
+}
+
+
 module.exports = {
   loadLogin,
   verifyLogin,
@@ -529,5 +559,7 @@ module.exports = {
   enableUser,
   addCoupon,
   loadAddCoupon,
-  listCoupon
+  listCoupon,
+  loadeditCoupon,
+  editCoupon
 };

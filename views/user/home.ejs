@@ -18,7 +18,7 @@
 			<div class="header-cart-content flex-w js-pscroll">
 				<%
 				let total = 0;
-				if (cart) { %>
+				if (session) { %>
 					<% if (cart.length > 0) { %>
 					  <ul class="header-cart-wrapitem w-full">
 						<% for (let i = 0; i < cart.length; i++) { %>

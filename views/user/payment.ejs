@@ -182,17 +182,27 @@
                                 <% } %>
                             </div>
                         </div>
-						<input type="hidden" name="amount" value="<%= totalamount %>">
+						<div class="m-t-20" style="display: flex; justify-content: center; align-items: center;">
+							
+						<input type="hidden" name="amount" value="1">
 						<input type="hidden" name="name" value="<%= userid.name %>">
-                        <div class="size-30 p-t-2" style="width: 200px; margin-top: 50px;">
-                                
-                                <p class="stext-30 cl6 size-100 p-t-18 p-b-10">
-                                    Cash On Delivery
-                                </p>
+                        <div class="size-30 p-t-2" style="width: 200px; margin-top: 50px; justify-content: center; align-items: center;">
+							<div class="m-b-15 m-t-20" style="display: flex;">PAYMENT METHOD:</div>
+							<div style="display: flex;">
+                                <input type="radio" name="mode" value="Cash On Delivery">
+								<span> Cash On Delivery</span>
+							</div>
+
+							
+                            <div style="display: flex;" class="m-tb-30">
+								<input type="radio" name="mode" value="Online Payment">
+								<span> Pay Using Card</span>
+							</div>
                             <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
                                 Place Order
                             </button>
                         </div>
+						</div>
                     </form>
                 
 		</div>
@@ -274,9 +284,14 @@ $(document).ready(function(){
 			data: formData,
 			success:function(res){
 				if(res.success){
-					var options = {
+					if(res.cod==true){
+						console.log('cod');
+						window.location.href = "/success"
+					}else{
+						var options = {
 						"key": ""+res.key_id+"",
 						"amount": ""+res.amount+"",
+						"mode": ""+res.mode+"",
 						"currency": "USD",
 						"name": "Payment",
 						"address": ""+res.address+"",
@@ -285,6 +300,7 @@ $(document).ready(function(){
 						"handler": function (response){
 							alert("Payment Succeeded");
 							// window.open("/","_self")
+							window.location.href = "/success"
 						},
 						"prefill": {
 							"contact":9895299091,
@@ -295,6 +311,7 @@ $(document).ready(function(){
 							"color": "#2300a3"
 						}
 					};
+					}
 					var razorpayObject = new Razorpay(options);
 					razorpayObject.on('payment.failed', function (response){
 							alert("Payment Failed");
