@@ -1,24 +1,7 @@
 const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
-
-const orderSchema = mongoose.Schema({
-
-    addressId:{
-        type:ObjectId,
-        required:true
-    },
-
-    customer_id: {
-
-        type:String,
-        required:true
-    },
-    customer_name: {
-
-        type:String,
-        required:true
-    },
+const productSchema= mongoose.Schema({
     product_id: {
 
         type:String,
@@ -58,10 +41,31 @@ const orderSchema = mongoose.Schema({
         type:String,
         default:'Ordered'
     },
+})
+
+
+const orderSchema = mongoose.Schema({
+
+    addressId:{
+        type:ObjectId,
+        required:true
+    },
+
+    customer_id: {
+
+        type:String,
+        required:true
+    },
+    customer_name: {
+
+        type:String,
+        required:true
+    },
     payment_method:{
         type:String,
         required:true
-    }
+    },
+    product_details: [productSchema]
     // is_delivered:{
     //     type:Boolean,
     //     default: false

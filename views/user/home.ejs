@@ -20,25 +20,30 @@
 				let total = 0;
 				if (session) { %>
 					<% if (cart) { %>
+						
 					  <ul class="header-cart-wrapitem w-full">
-						<% for (let i = 0; i < cart.length; i++) { %>
-							const cart = cart.product[i];
+						<% for (let i = 0; i < cart.product.length; i++) { 
+							const cartl = cart.product[i];
+							%>
+							<script>
+								console.log('jlkh');
+							</script>
 						  <li class="header-cart-item flex-w flex-t m-b-12">
 							<div class="header-cart-item-img">
-							  <img src="/admin/images/<%= cart.product_img %>" alt="IMG">
+							  <img src="/admin/images/<%= cartl.product_img %>" alt="IMG">
 							</div>
 					
 							<div class="header-cart-item-txt p-t-8">
 							  <a href="#" class="header-cart-item-name m-b-18 hov-cl1 trans-04">
-								<%= cart.product_name %>
+								<%= cartl.product_name %>
 							  </a>
 					
 							  <span class="header-cart-item-info">
-								<%= cart.product_quantity %> x $<%= cart.product_price %>
+								<%= cartl.product_quantity %> x $<%= cartl.product_price %>
 							  </span>
 							</div>
 						  </li>
-						  <input type="hidden" name="total" value="<%= total += parseFloat(cart.product_price) * parseFloat(cart.product_quantity) %>">
+						  <input type="hidden" name="total" value="<%= total += parseFloat(cartl.product_price) * parseFloat(cartl.product_quantity) %>">
 						<% } %>
 					  </ul>
 					

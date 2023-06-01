@@ -17,46 +17,47 @@
                     let total = 0; // Initialize the total variable
                     let prid
                       if (order.length > 0) {
-                      for (let i = 0; i < order.length; i++) {
-                      if (order[i].product_status != 'Delivered') {
+                      for (let i = 0; i < order.product_details.length; i++) {
+                        const orderlist = order.product_details[i];
+                      if (orderlist.product_status != 'Delivered') {
                         %>
                   <div class="card shadow-0 border mb-4">
                       <div class="card-body">
                         <div class="row">
                           <div class="col-md-2">
-                            <img src="/admin/images/<%= order[i].product_img %>"
+                            <img src="/admin/images/<%= orderlist.product_img %>"
                               class="img-fluid" alt="Phone">
                           </div>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                            <p class="text-muted mb-0"><%= order[i].product_name %></p>
+                            <p class="text-muted mb-0"><%= orderlist.product_name %></p>
                           </div>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                            <p class="text-muted mb-0 small" style="text-transform: uppercase;"><%= order[i].product_brand %></p>
+                            <p class="text-muted mb-0 small" style="text-transform: uppercase;"><%= orderlist.product_brand %></p>
                           </div>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                            <p class="text-muted mb-0 small">Size: <%= order[i].product_size %></p>
+                            <p class="text-muted mb-0 small">Size: <%= orderlist.product_size %></p>
                           </div>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                            <p class="text-muted mb-0 small">Qty: <%= order[i].product_quantity %></p>
+                            <p class="text-muted mb-0 small">Qty: <%= orderlist.product_quantity %></p>
                           </div>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                            <p class="text-muted mb-0 small">$<%= order[i].product_price %></p>
+                            <p class="text-muted mb-0 small">$<%= orderlist.product_price %></p>
                           </div>
                         </div>
-                        <input type="hidden" name="total" value="<%= total += parseFloat(order[i].product_price) * parseFloat(order[i].product_quantity) %>">
-								        <input type="hidden" name="prid" value="<%= prid = order[i].user_id %>">
+                        <input type="hidden" name="total" value="<%= total += parseFloat(orderlist.product_price) * parseFloat(orderlist.product_quantity) %>">
+								        <input type="hidden" name="prid" value="<%= prid = order.user_id %>">
                         <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
                         <div class="row d-flex align-items-center" style="display: flex; justify-content: space-between;">
                           <div class="col-md-3">
                             <p class="mb-0">Order Status:</p>
-                            <p class="mt-1 mb-0 ms-xl-5 text-danger" style="text-transform: capitalize;"><%= order[i].product_status %></p>
+                            <p class="mt-1 mb-0 ms-xl-5 text-danger" style="text-transform: capitalize;"><%= orderlist.product_status %></p>
                           </div>
                           <div class="d-flex justify-content-around mb-1">
                             
                           </div>
                           <div class="col-md-3">
                             <div class="d-flex justify-content-around mb-1 ">
-                              <a href="/cancel?orderid=<%= order[i]._id %>">Cancel Product</a>
+                              <a href="/cancel?orderid=<%= orderlist._id %>">Cancel Product</a>
                             </div>
                           </div>
                 
@@ -85,7 +86,7 @@
                         %>
       
                   <div class="d-flex justify-content-between mb-5">
-                    <p class="text-muted mb-0" style="text-transform: uppercase;">Recepits Voucher : <%= order[0]._id %></p>
+                    <p class="text-muted mb-0" style="text-transform: uppercase;">Recepits Voucher : <%= order.product_details[0]._id %></p>
                     <p class="text-muted mb-0"><span class="fw-bold me-4">Delivery Charges</span> Free</p>
                   </div>
                 </div>
@@ -109,52 +110,53 @@
             <div class="card-body p-4">
               <div class="d-flex justify-content-between align-items-center mb-4">
                 <p class="lead fw-normal mb-0" style="color: #000000;">PURCHASED</p>
-                <p class="small text-muted mb-0" style="text-transform: uppercase;">Receipt ID : <%= order[0]._id %></p>
+                <p class="small text-muted mb-0" style="text-transform: uppercase;">Receipt ID : <%= order.product_details[0]._id %></p>
               </div>
               
   
                     <%
                         if (order.length > 0) {
                           for (let i = 0; i < order.length; i++) {
-                            if (order[i].product_status == 'Delivered') {
+                            const orderlist = order.product_details[i];
+                            if (orderlist.product_status == 'Delivered') {
                         %>
                             <div class="card shadow-0 border mb-4">
                               <div class="card-body">
                                 <div class="row">
                                   <div class="col-md-2">
-                                    <img src="/admin/images/<%= order[i].product_img %>"
+                                    <img src="/admin/images/<%= orderlist.product_img %>"
                                       class="img-fluid" alt="Phone">
                                   </div>
                                   <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                    <p class="text-muted mb-0"><%= order[i].product_name %></p>
+                                    <p class="text-muted mb-0"><%= orderlist.product_name %></p>
                                   </div>
                                   <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                    <p class="text-muted mb-0 small" style="text-transform: uppercase;"><%= order[i].product_brand %></p>
+                                    <p class="text-muted mb-0 small" style="text-transform: uppercase;"><%= orderlist.product_brand %></p>
                                   </div>
                                   <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                    <p class="text-muted mb-0 small">Size: <%= order[i].product_size %></p>
+                                    <p class="text-muted mb-0 small">Size: <%= orderlist.product_size %></p>
                                   </div>
                                   <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                    <p class="text-muted mb-0 small">Qty: <%= order[i].product_quantity %></p>
+                                    <p class="text-muted mb-0 small">Qty: <%= orderlist.product_quantity %></p>
                                   </div>
                                   <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
-                                    <p class="text-muted mb-0 small">$<%= order[i].product_price %></p>
+                                    <p class="text-muted mb-0 small">$<%= orderlist.product_price %></p>
                                   </div>
                                 </div>
-                                <input type="hidden" name="total" value="<%= total += parseFloat(order[i].product_price) * parseFloat(order[i].product_quantity) %>">
-                                <input type="hidden" name="prid" value="<%= prid = order[i].user_id %>">
+                                <input type="hidden" name="total" value="<%= total += parseFloat(orderlist.product_price) * parseFloat(orderlist.product_quantity) %>">
+                                <input type="hidden" name="prid" value="<%= prid = orderlist.user_id %>">
                                 <hr class="mb-4" style="background-color: #e0e0e0; opacity: 1;">
                                 <div class="row d-flex align-items-center" style="display: flex; justify-content: space-between;">
                                   <div class="col-md-3">
                                     <p class="mb-0">Order Status:</p>
-                                    <p class="mt-1 mb-0 ms-xl-5 text-danger" style="text-transform: capitalize;"><%= order[i].product_status %></p>
+                                    <p class="mt-1 mb-0 ms-xl-5 text-danger" style="text-transform: capitalize;"><%= orderlist.product_status %></p>
                                   </div>
                                   <div class="d-flex justify-content-around mb-1">
                                     
                                   </div>
                                   <div class="col-md-3">
                                     <div class="d-flex justify-content-around mb-1 ">
-                                      <a href="/return?orderid=<%= order[i]._id %>">Return Product</a>
+                                      <a href="/return?orderid=<%= orderlist._id %>">Return Product</a>
                                     </div>
                                   </div>
                         

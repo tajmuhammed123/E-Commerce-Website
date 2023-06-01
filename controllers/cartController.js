@@ -64,7 +64,7 @@ const Coupon=require('../models/couponModels')
     try {
       const userid = req.session.user_id;
       console.log(userid);
-      const cartPrd = await Cart.findOne({ user_id: userid })
+      var cartPrd = await Cart.findOne({ user_id: userid })
   
       // Check if cart data exists
       if (cartPrd) {
@@ -81,9 +81,9 @@ const Coupon=require('../models/couponModels')
           await cartPrd.save();
   
         res.render('shoping-cart', { products: cartPrd, userid: userid, product:cartPrd.product });
-      } else {
-        // Handle case when cart data is not found
-        // Redirect or render appropriate error message
+      }else{
+        cartPrd=null
+        res.render('shoping-cart', { products: cartPrd, userid: userid, product:cartPrd });
       }
     } catch (error) {
       console.error(error);
