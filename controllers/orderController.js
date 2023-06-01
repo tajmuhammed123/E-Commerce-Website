@@ -68,13 +68,91 @@ const orderHistory=async(req,res)=>{
       const customer = await User.findOne({ _id: userid });
       const addressid = req.body.address;
 
-      // Check if cartData exists and is an array
+      
+      
+      
+      if(req.body.mode=='Online Payment'){
+        
+        const options = {
+          amount: amount,
+          currency: 'INR',
+          receipt: 'razorUser@gmail.com'
+        };
+    
+        razorpayInstance.orders.create(options, (err, order) => {
+          if (!err) {
+
+            
+            res.status(200).send({
+              success: true,
+              msg: 'Order Created',
+              order_id: order.id,
+              amount: amount,
+              key_id: RAZORPAY_ID_KEY,
+              product_name: req.body.name,
+              address: req.body.address,
+              contact: "9895299091",
+              name: "Taj Muhammed",
+              email: "tajmuhammed4969@gmail.com"
+            });
+
+            // Check if cartData exists and is an array
       if (cartData && Array.isArray(cartData.product)) {
         // Iterate over each cart item in the productData array
         for (const cartItem of cartData.product) {
           const order = new Order({
             addressId: addressid,
-            customer_id: userid, // Use the userid obtained from the request query
+            customer_id: userid,
+            customer_name: customer.name,
+            product_id: cartItem.product_id,
+            product_name: cartItem.product_name,
+            product_price: cartItem.product_price,
+            product_img: cartItem.product_img,
+            product_size: cartItem.product_size,
+            product_quantity: cartItem.product_quantity,
+            product_brand: cartItem.product_brand,
+            payment_method:req.body.mode
+          });
+
+          const orderData = order.save();
+          console.log(orderData);
+        }
+      } else {
+        console.log('Cart data not found or is invalid');
+      }
+
+      for (const productItem of cartData.product) {
+        console.log(productItem.product_id);
+        const product = Products.findByIdAndUpdate(
+          { _id: productItem.product_id },
+          {
+            $inc: {
+              product_stock: -productItem.product_quantity
+            }
+          },
+          { new: true }
+        );
+        const orderData = product.save();
+        console.log(orderData);
+      }
+
+            Cart.deleteOne( { user_id: userid } )
+            const add= customer.address.find((addr) => addr._id == addressid)
+            console.log(add);
+          } else {
+            res.status(400).send({ success: false, msg: 'Something went wrong!' });
+          }
+        });
+
+      }else{
+
+        // Check if cartData exists and is an array
+      if (cartData && Array.isArray(cartData.product)) {
+        // Iterate over each cart item in the productData array
+        for (const cartItem of cartData.product) {
+          const order = new Order({
+            addressId: addressid,
+            customer_id: userid,
             customer_name: customer.name,
             product_id: cartItem.product_id,
             product_name: cartItem.product_name,
@@ -107,38 +185,8 @@ const orderHistory=async(req,res)=>{
         const orderData = await product.save();
         console.log(orderData);
       }
-      
-      
-      if(req.body.mode=='Online Payment'){
-        
-        const options = {
-          amount: amount,
-          currency: 'INR',
-          receipt: 'razorUser@gmail.com'
-        };
-    
-        razorpayInstance.orders.create(options, (err, order) => {
-          if (!err) {
-            res.status(200).send({
-              success: true,
-              msg: 'Order Created',
-              order_id: order.id,
-              amount: amount,
-              key_id: RAZORPAY_ID_KEY,
-              product_name: req.body.name,
-              address: req.body.address,
-              contact: "9895299091",
-              name: "Taj Muhammed",
-              email: "tajmuhammed4969@gmail.com"
-            });
-            Cart.deleteOne( { user_id: userid } )
-            const add= customer.address.find((addr) => addr._id == addressid)
-            console.log(add);
-          } else {
-            res.status(400).send({ success: false, msg: 'Something went wrong!' });
-          }
-        });
-      }else{
+
+
         await Cart.deleteOne( { user_id: userid } )
         const add= customer.address.find((addr) => addr._id == addressid)
         console.log(add);

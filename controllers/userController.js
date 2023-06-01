@@ -132,7 +132,7 @@ const loadHome = async (req,res)=> {
             const cartData = await Cart.findOne({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
             console.log(userData);
-            res.render('home',{products:productData, user:userData, session, cart: cartData.product});
+            res.render('home',{products:productData, user:userData, session, cart: cartData});
             }else{
               const session=null
               const productData = await Products.find({ id_disable:false });

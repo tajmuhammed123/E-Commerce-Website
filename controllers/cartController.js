@@ -233,10 +233,11 @@ const updateCart = async (req, res) => {
   const loadPayment=async(req,res)=>{
     try{
       console.log(req.session.totalPrice);
+      const userid=req.session.user_id
       const prid=req.query.prid
       const orderid=req.query.orderid
       const totalPrice = req.query.totalamount
-      const userData = await User.findOne({ _id: prid });
+      const userData = await User.findOne({ _id: userid });
       console.log(userData);
       res.render('payment',{ userid:userData, orderid:orderid, totalamount:totalPrice })
     }catch(err){
