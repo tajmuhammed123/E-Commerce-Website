@@ -14,29 +14,43 @@ const razorpayInstance = new Razorpay({
 const orderHistory=async(req,res)=>{
     try{
     const id = req.session.user_id;
-    const orderData = await Order.find({ customer_id: id });
+    const orderData = await Order.findOne({ customer_id: id });
     const custData = await User.findOne({_id:id})
     const custName = custData.name
-    console.log(id);
+    console.log(orderData);
       res.render('orderhistory',{ order:orderData, name:custName })
     }catch(err){
       console.log(err.message);
     }
   }
 
-  const productStatus=async(req,res)=>{
+  const productStatus = async (req, res) => {
     try {
-          const orderid=req.query.orderid
-          const adminid=req.session.admin_id
-          const product_status=req.body.product_status
-          console.log(adminid);
-          await Order.findByIdAndUpdate({ _id:orderid }, { $set: { product_status: product_status } })
-            res.redirect(`/admin/orders?adminid=${adminid}`)
-            console.log(product_status);
+      const id = req.query.id;
+      const productId = req.body.productID;
+      const adminId = req.session.admin_id;
+      const productStatus = req.body.product_status;
+  
+      console.log(adminId);
+  
+      await Order.updateOne(
+        {
+          customer_id: id,
+          'product_details._id': productId
+        },
+        {
+          $set: {
+            'product_details.$.product_status': productStatus
+          }
+        }
+      );
+  
+      res.redirect(`/admin/orders?adminid=${adminId}`);
+      console.log(productStatus);
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };  
 
   const cancelProduct=async(req,res)=>{
     try {
@@ -114,7 +128,7 @@ const orderHistory=async(req,res)=>{
                   product_quantity: cartItem.product_quantity,
                   product_brand: cartItem.product_brand
                 };
-  
+            
                 let order = await Order.findOneAndUpdate(
                   { customer_id: req.session.user_id },
                   {
@@ -122,16 +136,15 @@ const orderHistory=async(req,res)=>{
                       addressId: addressid,
                       customer_name: customer.name,
                       payment_method: req.body.mode
-                    },
-                    $push: {
-                      product_details: orderItem
                     }
                   },
                   { new: true, upsert: true }
                 );
-  
+            
+                order.product_details.push(orderItem);
+            
                 console.log(order);
-              }
+              }            
             } else {
               console.log('Cart data not found or is invalid');
             }

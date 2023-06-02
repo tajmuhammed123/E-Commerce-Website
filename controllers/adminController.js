@@ -57,7 +57,7 @@ const verifyLogin = async (req, res) => {
 };
 const logout=async(req,res)=>{
   try{
-
+      console.log(req.session);
       req.session.destroy()
       res.redirect('/admin')
 
@@ -361,6 +361,19 @@ const loadOrderAddress=async(req,res)=>{
   }
 }
 
+const loadOrderProducts=async(req,res)=>{
+  try {
+    const userid=req.query.id
+    const adminid = req.session.admin_id
+    const adminData = await User.findOne({ _id:adminid });
+    const orderData = await Order.findOne({ customer_id: userid });
+    console.log(orderData);
+    res.render('order-products',{ admin: adminData, order:orderData })
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
 const loadAddCategorey=async(req,res)=>{
   try{
     const adminid = req.session.admin_id
@@ -374,8 +387,12 @@ const addCategorey=async(req,res)=>{
   try{
     const adminid = req.session.admin_id
     console.log(req.body.productcategory);
-    const existingCategorey = await Category.findOne({ product_category: req.body.productcategory });
-    if (existingCategorey) {
+    const productCategory = req.body.productcategory;
+
+    const existingCategory = await Category.findOne({
+      product_category: { $regex: new RegExp(productCategory, 'i') }
+    });
+    if (existingCategory) {
       return res.render("add-category", {
         message: "Categorey already exist", admin:adminid
       });
@@ -390,16 +407,16 @@ const addCategorey=async(req,res)=>{
   }
 }
 
-const editCategorey=async(req,res)=>{
-  try {
-    const productid=req.query.productid
-    const product_status= req.body.product_status
-    console.log(product_status);
-    await Order.findByIdAndUpdate({ _id: productid }, { $set: { product_status: product_status } }) 
-  } catch (error) {
-    console.log(error.message);
-  }
-}
+// const editProdutStatus=async(req,res)=>{
+//   try {
+//     const productid=req.query.productid
+//     const product_status= req.body.product_status
+//     console.log(product_status);
+//     await Order.findByIdAndUpdate({ _id: productid }, { $set: { product_status: product_status } }) 
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// }
 
 const loadCategorey=async(req,res)=>{
   try {
@@ -440,8 +457,37 @@ const disableUser=async(req,res)=>{
     const adminid = req.session.admin_id;
     const userid = req.query.userid;
     await User.findByIdAndUpdate({ _id: userid }, { $set: { id_disable: true } });
-
-    res.redirect('/admin/user-details');
+    
+    // Get all sessions from the session store
+    req.sessionStore.all((error, sessions) => {
+      if (error) {
+        console.log('An error occurred while retrieving sessions:', error);
+        res.status(500).send('An error occurred');
+      } else {
+        // Find the target session based on user_id
+        const targetSession = Object.values(sessions).find(session => session.user_id === userid);
+        if (targetSession) {
+          // Update the session data by removing the user_id
+          delete targetSession.user_id;
+          console.log(targetSession);
+          // Save the modified session data back to the session store
+          req.sessionStore.set(targetSession.sessionID, targetSession, (error) => {
+            if (error) {
+              console.log('An error occurred while updating the session:', error);
+              res.status(500).send('An error occurred');
+            } else {
+              console.log('User ID removed from session successfully');
+              res.redirect('/admin/user-details');
+            }
+          });
+        } else {
+          console.log('User session not found');
+          res.redirect('/admin/user-details');
+        }
+      }
+    });
+    
+    
   } catch (error) {
     console.log(error.message);
   }
@@ -474,6 +520,14 @@ const loadAddCoupon=async(req,res)=>{
 const addCoupon=async(req,res)=>{
   try {
       console.log(req.body.coupon_code);
+      const adminid=req.session.admin_id
+      const existingCoupon = await Coupon.findOne({ coupon_code: req.body.coupon_code });
+      if (existingCoupon) {
+        return res.render("addcoupon", {
+          message: "Coupon already exist", admin:adminid
+        });
+      }
+
     const coupon = new Coupon({
       coupon_code: req.body.coupon_code,
       coupon_type: req.body.coupon_type,
@@ -527,6 +581,33 @@ const editCoupon=async(req,res)=>{
     log(err.message)
   }
 }
+const loadeditCategorey=async(req,res)=>{
+  try{
+    const adminid = req.session.admin_id
+    const admin= await User.findById({_id: adminid})
+    const categoryid=req.query.categoryid
+    const categoryname= await Category.findById({_id: categoryid})
+    res.render('edit-category',{category:categoryname, admin:admin })
+    
+  }catch(err){
+    console.log(err.message)
+  }
+}
+const editCategorey=async(req,res)=>{
+  try{
+    const category = req.body.category
+    const categoryid=req.query.categoryid
+    const categoryData=await Category.findByIdAndUpdate({_id:categoryid},{ $set :{
+      product_category: req.body.category
+    }})
+    await categoryData.save()
+    res.redirect('/admin/category')
+    
+  }catch(err){
+    console.log(err.message)
+  }
+}
+
 
 
 module.exports = {
@@ -549,9 +630,9 @@ module.exports = {
   disableProduct,
   loadOrders,
   loadOrderAddress,
+  loadOrderProducts,
   loadAddCategorey,
   addCategorey,
-  editCategorey,
   loadCategorey,
   enableCategory,
   disableCategory,
@@ -561,5 +642,7 @@ module.exports = {
   loadAddCoupon,
   listCoupon,
   loadeditCoupon,
-  editCoupon
+  editCoupon,
+  loadeditCategorey,
+  editCategorey
 };

@@ -73,13 +73,15 @@ admin_route.get('/orders',auth.isLogin,adminController.loadOrders)
 
 admin_route.get('/orderaddress',auth.isLogin,adminController.loadOrderAddress)
 
-admin_route.post('/orderaddress',auth.isLogin, orderController.productStatus);
+admin_route.get('/orderproducts',auth.isLogin,adminController.loadOrderProducts)
+
+admin_route.post('/orderproducts',auth.isLogin,orderController.productStatus)
 
 admin_route.get('/addcategorey',auth.isLogin,adminController.loadAddCategorey)
 
 admin_route.post('/addcategorey',auth.isLogin,adminController.addCategorey)
 
-admin_route.post('/editcategory',auth.isLogin,adminController.editCategorey)
+// admin_route.post('/editcategory',auth.isLogin,adminController.editProdutStatus)
 
 admin_route.get('/category',auth.isLogin,adminController.loadCategorey)
 
@@ -100,5 +102,9 @@ admin_route.post('/addcoupon',adminController.addCoupon)
 admin_route.get('/editcoupon',adminController.loadeditCoupon)
 
 admin_route.post('/editcoupon',adminController.editCoupon)
+
+admin_route.get('/editcategory',adminController.loadeditCategorey)
+
+admin_route.post('/editcategory',adminController.editCategorey)
 
 module.exports = admin_route
