@@ -126,7 +126,7 @@ const addProduct = async (req, res) => {
       id_disable:false,
       product_stock: req.body.product_stock
     });
-    const adminid =req.query.adminid
+    const adminid =req.session.admin_id
     const adminData = await User.findOne({ _id:adminid });
     const productsData = await products.save();
     if (productsData) {
@@ -150,13 +150,15 @@ const addProduct = async (req, res) => {
 const editProduct = async (req, res) => {
   try {
     const adminid =req.query.adminid
+    message=null
     const id = req.query.id;
     const productData = await Products.findById({ _id: id });
+    const categoryData = await Category.find({ id_disable:false })
 
     if (productData) {
       console.log(productData);
       const adminData = await User.findOne({ _id:adminid });
-      res.render("editproducts", { product: productData, admin: adminData });
+      res.render("editproducts", { product: productData, admin: adminData, category: categoryData, message });
     } else {
       res.redirect(`/admin/product-details?adminid=${adminid}&&id=${id}`);
     }
@@ -167,7 +169,9 @@ const editProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
+    console.log('kjjhg');
     const productFiles = req.files.map((file) => file.filename);
+    console.log(req.query.id);
     const productData = await Products.findByIdAndUpdate(
       { _id: req.query.id },
       {
@@ -175,7 +179,6 @@ const updateProduct = async (req, res) => {
           product_name: req.body.product_name,
           product_price: req.body.product_price,
           product_discription: req.body.product_discription,
-          product_img: productFiles,
           product_category: req.body.product_category,
           product_brand: req.body.product_brand,
           product_size: req.body.product_size,
@@ -184,7 +187,8 @@ const updateProduct = async (req, res) => {
         },
       }
     );
-
+    console.log(productData);
+    await productData.save()
     res.redirect("/admin/product-details");
   } catch (error) {
     console.log(error.message);
@@ -564,23 +568,29 @@ const loadeditCoupon=async(req,res)=>{
   }
 }
 
-const editCoupon=async(req,res)=>{
-  try{
-    const couponid=req.body.couponid
-    const couponData=await Coupon.findByIdAndUpdate({_id:couponid},{ $set :{
-      coupon_code: req.body.coupon_code,
-      coupon_type: req.body.coupon_type,
-      coupon_value: req.body.coupon_value,
-      min_purchase: req.body.min_purchase,
-      max_discount: req.body.max_discount
-    }})
-    couponData.save()
-    res.redirect('couponlist')
-    
-  }catch(err){
-    log(err.message)
+const editCoupon = async (req, res) => {
+  try {
+    const couponid = req.body.couponid;
+    const couponData = await Coupon.findByIdAndUpdate(
+      { _id: couponid },
+      {
+        $set: {
+          coupon_code: req.body.coupon_code,
+          coupon_type: req.body.coupon_type,
+          coupon_value: req.body.coupon_value,
+          min_purchase: req.body.min_purchase,
+          max_discount: req.body.max_discount
+        }
+      }
+    );
+    await couponData.save();
+    res.status(200).json({ success: true });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ success: false, error: err.message });
   }
-}
+};
+
 const loadeditCategorey=async(req,res)=>{
   try{
     const adminid = req.session.admin_id

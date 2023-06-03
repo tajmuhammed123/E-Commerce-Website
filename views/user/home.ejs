@@ -25,9 +25,6 @@
 						<% for (let i = 0; i < cart.product.length; i++) { 
 							const cartl = cart.product[i];
 							%>
-							<script>
-								console.log('jlkh');
-							</script>
 						  <li class="header-cart-item flex-w flex-t m-b-12">
 							<div class="header-cart-item-img">
 							  <img src="/admin/images/<%= cartl.product_img %>" alt="IMG">
@@ -315,7 +312,7 @@
 					<div class="wrap-filter flex-w bg6 w-full p-lr-40 p-t-27 p-lr-15-sm">
 						<div class="filter-col1 p-r-15 p-b-27">
 							<div class="mtext-102 cl2 p-b-15">
-								Sort By
+								Brand
 							</div>
 
 							<ul>
@@ -415,10 +412,13 @@
 
 						<div class="filter-col3 p-r-15 p-b-27">
 							<div class="mtext-102 cl2 p-b-15">
-								Color
+								Sort
 							</div>
-
 							<ul>
+								<li><button id="ascFilter">Low to High</button> </li>
+								<li><button id="disFilter">High to Low</button></li>
+							</ul>
+							<!-- <ul>
 								<li class="p-b-6">
 									<span class="fs-15 lh-12 m-r-6" style="color: #222;">
 										<i class="zmdi zmdi-circle"></i>
@@ -478,7 +478,7 @@
 										White
 									</a>
 								</li>
-							</ul>
+							</ul> -->
 						</div>
 
 						<div class="filter-col4 p-b-27">
@@ -551,9 +551,9 @@
 
 			<!-- Load more -->
 			<div class="flex-c-m flex-w w-full p-t-45">
-				<a href="#" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
-					Load More
-				</a>
+					<button id="loadmore" class="flex-c-m stext-101 cl5 size-103 bg2 bor1 hov-btn1 p-lr-15 trans-04">
+						Load More
+					</button>
 			</div>
 		</div>
 	</section>
@@ -849,7 +849,59 @@
     }
   });
 })
+
+//////Filter Low to High ////////
+
+	$('#ascFilter').click(function (e) {
+
+  $.ajax({
+    method: "GET",
+    url: "/lowsort",
+    success: function (response) {
+      console.log(response);
+      $('.productdata').html($(response).find('.productdata').html());
+    },
+    error: function (error) {
+      console.log(error);
+      alert('Error occurred while searching product');
+    }
+  });
+})
+
+//////Filter High to Low   ////////
+	$('#disFilter').click(function (e) {
+
+  $.ajax({
+    method: "GET",
+    url: "/highsort",
+    success: function (response) {
+      console.log(response);
+      $('.productdata').html($(response).find('.productdata').html());
+    },
+    error: function (error) {
+      console.log(error);
+      alert('Error occurred while searching product');
+    }
+  });
+})
+	$('#loadmore').click(function (e) {
+
+  $.ajax({
+    method: "GET",
+    url: "/loadmore",
+    success: function (response) {
+      console.log(response);
+      $('.productdata').html($(response).find('.productdata').html());
+    },
+    error: function (error) {
+      console.log(error);
+      alert('Error occurred while searching product');
+    }
+  });
+})
 	</script>
 
 </body>
 </html>
+
+<!-- .sort({product_price:1}) -->

@@ -2,6 +2,7 @@ const User=require('../models/usermodals')
 const Products=require('../models/productModels')
 const Cart=require('../models/cartModels')
 const Order=require('../models/orderModels')
+const Wallet=require('../models/walletModels')
 const bcrypt = require("bcrypt");
 
 
@@ -127,7 +128,8 @@ const loadHome = async (req,res)=> {
         try {
             if(req.session.user_id){
               const session=req.session.user_id
-              const productData = await Products.find({ id_disable:false });
+              const productData = await Products.find({ id_disable:false }).limit(8);
+              
             const id=req.session.user_id
             const cartData = await Cart.findOne({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
@@ -135,7 +137,7 @@ const loadHome = async (req,res)=> {
             res.render('home',{products:productData, user:userData, session, cart: cartData});
             }else{
               const session=null
-              const productData = await Products.find({ id_disable:false });
+              const productData = await Products.find({ id_disable:false }).limit(8);
               res.render('home',{products:productData, session, cart: null})
             }
 
@@ -236,6 +238,89 @@ const userLogout=async(req,res)=>{
   }
 }
 
+const loadWallet = async (req, res) => {
+  try {
+    const user_id = req.session.user_id;
+    let wallet = await Wallet.findOne({ user_id: user_id });
+
+    if (!wallet) {
+      const walletUser = new Wallet({
+        user_id: user_id,
+        wallet_amount: 0
+      });
+
+      wallet = await walletUser.save();
+    }
+
+    res.render('wallet', { wallet: wallet });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+const ascendingFilter=async(req,res)=>{
+  try{
+    if(req.session.user_id){
+      const session=req.session.user_id
+      const productData = await Products.find({ id_disable:false }).sort({product_price:1});   
+    const id=req.session.user_id
+    const cartData = await Cart.findOne({ user_id: id })
+    const userData = await User.findById({_id : req.session.user_id});
+    console.log(id);
+    res.render('home',{products:productData, user:userData, session, cart: cartData});
+    }else{
+      const session=null
+      const productData = await Products.find({ id_disable:false }).sort({product_price:1});
+      res.render('home',{products:productData, session, cart: null})
+    }
+
+  }catch(err){
+    console.log(err.message);
+  }
+}
+const descendingFilter=async(req,res)=>{
+  try{
+    if(req.session.user_id){
+      const session=req.session.user_id
+      const productData = await Products.find({ id_disable:false }).sort({product_price:-1});   
+    const id=req.session.user_id
+    const cartData = await Cart.findOne({ user_id: id })
+    const userData = await User.findById({_id : req.session.user_id});
+    console.log(id);
+    res.render('home',{products:productData, user:userData, session, cart: cartData});
+    }else{
+      const session=null
+      const productData = await Products.find({ id_disable:false }).sort({product_price:-1});
+      res.render('home',{products:productData, session, cart: null})
+    }
+
+  }catch(err){
+    console.log(err.message);
+  }
+}
+const loadMore=async(req,res)=>{
+  try{
+    if(req.session.user_id){
+      const session=req.session.user_id
+      const productData = await Products.find({ id_disable:false });   
+    const id=req.session.user_id
+    const cartData = await Cart.findOne({ user_id: id })
+    const userData = await User.findById({_id : req.session.user_id});
+    console.log(id);
+    res.render('home',{products:productData, user:userData, session, cart: cartData});
+    }else{
+      console.log('hjk');
+      const session=null
+      const productData = await Products.find({ id_disable:false });
+      res.render('home',{products:productData, session, cart: null})
+    }
+
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+
 
 
 module.exports ={
@@ -248,5 +333,9 @@ module.exports ={
     productDetail,
     userProfile,
     searchProduct,
-    userLogout
+    userLogout,
+    loadWallet,
+    ascendingFilter,
+    descendingFilter,
+    loadMore
 }

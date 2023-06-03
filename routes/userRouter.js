@@ -51,7 +51,7 @@ user_route.get('/cart',auth.isLogin, cartController.loadCart)
 
 user_route.post('/cart',auth.isLogin, cartController.updateCoupon)
 
-user_route.get('/deleteproduct',cartController.deleteCartProduct)
+user_route.delete('/deleteproduct',cartController.deleteCartProduct)
 
 user_route.post('/update_cart',auth.isLogin, cartController.updateCart );
 
@@ -80,6 +80,14 @@ user_route.post('/coupon', cartController.couponCode);
 user_route.get('/success',auth.isLogin, orderController.paymentSuccess);
 
 user_route.get('/logout',auth.isLogin, userController.userLogout);
+
+user_route.get('/wallet',auth.isLogin, userController.loadWallet);
+
+user_route.get('/lowsortsort', userController.ascendingFilter);
+
+user_route.get('/highsort', userController.descendingFilter);
+
+user_route.get('/loadmore', userController.loadMore);
 
 
 

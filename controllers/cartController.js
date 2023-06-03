@@ -3,6 +3,7 @@ const Products=require('../models/productModels')
 const User = require("../models/usermodals");
 const Order=require('../models/orderModels')
 const Coupon=require('../models/couponModels')
+const mongoose=require('mongoose')
 
   const addToCart = async (req, res) => {
     try {
@@ -25,11 +26,11 @@ const Coupon=require('../models/couponModels')
       };
 
       // Find or create a cart for the user
-      let cart = await Cart.findOne({ user_id: req.session.user_id });
+      let cart = await Cart.findOneAndUpdate({ user_id: req.session.user_id },{$set:{cart_amount: +productData.product_price}});
 
       if (!cart) {
         // Create a new cart if it doesn't exist
-        cart = new Cart({ user_id: req.session.user_id });
+        cart = new Cart({ user_id: req.session.user_id, cart_amount: productData.product_price});
       }
 
       // Add the cart item to the cart's product array
@@ -136,16 +137,23 @@ const deleteCartProduct = async (req, res) => {
     const id = req.query.id;
     const userid = req.query.userid;
     console.log(id);
+
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).send({ success: false, error: 'Invalid product ID' });
+    }
+
     await Cart.updateOne(
-      {user_id:userid},
+      { user_id: userid },
       { $pull: { product: { _id: id } } }
-    )
-    
-    res.redirect(`/cart?id=${userid}`);
+    );
+
+    res.status(200).send({ success: true });
   } catch (error) {
     console.log(error.message);
+    res.status(500).send({ success: false, error: error.message });
   }
 };
+
 
 const updateCart = async (req, res) => {
   try {
@@ -234,12 +242,9 @@ const updateCart = async (req, res) => {
     try{
       console.log(req.session.totalPrice);
       const userid=req.session.user_id
-      const prid=req.query.prid
-      const orderid=req.query.orderid
-      const totalPrice = req.query.totalamount
       const userData = await User.findOne({ _id: userid });
       console.log(userData);
-      res.render('payment',{ userid:userData, orderid:orderid, totalamount:totalPrice })
+      res.render('payment',{ userid:userData })
     }catch(err){
       console.log(err.message);
     }

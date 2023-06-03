@@ -192,11 +192,20 @@
                                 <input type="radio" name="mode" value="Cash On Delivery">
 								<span> Cash On Delivery</span>
 							</div>
+							<div style="display: flex;">
+                                <input type="radio" name="mode" value="Wallet">
+								<span> Pay Using Wallet</span>
+							</div>
 
 							
                             <div style="display: flex;" class="m-tb-30">
 								<input type="radio" name="mode" value="Online Payment">
 								<span> Pay Using Card</span>
+							</div>
+							<div class="mb-3">
+								<% if(message) { %>
+									<p class="text-danger"><%= message %></p>
+								<% } %>
 							</div>
                             <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
                                 Place Order

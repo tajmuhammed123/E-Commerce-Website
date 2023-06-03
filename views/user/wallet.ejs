@@ -1,0 +1,112 @@
+<%-include('../layouts/userHeader') %>
+
+
+<div class="">
+    <section class="h-100 bg0 p-t-104" >
+        <div class="container py-5 h-100" >
+          <div class="row d-flex justify-content-center align-items-center h-100 py-5" style="justify-content: center; display: flex; ">
+            <div class="col-lg-10 col-xl-8" >
+            <div class="bg-light p-20">
+                <div class="d-flex">
+                    <div class="align-self-center">
+                        <h3 class="m-b-0">WALLET</h3></div>
+                    <div class="ml-auto align-self-center">
+                        <h2 class="text-success">$<%= parseFloat(wallet.wallet_amount).toFixed(2) %></h2></div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover earning-box w-100" >
+                        <thead>
+                            <tr style="justify-content: space-between; display: flex;">
+                                <th ><h5>Transfer Amount</h5></th>
+                                <th><h5>Transaction ID</h5></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <!-- <tr>
+                                <td style="width:50px;"><span class="round"><img src="https://i.imgur.com/uIgDDDd.jpg" alt="user" width="50"></span></td>
+                                <td>
+                                    <h6>Samso Nagaro</h6><small class="text-muted">Web Designer</small></td>
+                                <td><span class="label label-success">High</span></td>
+                                <td>$3.9K</td>
+                            </tr> -->
+                            <% if (wallet.wallet_history && wallet.wallet_history.length > 0) { %>
+                                <% for (let i = 0; i < wallet.wallet_history.length; i++) { %>
+                                  <% const wallet_history = wallet.wallet_history[i]; %>
+                                  <tr class="w-100" style="justify-content: space-between; display: flex;">
+                                    <input type="hidden" value="<%= wallet_history.transaction_amount %>">
+                                    <td><h4><%= wallet_history.transaction_amount %></h4></td>
+                                    <td><h4><%= wallet_history._id %></h4></td>
+                                  </tr>
+                                <% } %>
+                              <% } else { %>
+                                <tr>
+                                  <td colspan="2">No transactions found</td>
+                                </tr>
+                              <% } %>
+                                                       
+                           
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </section>
+</div>
+  <%-include('../layouts/userFooter') %>
+
+  <!-- Back to top -->
+	<div class="btn-back-to-top" id="myBtn">
+		<span class="symbol-btn-back-to-top">
+			<i class="zmdi zmdi-chevron-up"></i>
+		</span>
+	</div>
+
+<!--===============================================================================================-->	
+	<script src="vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/animsition/js/animsition.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/bootstrap/js/popper.js"></script>
+	<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/select2/select2.min.js"></script>
+	<script>
+		$(".js-select2").each(function(){
+			$(this).select2({
+				minimumResultsForSearch: 20,
+				dropdownParent: $(this).next('.dropDownSelect2')
+			});
+		})
+	</script>
+<!--===============================================================================================-->
+	<script src="vendor/MagnificPopup/jquery.magnific-popup.min.js"></script>
+<!--===============================================================================================-->
+	<script src="vendor/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+	<script>
+		$('.js-pscroll').each(function(){
+			$(this).css('position','relative');
+			$(this).css('overflow','hidden');
+			var ps = new PerfectScrollbar(this, {
+				wheelSpeed: 1,
+				scrollingThreshold: 1000,
+				wheelPropagation: false,
+			});
+
+			$(window).on('resize', function(){
+				ps.update();
+			})
+		});
+	</script>
+<!--===============================================================================================-->
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKFWBqlKAGCeS1rMVoaNlwyayu0e0YRes"></script>
+	<script src="js/map-custom.js"></script>
+<!--===============================================================================================-->
+	<script src="js/main.js"></script>
+
+</body>
+</html>

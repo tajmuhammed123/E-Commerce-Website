@@ -133,7 +133,7 @@
 								<div class="">
 									<tr class="table_row">
 										<td class="column-1">
-										  <a href="/deleteproduct?id=<%= product._id %>&&userid=<%= userid %>">
+										  <a href="/deleteproduct?id=<%= product._id %>&&userid=<%= userid %>" id="deleteLink">
 											<div class="how-itemcart1">
 											  <img src="/admin/images/<%= product.product_img %>" alt="IMG">
 											</div>
@@ -345,6 +345,12 @@
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
 	<script>
+
+		fetch('/deleteproduct?id=<%= product._id %>&&userid=<%= userid %>',{
+			method:'DELETE'
+		})
+
+
 		$(document).on('click', '.changeQuantity', function(e) {
   e.preventDefault();
 
@@ -434,6 +440,39 @@ $(document).ready(function() {
 
 
 	</script>
+
+<script>
+  const deleteLink = document.getElementById('deleteLink');
+
+  deleteLink.addEventListener('click', function(event) {
+    event.preventDefault(); // Prevents the default behavior of following the link
+
+    const url = deleteLink.getAttribute('href');
+    const options = {
+      method: 'DELETE'
+    };
+
+    fetch(url, options)
+      .then(response => {
+        if (response.status==200) {
+			console.log('Product deleted successfully');
+			window.location.href = `/cart?id=<%= userid %>`;
+          
+          // Perform any additional actions as needed
+        } else {
+          // Handle error
+          console.error('Failed to delete product');
+          // Perform any error handling as needed
+        }
+      })
+      .catch(error => {
+        // Handle network errors
+        console.error('Network error:', error);
+        // Perform any error handling as needed
+      });
+  });
+</script>
+
 		
 
 </body>

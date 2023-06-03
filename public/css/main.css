@@ -974,6 +974,56 @@ Input, textarea : 14px/1.6 '', Arial, sans-serif;
 
 
 /*//////////////////////////////////////////////////////////////////
+[ Wallet ]*/
+
+@import url(http://fonts.googleapis.com/css?family=Calibri:400,300,700);
+
+ body {
+     background-color: #ffffff;
+     font-family: 'Calibri', sans-serif !important
+ }
+
+
+.card-no-border .card {
+    border: 0px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
+    box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.05);
+}
+
+.card-body {
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    padding: 1.25rem;
+}
+
+.p-20 {
+    padding: 20px;
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -ms-overflow-style: -ms-autohiding-scrollbar;
+}
+
+.table th, .table thead th {
+    border: 0px;
+}
+
+.mt-100{
+  margin-top:100px;
+}
+
+.mb-100{
+  margin-bottom: 100px;
+}
+
+
+
+
+/*//////////////////////////////////////////////////////////////////
 [ Header cart ]*/
 .wrap-header-cart {
   position: fixed;
