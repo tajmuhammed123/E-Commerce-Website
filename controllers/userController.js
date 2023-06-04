@@ -3,7 +3,13 @@ const Products=require('../models/productModels')
 const Cart=require('../models/cartModels')
 const Order=require('../models/orderModels')
 const Wallet=require('../models/walletModels')
+const Category=require('../models/categoreyModels')
 const bcrypt = require("bcrypt");
+const fs= require('fs')
+const pdf=require('pdf-creator-node')
+const path=require('path')
+
+// const { loadOrderAddress } = require('./adminController')
 
 
 const securePassword = async(password) =>{
@@ -128,17 +134,31 @@ const loadHome = async (req,res)=> {
         try {
             if(req.session.user_id){
               const session=req.session.user_id
-              const productData = await Products.find({ id_disable:false }).limit(8);
+              const category = await Category.find({ id_disable: false });
+              const categoryIds = category.map(c => c.product_category); // Extract category IDs
+
+              const productData = await Products.find({
+                id_disable: false,
+                product_category: { $in: categoryIds }
+              }).limit(8);
+              console.log(productData);
               
             const id=req.session.user_id
             const cartData = await Cart.findOne({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
             console.log(id);
-            res.render('home',{products:productData, user:userData, session, cart: cartData});
+            res.render('home',{products:productData, user:userData, session, cart: cartData, category:category});
             }else{
               const session=null
-              const productData = await Products.find({ id_disable:false }).limit(8);
-              res.render('home',{products:productData, session, cart: null})
+              const category = await Category.find({ id_disable: false });
+              const categoryIds = category.map(c => c.product_category); // Extract category IDs
+              console.log(categoryIds);
+              const productData = await Products.find({
+                id_disable: false,
+                product_category: { $in: categoryIds }
+              }).limit(8);
+              console.log(productData);
+              res.render('home',{products:productData, session, cart: null, category:category})
             }
 
         } catch (error) {
@@ -320,6 +340,156 @@ const loadMore=async(req,res)=>{
   }
 }
 
+const loadAddress=async(req,res)=>{
+  try{
+    const userid=req.session.user_id
+    const userData = await User.findOne({ _id: userid });
+      res.render('addresslist',{userid:userData})
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+const loadEditAddress=async(req,res)=>{
+  try{
+    const addressid = req.body.address
+    const userid=req.session.user_id
+    const userData = await User.findOne({ _id: userid });
+    const address = userData.address.id(addressid)
+    console.log(address);
+      res.render('editaddress',{ userid:userData, address:address })
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+const editAddress=async(req,res)=>{
+  
+  try {
+    console.log('jkhh');
+    const addressid = req.body.addressid;
+    const userid = req.session.user_id;
+    const updateAddress = {
+      firstName: req.body.firstName,
+      secondName: req.body.secondName,
+      email: req.body.email,
+      mobNumber: req.body.mobNumber,
+      houseNumber: req.body.houseNumber,
+      city: req.body.city,
+      state: req.body.state,
+      pincode: req.body.pincode
+    };
+    const user = await User.findById(userid);
+  
+    const address = user.address.id(addressid);
+
+    address.set(updateAddress);
+    await user.save();
+    res.redirect('/addresslist')
+
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+  
+}
+
+const loadOrderDetails=async(req,res)=>{
+  try{
+    const id=req.session.user_id
+    const productid=req.query.productid
+    const orderData = await Order.findOne({ customer_id: id });
+    const order = orderData.product_details.find((product) => product._id.toString() === productid);
+    console.log(order);
+      res.render('orderdetails',{ order:order })
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+const generatePdf = async (req, res) => {
+  try {
+    console.log('khjgf');
+    const html = fs.readFileSync(path.join(__dirname, '../views/user/template.ejs'), 'utf-8');
+    const filename = Math.random() + '_doc' + '.pdf';
+
+    const prod = {
+      name: req.body.name,
+      description: req.body.description,
+      unit: req.body.unit,
+      quantity: req.body.quantity,
+      price: req.body.price,
+      total: req.body.quantity * req.body.price,
+      imgurl: req.body.imgurl
+    };
+
+    let subtotal = prod.total;
+    const tax = (subtotal * 20) / 100;
+    const grandtotal = subtotal - tax;
+
+    const obj = {
+      prodlist: [prod],
+      subtotal: subtotal,
+      tax: tax,
+      gtotal: grandtotal
+    };
+
+    const options = {
+      format: 'A4',
+      orientation: 'portrait',
+      border: '8mm',
+      header: {
+        height: '15mm',
+        contents: '<h4 style="color: red; font-size: 20; font-weight: 800; text-align: center;">CUSTOMER INVOICE</h4>'
+      },
+      footer: {
+        height: '20mm',
+        contents: {
+          first: 'Cover page',
+          2: 'Second page',
+          default: '<span style="color: #444;">page</span>/<span>pages</span>',
+          last: 'Last Page'
+        }
+      }
+    };
+
+    const document = {
+      html: html,
+      data: {
+        products: obj
+      },
+      path: './docs/' + filename
+    };
+
+    pdf.create(document, options)
+      .then(result => {
+        console.log(result);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+
+    const filepath = filename;
+    console.log(filepath);
+    res.redirect('/download?filepath=' + encodeURIComponent(filepath));
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+const loadDownload=async(req,res)=>{
+  try{
+    console.log('jkhgfd');
+    const filepath = req.query.filepath;
+      res.render('download', { path: filepath })
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+
+
+
 
 
 
@@ -337,5 +507,17 @@ module.exports ={
     loadWallet,
     ascendingFilter,
     descendingFilter,
-    loadMore
+    loadMore,
+    loadAddress,
+    loadEditAddress,
+    editAddress,
+    loadOrderDetails,
+    generatePdf,
+    loadDownload
 }
+
+
+// const addressData = await User.findOne(
+//   { _id: userid },
+//   { address: { $elemMatch: { _id: addressid } } }
+// );

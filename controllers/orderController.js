@@ -64,28 +64,54 @@ const orderHistory=async(req,res)=>{
     }
   }
 
-  const returnProduct=async(req,res)=>{
+  const returnProduct = async (req, res) => {
     try {
-          const orderid = req.query.orderid
-          console.log(orderid);
-          await Order.findByIdAndUpdate(
-            { customer_id: req.session.user_id },
-            {
-              $set: {
-                'product_details.$[elem].product_status': 'Return'
-              }
-            },
-            {
-              arrayFilters: [{ 'elem._id': orderid }],
-              new: true
-            }
-          );          
-          
-          res.redirect('/orderhistory')
+      const orderid = req.query.orderid;
+      const daysThreshold = 14; // Number of days threshold
+  
+      const order = await Order.findOne({
+        customer_id: req.session.user_id,
+        'product_details._id': orderid
+      });
+  
+      if (!order) {
+        // Order not found
+        return res.status(404).json({ error: 'Order not found' });
+      }
+  
+      const currentDate = new Date();
+      const orderDateStr = order.product_details.find(item => item._id.toString() === orderid).order_date;
+      const orderDate = new Date(orderDateStr);
+  
+      const timeDifference = currentDate.getTime() - orderDate.getTime();
+      const daysDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+  
+      if (daysDifference > daysThreshold) {
+        // Order is older than the threshold, handle the case accordingly
+        return res.status(400).json({ error: 'Order is older than the threshold' });
+      }
+  
+      // Perform the update on the found order
+      await Order.findOneAndUpdate(
+        {
+          customer_id: req.session.user_id,
+          'product_details._id': orderid
+        },
+        {
+          $set: {
+            'product_details.$.product_status': 'Return'
+          }
+        },
+        { new: true }
+      );
+  
+      res.redirect('/orderhistory');
     } catch (error) {
       console.log(error.message);
     }
-  }
+  };  
+
+  
 
   const createOrder = async (req, res) => {
     try {
@@ -94,6 +120,10 @@ const orderHistory=async(req,res)=>{
       const cartData = await Cart.findOne({ user_id: userid });
       const customer = await User.findOne({ _id: userid });
       const addressid = req.body.address;
+
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString();
+      console.log(currentDate);
   
       if (req.body.mode === 'Online Payment') {
         const options = {
@@ -127,7 +157,9 @@ const orderHistory=async(req,res)=>{
                   product_img: cartItem.product_img,
                   product_size: cartItem.product_size,
                   product_quantity: cartItem.product_quantity,
-                  product_brand: cartItem.product_brand
+                  product_brand: cartItem.product_brand,
+                  order_date: formattedDate,
+                  payment_method: req.body.mode
                 };
             
                 let order = await Order.findOneAndUpdate(
@@ -136,7 +168,6 @@ const orderHistory=async(req,res)=>{
                     $set: {
                       addressId: addressid,
                       customer_name: customer.name,
-                      payment_method: req.body.mode
                     }
                   },
                   { new: true, upsert: true }
@@ -186,7 +217,8 @@ const orderHistory=async(req,res)=>{
               product_img: cartItem.product_img,
               product_size: cartItem.product_size,
               product_quantity: cartItem.product_quantity,
-              product_brand: cartItem.product_brand
+              product_brand: cartItem.product_brand,
+              order_date: formattedDate
             };
   
             let order = await Order.findOneAndUpdate(
@@ -234,6 +266,7 @@ const orderHistory=async(req,res)=>{
         wallet.wallet_history.push(wallet_history)
         await wallet.save()
         console.log('hjkgh');
+        console.log(currentDate);
         await Cart.deleteOne({ user_id: userid });
         const add = customer.address.find((addr) => addr._id == addressid);
         console.log(add);
@@ -254,7 +287,8 @@ const orderHistory=async(req,res)=>{
               product_img: cartItem.product_img,
               product_size: cartItem.product_size,
               product_quantity: cartItem.product_quantity,
-              product_brand: cartItem.product_brand
+              product_brand: cartItem.product_brand,
+              order_date: formattedDate
             };
   
             let order = await Order.findOneAndUpdate(
@@ -290,7 +324,7 @@ const orderHistory=async(req,res)=>{
             { new: true }
           );
         }
-  
+        console.log(currentDate);
         await Cart.deleteOne({ user_id: userid });
         const add = customer.address.find((addr) => addr._id == addressid);
         console.log(add);

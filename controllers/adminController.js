@@ -597,6 +597,7 @@ const loadeditCategorey=async(req,res)=>{
     const admin= await User.findById({_id: adminid})
     const categoryid=req.query.categoryid
     const categoryname= await Category.findById({_id: categoryid})
+    console.log(categoryname);
     res.render('edit-category',{category:categoryname, admin:admin })
     
   }catch(err){
@@ -606,15 +607,17 @@ const loadeditCategorey=async(req,res)=>{
 const editCategorey=async(req,res)=>{
   try{
     const category = req.body.category
-    const categoryid=req.query.categoryid
+    const categoryid=req.body.categoryid
+    console.log(categoryid);
     const categoryData=await Category.findByIdAndUpdate({_id:categoryid},{ $set :{
       product_category: req.body.category
     }})
     await categoryData.save()
-    res.redirect('/admin/category')
+    res.status(200).json({ success: true });
     
   }catch(err){
     console.log(err.message)
+    res.status(400).json({ success: false });
   }
 }
 

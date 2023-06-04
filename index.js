@@ -12,6 +12,7 @@ const adminRouter=require('./routes/adminRouter')
 app.use('/admin',adminRouter)
 
 app.use(express.static(path.join(__dirname,"/public")))
+app.use('/docs', express.static(path.join(__dirname, 'docs')));
 
 app.listen(3000, ()=>{
     console.log('server running');

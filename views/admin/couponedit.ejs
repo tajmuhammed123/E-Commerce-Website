@@ -97,7 +97,7 @@
     <script>
     const editCouponForm = document.getElementById('editcouponlist');
 
-    editCouponForm.addEventListener('click', function(event) {
+    editCouponForm.addEventListener('submit', function(event) {
     event.preventDefault(); // Prevents the default behavior of following the link
 
     const url = '/admin/editcoupon'; // Replace with your desired endpoint URL

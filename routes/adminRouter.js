@@ -53,13 +53,13 @@ admin_route.get('/editproducts',auth.isLogin,adminController.editProduct)
 
 admin_route.post("/editproducts",upload.array('product_img'), adminController.updateProduct);
 
-admin_route.get('/deleteproduct',adminController.deleteProduct)
+// admin_route.get('/deleteproduct',adminController.deleteProduct)
 
 admin_route.get('/adduser',auth.isLogin,adminController.loadAddUser)
 
 admin_route.post('/adduser',upload.single('product_img'),adminController.addUser)
 
-admin_route.get('/editusers',auth.isLogin,adminController.editUser)
+// admin_route.get('/editusers',auth.isLogin,adminController.editUser)
 
 admin_route.post("/editusers", adminController.updateUser);
 
@@ -105,6 +105,6 @@ admin_route.put('/editcoupon',adminController.editCoupon)
 
 admin_route.get('/editcategory',adminController.loadeditCategorey)
 
-admin_route.post('/editcategory',adminController.editCategorey)
+admin_route.put('/editcategory',adminController.editCategorey)
 
 module.exports = admin_route

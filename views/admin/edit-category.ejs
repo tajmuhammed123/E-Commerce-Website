@@ -14,7 +14,7 @@
                                         <strong>Edit Product</strong>
                                     </div>
                                     <div class="card-body card-block">
-                                        <form action="" method="post">
+                                        <form id="editcategory">
                                             <div class="row form-group">
                                                 <div class="col col-md-5">
                                                     <label for="text-input" class=" form-control-label">Category</label>
@@ -23,7 +23,7 @@
                                                     <input type="text" id="text-input" name="category" placeholder="Text" class="form-control" value="<%= category.product_category %>">
                                                 </div>
                                             </div>
-                                            
+                                            <input type="hidden" name="categoryid" value="<%= category._id %>">
                                             <div class="card-footer">
                                                 <button type="submit" class="btn btn-primary btn-sm">
                                                     <i class="fa fa-dot-circle-o"></i> Submit
@@ -56,6 +56,47 @@
         </div>
 
     </div>
-                       
+
+    <script>
+    const editCategoryForm = document.getElementById('editcategory');
+
+    editCategoryForm.addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevents the default behavior of following the link
+
+    const url = '/admin/editcategory'; // Replace with your desired endpoint URL
+
+    const data = {
+        category: editCategoryForm.category.value,
+        categoryid: editCategoryForm.categoryid.value
+    };
+
+    const options = {
+        method: 'PUT',
+        headers: {
+        'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    };
+
+    fetch(url, options)
+        .then(response => {
+        if (response.status === 200) {
+            console.log('Coupon edited successfully');
+            window.location.href = `/admin/category`;
+            // Perform any additional actions as needed
+        } else {
+            // Handle error
+            console.error('Failed to edit coupon');
+            // Perform any error handling as needed
+        }
+        })
+        .catch(error => {
+        // Handle network errors
+        console.error('Network error:', error);
+        // Perform any error handling as needed
+        });
+    });
+
+      </script>
                        
 <%-include('../layouts/adminFooter') %>

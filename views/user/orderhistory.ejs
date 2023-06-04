@@ -25,8 +25,8 @@
                       <div class="card-body">
                         <div class="row">
                           <div class="col-md-2">
-                            <img src="/admin/images/<%= orderlist.product_img %>"
-                              class="img-fluid" alt="Phone">
+                            <a href="/orderdetails?productid=<%= orderlist._id %>"><img src="/admin/images/<%= orderlist.product_img %>"
+                              class="img-fluid" alt="Phone"></a>
                           </div>
                           <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
                             <p class="text-muted mb-0"><%= orderlist.product_name %></p>
@@ -124,8 +124,8 @@
                               <div class="card-body">
                                 <div class="row">
                                   <div class="col-md-2">
-                                    <img src="/admin/images/<%= orderlist.product_img %>"
-                                      class="img-fluid" alt="Phone">
+                                    <a href="/orderdetails?productid=<%= orderlist._id %>"><img src="/admin/images/<%= orderlist.product_img %>"
+                                      class="img-fluid" alt="Phone"></a>
                                   </div>
                                   <div class="col-md-2 text-center d-flex justify-content-center align-items-center">
                                     <p class="text-muted mb-0"><%= orderlist.product_name %></p>
@@ -156,7 +156,7 @@
                                   </div>
                                   <div class="col-md-3">
                                     <div class="d-flex justify-content-around mb-1 ">
-                                      <a href="/return?orderid=<%= orderlist._id %>">Return Product</a>
+                                      <a href="/return?orderid=<%= orderlist._id %>&&orderdate=<%= orderlist.order_date %>">Return Product</a>
                                     </div>
                                   </div>
                         

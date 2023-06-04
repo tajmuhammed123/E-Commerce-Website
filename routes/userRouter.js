@@ -89,6 +89,18 @@ user_route.get('/highsort', userController.descendingFilter);
 
 user_route.get('/loadmore', userController.loadMore);
 
+user_route.post('/editaddress', userController.loadEditAddress);
+
+user_route.get('/addresslist', userController.loadAddress);
+
+user_route.post('/updateaddress', userController.editAddress);
+
+user_route.get('/orderdetails', userController.loadOrderDetails);
+
+user_route.post('/downloadinvoice', userController.generatePdf);
+
+user_route.get('/download', userController.loadDownload);
+
 
 
 module.exports = user_route;

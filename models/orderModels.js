@@ -41,6 +41,13 @@ const productSchema= mongoose.Schema({
         type:String,
         default:'Ordered'
     },
+    order_date: {
+        type:String,
+    },
+    payment_method:{
+        type:String,
+        required:true
+    },
 })
 
 
@@ -58,10 +65,6 @@ const orderSchema = mongoose.Schema({
     },
     customer_name: {
 
-        type:String,
-        required:true
-    },
-    payment_method:{
         type:String,
         required:true
     },

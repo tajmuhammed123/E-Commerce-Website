@@ -240,11 +240,12 @@ const updateCart = async (req, res) => {
 
   const loadPayment=async(req,res)=>{
     try{
+      message=null
       console.log(req.session.totalPrice);
       const userid=req.session.user_id
       const userData = await User.findOne({ _id: userid });
       console.log(userData);
-      res.render('payment',{ userid:userData })
+      res.render('payment',{ userid:userData, message })
     }catch(err){
       console.log(err.message);
     }
