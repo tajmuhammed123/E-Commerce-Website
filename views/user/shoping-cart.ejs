@@ -346,10 +346,6 @@
 	<script src="js/main.js"></script>
 	<script>
 
-		fetch('/deleteproduct?id=<%= product._id %>&&userid=<%= userid %>',{
-			method:'DELETE'
-		})
-
 
 		$(document).on('click', '.changeQuantity', function(e) {
   e.preventDefault();

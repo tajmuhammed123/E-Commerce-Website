@@ -84,6 +84,7 @@ const loadDashboard = async (req, res) => {
     console.log(users.length);
     const dashboard=await Dashboard.find({})
     const products=await Products.find({id_disable:false})
+    const orders= await Order.find({})
     
     if(dashboard.length==0){
       console.log('null');
@@ -101,7 +102,7 @@ const loadDashboard = async (req, res) => {
 
     const dashboardData=await Dashboard.find({})
     const adminData = await User.findById({ _id: req.session.admin_id });
-    res.render("dashboard", { admin: adminData, users:users, dashboardData:dashboardData });
+    res.render("dashboard", { admin: adminData, users:users, dashboardData:dashboardData, orders:orders });
   } catch (err) {
     console.log(err.message);
   }

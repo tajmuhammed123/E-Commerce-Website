@@ -234,7 +234,7 @@ const orderHistory=async(req,res)=>{
               product_brand: cartItem.product_brand,
               order_date: formattedDate,
               payment_method: req.body.mode,
-              amount:req.body.amount
+              amount:req.body.amount,
             };
   
             let order = await Order.findOneAndUpdate(
@@ -316,7 +316,7 @@ const orderHistory=async(req,res)=>{
               product_brand: cartItem.product_brand,
               order_date: formattedDate,
               payment_method: req.body.mode,
-              amount:req.body.amount
+              amount:req.body.amount,
             };
   
             let order = await Order.findOneAndUpdate(

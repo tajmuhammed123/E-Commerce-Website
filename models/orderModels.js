@@ -50,7 +50,7 @@ const productSchema= mongoose.Schema({
     },
     amount:{
         type:String
-    }
+    },
 })
 
 

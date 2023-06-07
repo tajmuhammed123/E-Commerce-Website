@@ -91,20 +91,44 @@
                         </div>
                         <div class="row">
                             <div class="col-lg-8">
-                                <div class="table-responsive table--no-card m-b-40">
+                                <div class="table-responsive table--no-card m-b-40" style="height: 470px;">
                                     <table class="table table-borderless table-striped table-earning">
                                         <thead>
                                             <tr>
-                                                <th>date</th>
-                                                <th>order ID</th>
-                                                <th>name</th>
-                                                <th class="text-right">price</th>
-                                                <th class="text-right">quantity</th>
-                                                <th class="text-right">total</th>
+                                                <th>Date</th>
+                                                <th>Cust. Name</th>
+                                                <th>Prdct Name</th>
+                                                <th class="text-right">Price</th>
+                                                <th class="text-right">Quantity</th>
+                                                <th class="text-right">Pay/Paid</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            <%
+                                            if (orders.length > 0) {
+                                              for (let i = 0; i < orders.length; i++) {
+                                            %>
+                                            <% for (let j = 0; j < orders[i].product_details.length; j++) { %>
                                             <tr>
+                                                <td><%= orders[i].product_details[j].order_date %></td>
+                                              <td><%= orders[i].customer_name %></td>
+                                              <td><%= orders[i].product_details[j].product_name %></td>
+                                              <td>$<%= orders[i].product_details[j].product_price %></td>
+                                              <td><%= orders[i].product_details[j].product_quantity %></td>
+                                              <td>$<%= orders[i].product_details[j].amount %></td>
+                                            </tr>
+                                            <% } %>
+                                            <%
+                                              }
+                                            } else {
+                                            %>
+                                            <tr>
+                                              <td colspan="5">No Orders found</td>
+                                            </tr>
+                                            <%
+                                            }
+                                            %>
+                                            <!-- <tr>
                                                 <td>2018-09-29 05:57</td>
                                                 <td>100398</td>
                                                 <td>iPhone X 64Gb Grey</td>
@@ -167,7 +191,7 @@
                                                 <td class="text-right">$10.00</td>
                                                 <td class="text-right">3</td>
                                                 <td class="text-right">$30.00</td>
-                                            </tr>
+                                            </tr> -->
                                         </tbody>
                                     </table>
                                 </div>
