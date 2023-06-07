@@ -243,9 +243,10 @@ const updateCart = async (req, res) => {
       message=null
       console.log(req.session.totalPrice);
       const userid=req.session.user_id
+      const totalamount=req.query.totalamount
       const userData = await User.findOne({ _id: userid });
       console.log(userData);
-      res.render('payment',{ userid:userData, message })
+      res.render('payment',{ userid:userData, message, totalamount:totalamount })
     }catch(err){
       console.log(err.message);
     }

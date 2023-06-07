@@ -107,4 +107,16 @@ admin_route.get('/editcategory',adminController.loadeditCategorey)
 
 admin_route.put('/editcategory',adminController.editCategorey)
 
+admin_route.get('/pdfdownload',adminController.saleReport)
+
+admin_route.get('/banner', adminController.loadAddBanner);
+
+admin_route.post('/banner',upload.single('banner_img'), adminController.addBanner);
+
+admin_route.get('/bannerlist', adminController.bannerList);
+
+admin_route.get('/editbanner', adminController.loadEditBanner);
+
+admin_route.post('/editbanner',upload.single('banner_img'), adminController.editBanner);
+
 module.exports = admin_route

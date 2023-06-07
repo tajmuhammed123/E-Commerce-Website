@@ -3,7 +3,16 @@ const Products = require("../models/productModels");
 const Category=require('../models/categoreyModels')
 const Order=require('../models/orderModels')
 const Coupon=require('../models/couponModels')
+const Dashboard=require('../models/dashboardModels')
+const Banner=require('../models/bannerModels')
 const bcrypt = require("bcrypt");
+
+
+const fs = require('fs');
+const path = require('path');
+const pdf=require('puppeteer')
+const ejs = require('ejs');
+const puppeteer = require('puppeteer');
 
 const securePassword = async (password) => {
   try {
@@ -13,6 +22,8 @@ const securePassword = async (password) => {
     console.log(error.message);
   }
 };
+
+
 
 const loadLogin = async (req, res) => {
   try {
@@ -69,9 +80,28 @@ const logout=async(req,res)=>{
 const loadDashboard = async (req, res) => {
   try {
     var id = req.session.admin_id;
+    const users= await User.find({is_admin:0})
+    console.log(users.length);
+    const dashboard=await Dashboard.find({})
+    const products=await Products.find({id_disable:false})
+    
+    if(dashboard.length==0){
+      console.log('null');
+      const dataDashboard = new Dashboard({
+        total_users : users.length,
+
+      })
+      await dataDashboard.save()
+    }
+    await Dashboard.updateOne({
+      total_users: users.length,
+      total_products:products.length
+    })
     //const userData = await User.findById({ _id: req.session.admin_id });
+
+    const dashboardData=await Dashboard.find({})
     const adminData = await User.findById({ _id: req.session.admin_id });
-    res.render("dashboard", { admin: adminData });
+    res.render("dashboard", { admin: adminData, users:users, dashboardData:dashboardData });
   } catch (err) {
     console.log(err.message);
   }
@@ -622,6 +652,154 @@ const editCategorey=async(req,res)=>{
 }
 
 
+const saleReport = async (req, res) => {
+  try {
+    const adminid=req.session.admin_id
+    const admin=await User.findById({_id:adminid})
+    const dashboard = await Dashboard.find({});
+    const orders= await Order.find({})
+    const data = {
+      dashboard: dashboard,
+      admin:admin,
+      orders:orders
+    };
+
+    const filepathName = path.resolve(__dirname, '../views/admin/salereport.ejs');
+    const html = fs.readFileSync(filepathName).toString();
+    const ejsData = ejs.render(html, data);
+
+    console.log('Generating PDF...');
+
+    const browser = await puppeteer.launch({ headless: 'new' });
+    const page = await browser.newPage();
+
+    await page.setContent(ejsData, { waitUntil: 'networkidle0' });
+
+    const pdfBytes = await page.pdf({ format: 'Letter' });
+    await browser.close();
+
+    const randomFilename = generateRandomFilename(); // Generate a random filename here
+    const filePath = path.resolve(__dirname, `../docs/${randomFilename}.pdf`);
+
+    fs.writeFileSync(filePath, pdfBytes);
+
+    console.log('PDF file generated successfully.');
+    console.log(randomFilename);
+    res.redirect('/admin/dashboard');
+  } catch (err) {
+    console.log('Error:', err.message);
+  }
+};
+
+// Function to generate a random filename
+const generateRandomFilename = () => {
+  const randomString = Math.random().toString(36).substring(7); // Generate a random string
+  const timestamp = Date.now(); // Get the current timestamp
+  return `file_${timestamp}_${randomString}`;
+};
+const loadAddBanner=async(req,res)=>{
+  try{
+    const admin=req.session.admin_id
+    const adminData = await User.findOne({ _id:admin });
+      res.render('addbanner',{admin:adminData})
+  }catch(err){
+    console.log(err.message);
+  }
+}
+const addBanner = async (req, res) => {
+  try {
+    const adminid = req.session.admin_id;
+    const adminData = await User.findOne({ _id: adminid });
+
+    if (!req.file) {
+      return res.render("addbanner", {
+        message: "No file was uploaded",
+        admin: adminData,
+      });
+    }
+
+    const bannerFile = req.file.filename;
+    const banner = new Banner({
+      button_effect: req.body.button_effect,
+      first_effect: req.body.first_effect,
+      main_effect: req.body.main_effect,
+      banner_img: bannerFile,
+      first_text: req.body.first_text,
+      main_text: req.body.main_text,
+      button_text: req.body.button_text,
+    });
+
+    const bannerData = await banner.save();
+    if (bannerData) {
+      res.render("addbanner", {
+        message: "Product added successfully",
+        admin: adminData,
+      });
+      console.log("success");
+    } else {
+      return res.render("addbanner", {
+        message: "Enter valid details",
+        admin: adminData,
+      });
+      console.log("failed");
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+const bannerList=async(req,res)=>{
+  try{
+    const admin=req.session.admin_id
+    const adminData = await User.findOne({ _id:admin });
+    const banner= await Banner.find({})
+      res.render('bannerlist',{admin:adminData, banner:banner})
+  }catch(err){
+    console.log(err.message);
+  }
+}
+const loadEditBanner=async(req,res)=>{
+  try{
+    const bannerid=req.query.bannerid
+    const admin=req.session.admin_id
+    const adminData = await User.findOne({ _id:admin });
+    const banner=await Banner.findById({_id:bannerid})
+      res.render('banner-edit',{admin:adminData, banner:banner})
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+
+const editBanner = async (req, res) => {
+  try {
+    console.log('kjjhg');
+    const bannerFile = req.file.filename;
+    console.log(req.query.bannerid);
+    const bannertData = await Banner.findByIdAndUpdate(
+      { _id: req.query.bannerid },
+      {
+        $set: {
+          button_effect: req.body.button_effect,
+          first_effect: req.body.first_effect,
+          main_effect: req.body.main_effect,
+          banner_img: bannerFile,
+          first_text: req.body.first_text,
+          main_text: req.body.main_text,
+          button_text: req.body.button_text,
+        },
+      }
+    );
+    console.log(bannertData);
+    await bannertData.save()
+    res.redirect("/admin/bannerlist");
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+
 
 module.exports = {
   loadLogin,
@@ -657,5 +835,11 @@ module.exports = {
   loadeditCoupon,
   editCoupon,
   loadeditCategorey,
-  editCategorey
+  editCategorey,
+  saleReport,
+  loadAddBanner,
+  addBanner,
+  bannerList,
+  loadEditBanner,
+  editBanner
 };

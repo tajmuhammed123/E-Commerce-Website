@@ -4,6 +4,7 @@ const Cart=require('../models/cartModels')
 const Order=require('../models/orderModels')
 const Wallet=require('../models/walletModels')
 const Category=require('../models/categoreyModels')
+const Banner=require('../models/bannerModels')
 const bcrypt = require("bcrypt");
 const fs= require('fs')
 const pdf=require('pdf-creator-node')
@@ -133,6 +134,7 @@ const loadHome = async (req,res)=> {
 
         try {
             if(req.session.user_id){
+              const banner= await Banner.find({})
               const session=req.session.user_id
               const category = await Category.find({ id_disable: false });
               const categoryIds = category.map(c => c.product_category); // Extract category IDs
@@ -147,8 +149,9 @@ const loadHome = async (req,res)=> {
             const cartData = await Cart.findOne({ user_id: id })
             const userData = await User.findById({_id : req.session.user_id});
             console.log(id);
-            res.render('home',{products:productData, user:userData, session, cart: cartData, category:category});
+            res.render('home',{products:productData, user:userData, session, cart: cartData, category:category, banner:banner});
             }else{
+              const banner= await Banner.find({})
               const session=null
               const category = await Category.find({ id_disable: false });
               const categoryIds = category.map(c => c.product_category); // Extract category IDs
@@ -157,8 +160,8 @@ const loadHome = async (req,res)=> {
                 id_disable: false,
                 product_category: { $in: categoryIds }
               }).limit(8);
-              console.log(productData);
-              res.render('home',{products:productData, session, cart: null, category:category})
+              console.log(banner);
+              res.render('home',{products:productData, session, cart: null, category:category, banner:banner})
             }
 
         } catch (error) {
@@ -398,10 +401,12 @@ const loadOrderDetails=async(req,res)=>{
   try{
     const id=req.session.user_id
     const productid=req.query.productid
+    const user= await User.findById(id)
+    console.log(user);
     const orderData = await Order.findOne({ customer_id: id });
     const order = orderData.product_details.find((product) => product._id.toString() === productid);
     console.log(order);
-      res.render('orderdetails',{ order:order })
+      res.render('orderdetails',{ order:order, user:user })
   }catch(err){
     console.log(err.message);
   }
@@ -413,6 +418,7 @@ const generatePdf = async (req, res) => {
     const html = fs.readFileSync(path.join(__dirname, '../views/user/template.ejs'), 'utf-8');
     const filename = Math.random() + '_doc' + '.pdf';
 
+
     const prod = {
       name: req.body.name,
       description: req.body.description,
@@ -420,7 +426,14 @@ const generatePdf = async (req, res) => {
       quantity: req.body.quantity,
       price: req.body.price,
       total: req.body.quantity * req.body.price,
-      imgurl: req.body.imgurl
+      imgurl: req.body.imgurl,
+      username: req.body.username,
+      mob: req.body.mob,
+      email: req.body.email,
+      date: req.body.date,
+      id: req.body.id,
+      amount:req.body.amount
+
     };
 
     let subtotal = prod.total;
@@ -428,14 +441,30 @@ const generatePdf = async (req, res) => {
     const grandtotal = subtotal - tax;
 
     const obj = {
-      prodlist: [prod],
+      // prodlist: [prod],      
+      name: req.body.name,
+      description: req.body.description,
+      unit: req.body.unit,
+      quantity: req.body.quantity,
+      price: req.body.price,
+      total: req.body.quantity * req.body.price,
+      imgurl: req.body.imgurl,
+      username: req.body.username,
+      mob: req.body.mob,
+      email: req.body.email,
+      date: req.body.date,
+      id: req.body.id,
+      amount:req.body.amount,
       subtotal: subtotal,
       tax: tax,
-      gtotal: grandtotal
+      gtotal: grandtotal,
+      prdcts: [prdcts]
     };
 
+    console.log(obj);
+
     const options = {
-      format: 'A4',
+      format: 'A3',
       orientation: 'portrait',
       border: '8mm',
       header: {

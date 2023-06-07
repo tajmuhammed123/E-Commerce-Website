@@ -184,7 +184,7 @@
                         </div>
 						<div class="m-t-20" style="display: flex; justify-content: center; align-items: center;">
 							
-						<input type="hidden" name="amount" value="1">
+						<input type="hidden" name="amount" value="<%= totalamount %>">
 						<input type="hidden" name="name" value="<%= userid.name %>">
                         <div class="size-30 p-t-2" style="width: 200px; margin-top: 50px; justify-content: center; align-items: center;">
 							<div class="m-b-15 m-t-20" style="display: flex;">PAYMENT METHOD:</div>
@@ -307,9 +307,9 @@ $(document).ready(function(){
 						"image": "https://dummyimage.com/600x400/000/fff",
 						"order_id": ""+res.order_id+"",
 						"handler": function (response){
+							window.location.href = "/success"
 							alert("Payment Succeeded");
 							// window.open("/","_self")
-							window.location.href = "/success"
 						},
 						"prefill": {
 							"contact":9895299091,
