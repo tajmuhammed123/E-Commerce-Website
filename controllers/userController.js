@@ -10,6 +10,14 @@ const fs= require('fs')
 const pdf=require('pdf-creator-node')
 const path=require('path')
 
+const Razorpay = require('razorpay'); 
+const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
+
+const razorpayInstance = new Razorpay({
+    key_id: RAZORPAY_ID_KEY,
+    key_secret: RAZORPAY_SECRET_KEY
+});
+
 // const { loadOrderAddress } = require('./adminController')
 
 
@@ -264,6 +272,7 @@ const userLogout=async(req,res)=>{
 const loadWallet = async (req, res) => {
   try {
     const user_id = req.session.user_id;
+  const userData= await User.findById({_id:user_id})
     let wallet = await Wallet.findOne({ user_id: user_id });
 
     if (!wallet) {
@@ -275,46 +284,121 @@ const loadWallet = async (req, res) => {
       wallet = await walletUser.save();
     }
 
-    res.render('wallet', { wallet: wallet });
+    res.render('wallet', { wallet: wallet, userData:userData });
   } catch (error) {
     console.log(error.message);
   }
 };
 
+const addWallet= async(req,res)=>{
+  try{
+
+    const userid=req.session.user_id
+    const amount =req.body.addamount * 100
+    
+    
+    const options = {
+      amount: amount,
+      currency: 'INR',
+      receipt: 'razorUser@gmail.com'
+    };
+
+    razorpayInstance.orders.create(options, async (err, order) => {
+      console.log('Razorpay API Response:', err, order);
+      if (!err) {
+        res.status(200).send({
+          success: true,
+          amount: amount,
+          key_id: RAZORPAY_ID_KEY,
+          contact: '9895299091',
+          name: 'Taj Muhammed',
+          email: 'tajmuhammed4969@gmail.com'
+        });
+
+      const wallet= await Wallet.findOne({user_id:userid})
+      await Wallet.updateOne({user_id:userid},{
+        $inc: {
+          wallet_amount: req.body.addamount
+        }
+      },
+      { new: true })
+      let wallet_history={
+        transaction_amount:'+$'+req.body.addamount
+      }
+      wallet.wallet_history.push(wallet_history)
+      await wallet.save()
+        
+      } else {
+        console.log('hjghfd');
+        res.status(400).send({ success: false, msg: 'Something went wrong!' });
+      }
+    });
+
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
 const ascendingFilter=async(req,res)=>{
   try{
     if(req.session.user_id){
       const session=req.session.user_id
-      const productData = await Products.find({ id_disable:false }).sort({product_price:1});   
+      const category = await Category.find({ id_disable: false });
+      const categoryIds = category.map(c => c.product_category); 
+      const banner= await Banner.find({})
+      const productData = await Products.find({
+        id_disable: false,
+        product_category: { $in: categoryIds }
+      }).sort({product_price:1})
     const id=req.session.user_id
     const cartData = await Cart.findOne({ user_id: id })
     const userData = await User.findById({_id : req.session.user_id});
     console.log(id);
-    res.render('home',{products:productData, user:userData, session, cart: cartData});
+    res.render('home',{products:productData, user:userData, session, cart: cartData, banner:banner, category:category});
     }else{
       const session=null
-      const productData = await Products.find({ id_disable:false }).sort({product_price:1});
-      res.render('home',{products:productData, session, cart: null})
+      const category = await Category.find({ id_disable: false });
+      const categoryIds = category.map(c => c.product_category); 
+      const banner= await Banner.find({})
+      const productData = await Products.find({
+        id_disable: false,
+        product_category: { $in: categoryIds }
+      }).sort({product_price:1})
+      res.render('home',{products:productData, session, cart: null, banner:banner, category:category})
     }
 
   }catch(err){
     console.log(err.message);
   }
 }
+
+
 const descendingFilter=async(req,res)=>{
   try{
     if(req.session.user_id){
       const session=req.session.user_id
-      const productData = await Products.find({ id_disable:false }).sort({product_price:-1});   
+      const category = await Category.find({ id_disable: false });
+      const categoryIds = category.map(c => c.product_category); 
+      const banner= await Banner.find({})
+      const productData = await Products.find({
+        id_disable: false,
+        product_category: { $in: categoryIds }
+      }).sort({product_price:-1}) 
     const id=req.session.user_id
     const cartData = await Cart.findOne({ user_id: id })
     const userData = await User.findById({_id : req.session.user_id});
     console.log(id);
-    res.render('home',{products:productData, user:userData, session, cart: cartData});
+    res.render('home',{products:productData, user:userData, session, cart: cartData, banner:banner, category:category});
     }else{
       const session=null
-      const productData = await Products.find({ id_disable:false }).sort({product_price:-1});
-      res.render('home',{products:productData, session, cart: null})
+      const category = await Category.find({ id_disable: false });
+      const categoryIds = category.map(c => c.product_category); 
+      const banner= await Banner.find({})
+      const productData = await Products.find({
+        id_disable: false,
+        product_category: { $in: categoryIds }
+      }).sort({product_price: -1})
+      res.render('home',{products:productData, session, cart: null, banner:banner, category:category})
     }
 
   }catch(err){
@@ -324,18 +408,30 @@ const descendingFilter=async(req,res)=>{
 const loadMore=async(req,res)=>{
   try{
     if(req.session.user_id){
+      const category = await Category.find({ id_disable: false });
+      const categoryIds = category.map(c => c.product_category); 
+      const banner= await Banner.find({})
       const session=req.session.user_id
-      const productData = await Products.find({ id_disable:false });   
+      const productData = await Products.find({
+        id_disable: false,
+        product_category: { $in: categoryIds }
+      })  
     const id=req.session.user_id
     const cartData = await Cart.findOne({ user_id: id })
     const userData = await User.findById({_id : req.session.user_id});
     console.log(id);
-    res.render('home',{products:productData, user:userData, session, cart: cartData});
+    res.render('home',{products:productData, user:userData, session, cart: cartData, category:category, banner:banner});
     }else{
       console.log('hjk');
+      const banner= await Banner.find({})
       const session=null
-      const productData = await Products.find({ id_disable:false });
-      res.render('home',{products:productData, session, cart: null})
+      const category = await Category.find({ id_disable: false });
+      const categoryIds = category.map(c => c.product_category); 
+      const productData = await Products.find({
+        id_disable: false,
+        product_category: { $in: categoryIds }
+      })
+      res.render('home',{products:productData, session, cart: null, banner:banner, category:category})
     }
 
   }catch(err){
@@ -458,7 +554,7 @@ const generatePdf = async (req, res) => {
       subtotal: subtotal,
       tax: tax,
       gtotal: grandtotal,
-      prdcts: [prdcts]
+      prdcts: [prod]
     };
 
     console.log(obj);
@@ -534,6 +630,7 @@ module.exports ={
     searchProduct,
     userLogout,
     loadWallet,
+    addWallet,
     ascendingFilter,
     descendingFilter,
     loadMore,

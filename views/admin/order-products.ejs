@@ -23,6 +23,7 @@
                                                 <th>Quantity</th>
                                                 <th>Status</th>
                                                 <th></th>
+                                                <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -45,6 +46,9 @@
                                             <td class="desc"><%= product.product_price %></td>
                                             <td><%= product.product_quantity %></td>
                                             <td class="text-danger"><%= product.product_status %></td>
+                                            <td>
+                                                <a href="/admin/orderaddress?addid=<%= product.addressId %>&&id=<%= order.customer_id %>"><span class="status--process">Address</span></a>
+                                            </td>
                                             <% 
                                                 if(product.product_status != 'Canceled' && product.product_status != 'Return' ){
                                                 %>

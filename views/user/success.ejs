@@ -16,11 +16,57 @@
 			<div class="flex-w flex-tr" style="justify-content: center;">
 				<div class="size-150 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
                     <div style="align-items: center; justify-content: center; display: block;">
-                        <span id="boot-icon" class="bi bi-check" style="font-size: 10rem; color: rgb(0, 128, 55); -webkit-text-stroke-width: 0px;"></span><br>
-					<h1>Your Order Placed</h1><br>
-                    <a href="/dashboard"><button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04">
-                        Continue Shopping
-                    </button></a>
+						<%
+							let total = 0; // Initialize the total variable
+							let prid;
+							if (order) {
+							for (let i = 0; i < order.length; i++) {
+								const orderlist = order[i];
+							%>
+							<div class="card shadow-0 border mb-4">
+							<div class="card-body">
+								<div class="row">
+								<div class="col-md-2">
+									<img src="/admin/images/<%= orderlist.product_img %>" class="img-fluid" alt="Phone">
+								</div>
+								<div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+									<p class="text-muted mb-0"><%= orderlist.product_name %></p>
+								</div>
+								<div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+									<p class="text-muted mb-0 small" style="text-transform: uppercase;"><%= orderlist.product_brand %></p>
+								</div>
+								<div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+									<p class="text-muted mb-0 small">Size: <%= orderlist.product_size %></p>
+								</div>
+								<div class="col-md-2 text-center d-flex justify-content-center align-items-center">
+									<p class="text-muted mb-0 small">Qty: <%= orderlist.product_quantity %></p>
+								</div>
+								</div>
+							</div>
+							</div>
+							<%
+							}
+							} else {
+							%>
+							<tr>
+							<td colspan="5">Products Not found</td>
+							</tr>
+							<%
+							}
+							%>
+
+							<div style="justify-content: center; display: flex;">
+								<span id="boot-icon" class="bi bi-check" style="font-size: 10rem; color: rgb(0, 128, 55); -webkit-text-stroke-width: 0px;"></span><br>
+							</div>
+							<div style="justify-content: center; display: flex;">
+								<h1>Your Order Placed</h1><br>
+								
+							</div>
+							<div style="justify-content: center; display: flex;">
+								<a href="/dashboard"><button class="flex-c-m stext-101 cl0 size-103 bg1 bor1 hov-btn2 p-lr-15 trans-04" >
+									Continue Shopping
+								</button></a>
+							</div>
                     </div>
 				</div>
 

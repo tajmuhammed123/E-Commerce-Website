@@ -6,6 +6,8 @@ const Coupon=require('../models/couponModels')
 const Dashboard=require('../models/dashboardModels')
 const Banner=require('../models/bannerModels')
 const bcrypt = require("bcrypt");
+const mime = require('mime-types');
+
 
 
 const fs = require('fs');
@@ -13,6 +15,7 @@ const path = require('path');
 const pdf=require('puppeteer')
 const ejs = require('ejs');
 const puppeteer = require('puppeteer');
+
 
 const securePassword = async (password) => {
   try {
@@ -145,6 +148,17 @@ const loadAddProduct = async (req, res) => {
 
 const addProduct = async (req, res) => {
   try {
+
+    const fileBuffer = req.file.buffer;
+    const mimeType = mime.lookup(req.file.originalname);
+
+    if (!mimeType || !mimeType.startsWith('image/')) {
+      return res.render("addproduct", {
+        message: "Invalid file format. Please upload an image.",
+        admin: adminData,
+      });
+    }
+
     const productFiles = req.files.map((file) => file.filename);
     const products = new Products({
       product_name: req.body.product_name,
@@ -161,10 +175,7 @@ const addProduct = async (req, res) => {
     const adminData = await User.findOne({ _id:adminid });
     const productsData = await products.save();
     if (productsData) {
-      res.render("addproduct", {
-        message: "Product added successfully",
-        admin: adminData,
-      });
+      res.redirect('/product-details')
       console.log("success");
     } else {
       return res.render("addproduct", {
@@ -180,7 +191,7 @@ const addProduct = async (req, res) => {
 
 const editProduct = async (req, res) => {
   try {
-    const adminid =req.query.adminid
+    const adminid =req.session.admin_id
     message=null
     const id = req.query.id;
     const productData = await Products.findById({ _id: id });
@@ -200,8 +211,6 @@ const editProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    console.log('kjjhg');
-    const productFiles = req.files.map((file) => file.filename);
     console.log(req.query.id);
     const productData = await Products.findByIdAndUpdate(
       { _id: req.query.id },
@@ -225,6 +234,30 @@ const updateProduct = async (req, res) => {
     console.log(error.message);
   }
 };
+
+
+const editProductImage = async (req, res) => {
+  try {
+    const productId = req.body.productID;
+    console.log(productId);
+    const productFiles = req.files.map((file) => file.filename);
+    const adminId = req.session.admin_id;
+
+    console.log(productFiles);
+
+    await Products.findByIdAndUpdate(
+      { _id: productId },
+      { $set: { product_img: productFiles } }
+    );
+
+    res.redirect(`/admin/editproducts?id=${productId}`);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send('Error updating product images');
+  }
+};
+
+
 const deleteProduct = async (req, res) => {
   try {
     const id = req.query.id;
@@ -313,25 +346,25 @@ const editUser = async (req, res) => {
   }
 };
 
-const updateUser = async (req, res) => {
-  try {
-    const userData = await User.findByIdAndUpdate(
-      { _id: req.query.id },
-      {
-        $set: {
-          name: req.body.name,
-          email: req.body.email,
-          mobile: req.body.mob,
-          username: req.body.username,
-        },
-      }
-    );
-    console.log(userData);
-    res.redirect("/admin/user-details");
-  } catch (error) {
-    console.log(error.message);
-  }
-};
+// const updateUser = async (req, res) => {
+//   try {
+//     const userData = await User.findByIdAndUpdate(
+//       { _id: req.query.id },
+//       {
+//         $set: {
+//           name: req.body.name,
+//           email: req.body.email,
+//           mobile: req.body.mob,
+//           username: req.body.username,
+//         },
+//       }
+//     );
+//     console.log(userData);
+//     res.redirect("/admin/user-details");
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
 // const deleteUser = async (req, res) => {
 //   try {
 //     const id = req.query.id;
@@ -381,16 +414,13 @@ const loadOrders=async(req,res)=>{
 
 const loadOrderAddress=async(req,res)=>{
   try {
-    const productid=req.query.productid
     const addid= req.query.addid
     const userid=req.query.id
     const adminid = req.session.admin_id
-    const orderid=req.query.orderid
     const adminData = await User.findOne({ _id:adminid });
     const customer = await User.findOne({ _id: userid });
-    const orderData = await Order.findOne({ _id: orderid });
     const add= customer.address.find((addr) => addr._id == addid)
-    res.render('order-address',{address:add, admin: adminData, order:orderData })
+    res.render('order-address',{address:add, admin: adminData })
   } catch (err) {
     console.log(err.message);
   }
@@ -492,35 +522,9 @@ const disableUser=async(req,res)=>{
     const adminid = req.session.admin_id;
     const userid = req.query.userid;
     await User.findByIdAndUpdate({ _id: userid }, { $set: { id_disable: true } });
-    
-    // Get all sessions from the session store
-    req.sessionStore.all((error, sessions) => {
-      if (error) {
-        console.log('An error occurred while retrieving sessions:', error);
-        res.status(500).send('An error occurred');
-      } else {
-        // Find the target session based on user_id
-        const targetSession = Object.values(sessions).find(session => session.user_id === userid);
-        if (targetSession) {
-          // Update the session data by removing the user_id
-          delete targetSession.user_id;
-          console.log(targetSession);
-          // Save the modified session data back to the session store
-          req.sessionStore.set(targetSession.sessionID, targetSession, (error) => {
-            if (error) {
-              console.log('An error occurred while updating the session:', error);
-              res.status(500).send('An error occurred');
-            } else {
-              console.log('User ID removed from session successfully');
-              res.redirect('/admin/user-details');
-            }
-          });
-        } else {
-          console.log('User session not found');
-          res.redirect('/admin/user-details');
-        }
-      }
-    });
+    const n=await User.findOne({ _id: userid })
+    console.log(n);
+    res.redirect('/admin/user-details');
     
     
   } catch (error) {
@@ -657,12 +661,33 @@ const saleReport = async (req, res) => {
   try {
     const adminid=req.session.admin_id
     const admin=await User.findById({_id:adminid})
-    const dashboard = await Dashboard.find({});
     const orders= await Order.find({})
+    const months0106 = [];
+    const months0612 = [];
+    
+    for (let i = 0; i < orders.length; i++) {
+      for (let j = 0; j < orders[i].product_details.length; j++) {
+        const dateArray = orders[i].product_details[j].order_date.split('-');
+        const month = parseInt(dateArray[1]);
+    
+        if (month >= 1 && month <= 6) {
+          months0106.push(orders[i].product_details[j]);
+        } else if (month >= 6 && month <= 12) {
+          months0612.push(orders[i].product_details[j]);
+        }
+      }
+    }
+    
+    console.log(months0106); // Product details with order dates from month 01 to 06
+    console.log(months0612); // Product details with order dates from month 06 to 12
+    
+    const dashboard = await Dashboard.find({});
     const data = {
       dashboard: dashboard,
       admin:admin,
-      orders:orders
+      // orders:orders
+      uptojune:months0106,
+      afterjune:months0612
     };
 
     const filepathName = path.resolve(__dirname, '../views/admin/salereport.ejs');
@@ -707,6 +732,8 @@ const loadAddBanner=async(req,res)=>{
     console.log(err.message);
   }
 }
+
+
 const addBanner = async (req, res) => {
   try {
     const adminid = req.session.admin_id;
@@ -718,6 +745,19 @@ const addBanner = async (req, res) => {
         admin: adminData,
       });
     }
+
+    // Check if the file is an image
+    const fileBuffer = req.file.buffer;
+    const mimeType = mime.lookup(req.file.originalname);
+
+    if (!mimeType || !mimeType.startsWith('image/')) {
+      return res.render("addbanner", {
+        message: "Invalid file format. Please upload an image.",
+        admin: adminData,
+      });
+    }
+
+    // The file is an image, continue with banner creation
 
     const bannerFile = req.file.filename;
     const banner = new Banner({
@@ -748,6 +788,8 @@ const addBanner = async (req, res) => {
     console.log(err.message);
   }
 };
+
+
 
 const bannerList=async(req,res)=>{
   try{
@@ -813,11 +855,11 @@ module.exports = {
   addProduct,
   editProduct,
   updateProduct,
+  editProductImage,
   deleteProduct,
   loadAddUser,
   addUser,
   editUser,
-  updateUser,
   enableProduct,
   disableProduct,
   loadOrders,

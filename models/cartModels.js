@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema({
         type:String
     },
     product_quantity:{
-        type:String,
+        type:Number,
         required:true
     },
     product_brand:{
@@ -34,6 +34,9 @@ const productSchema = new mongoose.Schema({
     },
     current_stock:{
         type:String
+    },
+    total_price:{
+        type:Number
     }
 })
 
@@ -44,7 +47,7 @@ const cartSchema = mongoose.Schema({
         required:true
     },
     cart_amount:{
-        type:String,
+        type:Number,
     },
 
 })

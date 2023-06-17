@@ -23,6 +23,7 @@ const storage =multer.diskStorage({
     }
 })
 
+
 const upload=multer({storage:storage})
 
 admin_route.set('view engine','ejs')
@@ -51,7 +52,9 @@ admin_route.post('/addproduct',upload.array('product_img'),adminController.addPr
 
 admin_route.get('/editproducts',auth.isLogin,adminController.editProduct)
 
-admin_route.post("/editproducts",upload.array('product_img'), adminController.updateProduct);
+admin_route.post("/editproducts", adminController.updateProduct);
+
+admin_route.post("/edit_product_image",upload.array('product_img'), adminController.editProductImage);
 
 // admin_route.get('/deleteproduct',adminController.deleteProduct)
 
@@ -61,7 +64,7 @@ admin_route.post('/adduser',upload.single('product_img'),adminController.addUser
 
 // admin_route.get('/editusers',auth.isLogin,adminController.editUser)
 
-admin_route.post("/editusers", adminController.updateUser);
+// admin_route.post("/editusers", adminController.updateUser);
 
 // admin_route.get('/deleteusers',adminController.deleteUser)
 
@@ -99,23 +102,23 @@ admin_route.get('/addcoupon',auth.isLogin,adminController.loadAddCoupon)
 
 admin_route.post('/addcoupon',adminController.addCoupon)
 
-admin_route.get('/editcoupon',adminController.loadeditCoupon)
+admin_route.get('/editcoupon',auth.isLogin,adminController.loadeditCoupon)
 
 admin_route.put('/editcoupon',adminController.editCoupon)
 
-admin_route.get('/editcategory',adminController.loadeditCategorey)
+admin_route.get('/editcategory',auth.isLogin,adminController.loadeditCategorey)
 
 admin_route.put('/editcategory',adminController.editCategorey)
 
-admin_route.get('/pdfdownload',adminController.saleReport)
+admin_route.get('/pdfdownload',auth.isLogin,adminController.saleReport)
 
-admin_route.get('/banner', adminController.loadAddBanner);
+admin_route.get('/banner',auth.isLogin, adminController.loadAddBanner);
 
 admin_route.post('/banner',upload.single('banner_img'), adminController.addBanner);
 
-admin_route.get('/bannerlist', adminController.bannerList);
+admin_route.get('/bannerlist',auth.isLogin, adminController.bannerList);
 
-admin_route.get('/editbanner', adminController.loadEditBanner);
+admin_route.get('/editbanner',auth.isLogin, adminController.loadEditBanner);
 
 admin_route.post('/editbanner',upload.single('banner_img'), adminController.editBanner);
 

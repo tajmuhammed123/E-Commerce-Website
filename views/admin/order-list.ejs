@@ -18,11 +18,11 @@
                                             <tr>
                                                 <th></th>
                                                 <th>Name</th>
-                                                <th>Product Name</th>
-                                                <th>Brand</th>
-                                                <th>Price</th>
-                                                <th>Quantity</th>
-                                                <th>Status</th>
+                                                <th></th>
+                                                <th></th>
+                                                <th>Products</th>
+                                                <th></th>
+                                                <th></th>
                                                 <th>Address</th>
                                             </tr>
                                         </thead>
@@ -37,20 +37,15 @@
 
                             <tr>
                                 <tr class="tr-shadow">
-                                    <td class="header-cart-item-img">
-                                        <img src="/admin/images/<%= orders[i].product_img %>" alt="">
-                                    </td>
+                                    <td class="header-cart-item-img"></td>
                                     <td><%= orders[i].customer_name %></td>
-                                    <td><%= orders[i].product_name %></td>
-                                    <td style="text-transform: uppercase;"><%= orders[i].product_brand %></td>
+                                    <td></td>
+                                    <td></td>
                                     <td>
-                                        <a href="/admin/orderproducts?id=<%= orders[i].customer_id %>"><span class="status--process">Address</span></a>
+                                        <a href="/admin/orderproducts?id=<%= orders[i].customer_id %>"><span class="status--process">Products</span></a>
                                     </td>
-                                    <td><%= orders[i].product_quantity %></td>
-                                    <td class="text-danger"><%= orders[i].product_status %></td>
-                                    <td>
-                                        <a href="/admin/orderaddress?addid=<%= orders[i].addressId %>&&id=<%= orders[i].customer_id %>&&orderid=<%= orders[i]._id %>&&productid=<%= orders[i]._id %>"><span class="status--process">Address</span></a>
-                                    </td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                             </tr>
                             <tr class="spacer"></tr>

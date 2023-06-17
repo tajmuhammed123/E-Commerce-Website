@@ -2,6 +2,11 @@ const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
 const productSchema= mongoose.Schema({
+
+    addressId:{
+        type:ObjectId,
+        required:true
+    },
     product_id: {
 
         type:String,
@@ -51,15 +56,14 @@ const productSchema= mongoose.Schema({
     amount:{
         type:String
     },
+    order_id:{
+        type:String
+    },
 })
 
 
 const orderSchema = mongoose.Schema({
 
-    addressId:{
-        type:ObjectId,
-        required:true
-    },
 
     customer_id: {
 

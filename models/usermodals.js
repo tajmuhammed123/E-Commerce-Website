@@ -45,7 +45,7 @@ const addressSchema= new mongoose.Schema({
 
 const user=mongoose.Schema({
 
-    address:[addressSchema],
+address:[addressSchema],
 
 name:{
     type:String,

@@ -5,6 +5,8 @@ const Order=require('../models/orderModels')
 const Coupon=require('../models/couponModels')
 const mongoose=require('mongoose')
 
+const { v4: uuidv4 } = require('uuid');
+
   const addToCart = async (req, res) => {
     try {
       const id = req.query.id;
@@ -26,7 +28,7 @@ const mongoose=require('mongoose')
       };
 
       // Find or create a cart for the user
-      let cart = await Cart.findOneAndUpdate({ user_id: req.session.user_id },{$set:{cart_amount: +productData.product_price}});
+      let cart = await Cart.findOneAndUpdate({ user_id: req.session.user_id },{$inc:{cart_amount: productData.product_price}});
 
       if (!cart) {
         // Create a new cart if it doesn't exist
@@ -103,7 +105,7 @@ const couponCode = async (req, res) => {
     console.log(cartData);
 
     if (cartData) {
-      let totalPrice = cartData.product.map((product) => product.product_price).reduce((acc, cur) => acc += cur);
+      let totalPrice = cartData.product.map((product) => product.total_price).reduce((acc, cur) => acc += cur);
 
       await Coupon.findOne({coupon_status:false, coupon_code: { $regex: new RegExp(code, 'i') } })
         .then((coupon) => {
@@ -136,11 +138,13 @@ const deleteCartProduct = async (req, res) => {
   try {
     const id = req.query.id;
     const userid = req.query.userid;
-    console.log(id);
+    console.log('fdsf');
+    console.log(userid);
 
-    if (!mongoose.isValidObjectId(id)) {
-      return res.status(400).send({ success: false, error: 'Invalid product ID' });
-    }
+    // if (!mongoose.isValidObjectId(id)) {
+    //   console.log('err');
+    //   return res.status(400).send({ success: false, error: 'Invalid product ID' });
+    // }
 
     await Cart.updateOne(
       { user_id: userid },
@@ -157,27 +161,55 @@ const deleteCartProduct = async (req, res) => {
 
 const updateCart = async (req, res) => {
   try {
-    console.log('hghfg');
-    const userid=req.session.user_id
-    const product_id = req.body.product_id;
-    const product_qty = req.body.product_qty;
-    // const Product= await Cart.findOne({user_id: userid, "product._id": product_id})
+    console.log(req.body.product);
+    const userData = req.body.user;
+    const proId = req.body.product;
+    let count = parseInt(req.body.count);
 
-    console.log(product_id);
-    console.log(product_qty);
-    const updatedCart = await Cart.findOneAndUpdate(
-      { user_id: userid, "product._id": product_id },
-      { $set: { "product.$.product_quantity": product_qty } }
+    const cartData = await Cart.findOne({ user_id: userData });
+    const product = cartData.product.find((product) => product.product_id === proId);
+
+    const productData = await Products.findOne({ _id: proId });
+    console.log(productData);
+    const productQuantity = productData.product_stock;
+
+    if (count > 0) {
+      // Quantity is being increased
+      if (product.product_quantity + count > productQuantity) {
+        res.json({ success: false, message: 'Quantity limit reached!' });
+        return;
+      }
+    } else if (count < 0) {
+      // Quantity is being decreased
+      if (product.product_quantity <= 1 || Math.abs(count) > product.product_quantity) {
+        await Cart.updateOne({ user_id: userData }, { $pull: { product: { product_id: proId } } });
+        res.json({ success: true });
+        return;
+      }
+    }
+
+    await Cart.updateOne(
+      { user_id: userData, 'product.product_id': proId },
+      { $inc: { 'product.$.product_quantity': count } }
     );
 
-    console.log(updatedCart);
-    console.log('success');
-    res.redirect("/cart");
+    const updatedCartData = await Cart.findOne({ user_id: userData });
+    const updatedProduct = updatedCartData.product.find((product) => product.product_id === proId);
+    const updatedQuantity = updatedProduct.product_quantity;
+    const price = updatedQuantity * productData.product_price;
+
+    await Cart.updateOne(
+      { user_id: userData, 'product.product_id': proId },
+      { $set: { 'product.$.total_price': price } }
+    );
+
+    res.json({ success: true });
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ error: 'An error occurred while updating the cart.' });
+    res.status(500).json({ success: false, error: error.message });
   }
-}
+};
+
 
 
 
@@ -243,10 +275,12 @@ const updateCart = async (req, res) => {
       message=null
       console.log(req.session.totalPrice);
       const userid=req.session.user_id
-      const totalamount=req.query.totalamount
+      const user= await Cart.findOne({user_id:userid})
+      const totalamount=user.cart_amount
       const userData = await User.findOne({ _id: userid });
       console.log(userData);
-      res.render('payment',{ userid:userData, message, totalamount:totalamount })
+      const randomId = uuidv4();
+      res.render('payment',{ userid:userData, message, totalamount:totalamount, order_id:randomId })
     }catch(err){
       console.log(err.message);
     }

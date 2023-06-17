@@ -32,8 +32,12 @@ const orderHistory=async(req,res)=>{
       const productId = req.body.productID;
       const adminId = req.session.admin_id;
       const productStatus = req.body.product_status;
+
+      const orderdata = await Order.findOne({ customer_id: id,'product_details._id': productId });
+      const productPrice= orderdata.product_details[0].product_price
+      const paymentMode= orderdata.product_details[0].payment_method
   
-      console.log(adminId);
+      console.log(paymentMode);
   
       await Order.updateOne(
         {
@@ -46,6 +50,46 @@ const orderHistory=async(req,res)=>{
           }
         }
       );
+
+      if(productStatus=='Delivered'){
+
+        if(paymentMode=='Cash On Delivery'){
+          const dashboard = await Dashboard.updateOne(
+            {},
+            {
+              $inc: {
+                items_sold: 1,
+                cod: 1,
+                total_earnings: productPrice,
+              }
+            }
+          );
+          console.log(dashboard);          
+        }else if(paymentMode=='Wallet' || paymentMode=='Online Payment'){
+          console.log('online');
+          const dashboard=await Dashboard.updateMany({},
+            {
+              $inc: {
+                items_sold: 1,
+                total_earnings: productPrice,
+                online:1
+              }
+            })
+            console.log(dashboard);
+        }
+        
+        await Order.updateOne(
+          {
+            customer_id: id,
+            'product_details._id': productId
+          },
+          {
+            $set: {
+              'product_details.$.product_status': productStatus
+            }
+          }
+        );
+      }
   
       res.redirect(`/admin/orders?adminid=${adminId}`);
       console.log(productStatus);
@@ -121,6 +165,10 @@ const orderHistory=async(req,res)=>{
       const cartData = await Cart.findOne({ user_id: userid });
       const customer = await User.findOne({ _id: userid });
       const addressid = req.body.address;
+      const orderid = req.body.orderid
+      
+      console.log(req.body.mode);
+      console.log(req.body.address);
 
       const currentDate = new Date();
       const formattedDate = currentDate.toISOString();
@@ -134,7 +182,9 @@ const orderHistory=async(req,res)=>{
         };
   
         razorpayInstance.orders.create(options, async (err, order) => {
+          console.log('Razorpay API Response:', err, order);
           if (!err) {
+            console.log('hjkgfgd');
             res.status(200).send({
               success: true,
               msg: 'Order Created',
@@ -148,69 +198,7 @@ const orderHistory=async(req,res)=>{
               email: 'tajmuhammed4969@gmail.com'
             });
   
-            // Check if cartData exists and is an array
-            if (cartData && Array.isArray(cartData.product)) {
-              for (const cartItem of cartData.product) {
-                const orderItem = {
-                  product_id: cartItem.product_id,
-                  product_name: cartItem.product_name,
-                  product_price: cartItem.product_price,
-                  product_img: cartItem.product_img,
-                  product_size: cartItem.product_size,
-                  product_quantity: cartItem.product_quantity,
-                  product_brand: cartItem.product_brand,
-                  order_date: formattedDate,
-                  payment_method: req.body.mode,
-                  amount:req.body.amount
-                };
             
-                let order = await Order.findOneAndUpdate(
-                  { customer_id: req.session.user_id },
-                  {
-                    $set: {
-                      addressId: addressid,
-                      customer_name: customer.name,
-                    }
-                  },
-                  { new: true, upsert: true }
-                );
-            
-                order.product_details.push(orderItem);
-            
-                console.log(order);
-              }            
-            } else {
-              console.log('Cart data not found or is invalid');
-            }
-  
-            for (const productItem of cartData.product) {
-              console.log(productItem.product_id);
-              await Products.findByIdAndUpdate(
-                productItem.product_id,
-                {
-                  $inc: {
-                    product_stock: -productItem.product_quantity
-                  }
-                },
-                { new: true }
-              );
-            }
-
-            await Dashboard.updateMany(
-              {}, // Empty filter object to match all documents
-              {
-                $inc: {
-                  items_sold: 1,
-                  total_earnings: req.body.amount,
-                  online:1
-                }
-              },
-              { new: true }
-            );            
-  
-            await Cart.deleteOne({ user_id: userid });
-            const add = customer.address.find((addr) => addr._id == addressid);
-            console.log(add);
           } else {
             res.status(400).send({ success: false, msg: 'Something went wrong!' });
           }
@@ -235,15 +223,13 @@ const orderHistory=async(req,res)=>{
               order_date: formattedDate,
               payment_method: req.body.mode,
               amount:req.body.amount,
+              addressId: addressid,
+              order_id: orderid
             };
   
             let order = await Order.findOneAndUpdate(
               { customer_id: req.session.user_id },
               {
-                $set: {
-                  addressId: addressid,
-                  customer_name: customer.name
-                },
                 $push: {
                   product_details: orderItem
                 }
@@ -284,9 +270,9 @@ const orderHistory=async(req,res)=>{
           {}, // Empty filter object to match all documents
           {
             $inc: {
-              items_sold: 1,
+              items_sold: cartData.product.length,
               total_earnings: req.body.amount,
-              online:1
+              online:cartData.product.length
             }
           },
           { new: true }
@@ -303,6 +289,8 @@ const orderHistory=async(req,res)=>{
         }
         
       } else {
+
+        
         // Check if cartData exists and is an array
         if (cartData && Array.isArray(cartData.product)) {
           for (const cartItem of cartData.product) {
@@ -317,15 +305,13 @@ const orderHistory=async(req,res)=>{
               order_date: formattedDate,
               payment_method: req.body.mode,
               amount:req.body.amount,
+              addressId: addressid,
+              order_id: orderid
             };
   
             let order = await Order.findOneAndUpdate(
               { customer_id: req.session.user_id },
               {
-                $set: {
-                  addressId: addressid,
-                  customer_name: customer.name
-                },
                 $push: {
                   product_details: orderItem
                 }
@@ -337,9 +323,9 @@ const orderHistory=async(req,res)=>{
               {}, // Empty filter object to match all documents
               {
                 $inc: {
-                  items_sold: 1,
+                  items_sold: cartData.product.length,
                   total_earnings: req.body.amount,
-                  cod:1
+                  cod:cartData.product.length
                 }
               },
               { new: true }
@@ -374,11 +360,99 @@ const orderHistory=async(req,res)=>{
       console.log(error.message);
     }
   };
+
+  const onlinePaySuccess=async(req,res)=>{
+    try {
+      console.log('dfs');
+      const userid = req.session.user_id;
+      const cartData = await Cart.findOne({ user_id: userid });
+      const customer = await User.findOne({ _id: userid });
+      const addressid = req.body.address;
+      const orderid = req.body.orderid
+      const amnt= (req.body.amount)/100
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString();
+      console.log(currentDate);
+
+        // Check if cartData exists and is an array
+        if (cartData && Array.isArray(cartData.product)) {
+          for (const cartItem of cartData.product) {
+            const orderItem = {
+              product_id: cartItem.product_id,
+              product_name: cartItem.product_name,
+              product_price: cartItem.product_price,
+              product_img: cartItem.product_img,
+              product_size: cartItem.product_size,
+              product_quantity: cartItem.product_quantity,
+              product_brand: cartItem.product_brand,
+              order_date: formattedDate,
+              payment_method: 'Online Payment',
+              amount:amnt,
+              addressId: addressid,
+              order_id: orderid
+            };
+  
+            let order = await Order.findOneAndUpdate(
+              { customer_id: req.session.user_id },
+              {
+                $push: {
+                  product_details: orderItem
+                }
+              },
+              { new: true, upsert: true }
+            );
+          }            
+        } else {
+          console.log('Cart data not found or is invalid');
+        }
+
+        for (const productItem of cartData.product) {
+          console.log(productItem.product_id);
+          await Products.findByIdAndUpdate(
+            productItem.product_id,
+            {
+              $inc: {
+                product_stock: -productItem.product_quantity
+              }
+            },
+            { new: true }
+          );
+        }
+        
+        console.log(amnt);
+        await Dashboard.updateMany(
+          {}, // Empty filter object to match all documents
+          {
+            $inc: {
+              items_sold: cartData.product.length,
+              total_earnings: amnt,
+              online: cartData.product.length
+            }
+          },
+          { new: true }
+        );            
+
+        await Cart.deleteOne({ user_id: userid });
+        res.status(200).send({ success: true});
+        const add = customer.address.find((addr) => addr._id == addressid);
+        console.log(add);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
   
 
   const paymentSuccess=async(req,res)=>{
     try{
-        res.render('success')
+      const orderid = req.query.orderid;
+      const userid = req.session.user_id;
+
+      const orderProducts = await Order.find({ customer_id: userid });
+      const order = orderProducts.find(order => order.product_details.some(detail => detail.order_id === orderid));
+      const products = order.product_details.filter(detail => detail.order_id === orderid);
+
+      console.log(order);
+        res.render('success', { order:products })
     }catch(err){
       console.log(err.message);
     }
@@ -392,5 +466,6 @@ const orderHistory=async(req,res)=>{
     cancelProduct,
     returnProduct,
     createOrder,
+    onlinePaySuccess,
     paymentSuccess
   }

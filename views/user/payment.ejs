@@ -1,4 +1,8 @@
 <%-include('../layouts/userHeader') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+
+    <!--Font Awesome CDN -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
 
 	<!-- Cart -->
 	<div class="wrap-header-cart js-panel-cart">
@@ -14,7 +18,7 @@
 					<i class="zmdi zmdi-close"></i>
 				</div>
 			</div>
-			
+		
 			<div class="header-cart-content flex-w js-pscroll">
 				<ul class="header-cart-wrapitem w-full">
 					<li class="header-cart-item flex-w flex-t m-b-12">
@@ -96,123 +100,126 @@
 
 	<!-- Content page -->
 	<section class="bg0 p-t-104 p-b-116">
-		<div class="container">
-            <div class="flex-w flex-tr w-full-md m-lr-70 m-t-55 " style="width: 150px;">
-				<a href="/addaddress?userid=<%= userid._id %>"><button class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
-					Add Address
-				</button></a>
-			</div>
-				<!-- <div class="size-210 bor10 p-lr-70 p-t-55 p-b-70 p-lr-15-lg w-full-md">
-					<form action="">
-						<h4 class="mtext-105 cl2 txt-center p-b-30">
-							Add Address
-						</h4>
-
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="firstName" placeholder="First Name">
-						</div>
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="secondName" placeholder="Second Name">
-						</div>
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="email" name="email" placeholder="Your Email Address">
-						</div>
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="number" name="mobNumber" placeholder="Mobile Number">
-						</div> -->
-
-						<!-- <div class="bor8 m-b-30">
-							<textarea class="stext-111 cl2 plh3 size-120 p-lr-28 p-tb-25" name="msg" placeholder="How Can We Help?"></textarea>
-						</div> -->
-
-						<!-- <div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="houseNumber" placeholder="House Address">
-						</div>
-
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="city" placeholder="City">
-						</div>
-
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="text" name="state" placeholder="State">
-						</div>
-
-						<div class="bor8 m-b-20 how-pos4-parent">
-							<input class="stext-111 cl2 plh3 size-116 p-l-62 p-r-30" type="number" name="pincode" placeholder="Pincode">
-						</div>
-					</form>
-				</div> -->
-                    <form class="pay-form" >
-                        <div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40">
-                            <div class="flex-w flex-tr">
-                            <% if (userid && userid.address) { %>
-                                <% for (let i = 0; i < userid.address.length; i++) { %>
-                                <% const address = userid.address[i]; %>
-                                
-                                    <div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40 addressleft" style="width: 300px;">
-                                        <div class="flex-w w-full p-b-20">
-                                            <span class="fs-18 cl5 txt-center size-100">
-                                                <span class="lnr lnr-map-marker"></span>
-                                            </span>
-                    
-                                            <div class="size-30 p-t-2">
-                                                <span class="mtext-50 cl2">
-                                                    Address
-                                                </span>
-                                                <input class="form-check-input" type="radio" name="address" value="<%=userid.address[i]._id%>"
-                                                    id="<%=userid.address[i]._id%> required">
-                                                <label class="form-check-label" for="<%=userid.address[i]._id%>">
-                                                    <div class="bg-light p-3 border rounded">
-                                                        <p class="stext-30 cl6 size-100 p-t-18">
-                                                            <%= address.firstName %>
-                                                            <%= address.secondName %> <br>
-                                                            <%= address.houseNumber %> <br>
-                                                            <%= address.city %> <br>
-                                                            <%= address.state %> <br>
-                                                            <%= address.pincode %> <br>
-                                                          </p>
-                                                    </div>
-                                    
-                                                  </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                
-                                <% } %>
-                                <% } %>
-                            </div>
-                        </div>
-						<div class="m-t-20" style="display: flex; justify-content: center; align-items: center;">
-							
-						<input type="hidden" name="amount" value="<%= totalamount %>">
-						<input type="hidden" name="name" value="<%= userid.name %>">
-                        <div class="size-30 p-t-2" style="width: 200px; margin-top: 50px; justify-content: center; align-items: center;">
-							<div class="m-b-15 m-t-20" style="display: flex;">PAYMENT METHOD:</div>
-							<div style="display: flex;">
-                                <input type="radio" name="mode" value="Cash On Delivery">
-								<span> Cash On Delivery</span>
-							</div>
-							<div style="display: flex;">
-                                <input type="radio" name="mode" value="Wallet">
-								<span> Pay Using Wallet</span>
-							</div>
-
-							
-                            <div style="display: flex;" class="m-tb-30">
-								<input type="radio" name="mode" value="Online Payment">
-								<span> Pay Using Card</span>
-							</div>
-							<div class="mb-3">
-								<% if(message) { %>
-									<p class="text-danger"><%= message %></p>
+		<div class="container p-lr-40">
+			<div class="flex-w flex-sa-m p-t-18 p-b-15 p-lr-40 p-lr-15-sm border-all">
+				<div class="flex-w flex-m m-r-20 m-tb-5">
+					<input class="stext-104 cl2 plh4 size-117 bor13 p-lr-20 m-r-10 m-tb-5" type="text" name="coupon" placeholder="Coupon Code" id="coupon" value=''>
+				</div>				
+					<div class="flex-c-m stext-101 cl2 size-118 bg8 bor13 hov-btn3 p-lr-15 trans-04 pointer m-tb-5" onclick="couponApply()">
+							Apply coupon
+					</div>
+			  	</div>
+			  
+            
+			  <form class="pay-form">
+				<div class="bor10 flex-w flex-col-m p-lr-20 p-tb-20 p-lr-10-lg m-l-40 m-t-40">
+				  <div class="flex-w flex-tr">
+					<div class="container bg-light mt-5 rounded">
+					  <small class="text-muted">Browse and select an option</small>
+					  <div class="container main-carousel container mb-2 pb-4">
+						<div class="main-container">
+						  <button role="button" id="arrow-left" class="arrow-left border-0 text-secondary p-1 rounded">
+							<i class="fa fa-chevron-left"></i>
+						  </button>
+						  <div class="container-carousel px-3">
+							<div class="carousel">
+							  <% if (userid && userid.address) { %>
+								<% for (let i = 0; i < userid.address.length; i++) { %>
+								  <% const address = userid.address[i]; %>
+								  <div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0">
+									<input type="radio" name="address" value="<%=userid.address[i]._id%>" id="<%=userid.address[i]._id%>" required />
+									<label for="<%=userid.address[i]._id%>" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+									  <div class="mb-1 mt-1">
+										<div class="text-sm">
+										  <p class="stext-30 cl6 size-100 p-t-18">
+											<%= address.firstName %>
+											<%= address.secondName %> <br>
+											<%= address.houseNumber %> <br>
+											<%= address.city %> <br>
+											<%= address.state %> <br>
+											<%= address.pincode %> <br>
+										  </p>
+										</div>
+									  </div>
+									</label>
+								  </div>
 								<% } %>
+							  <% } %>
 							</div>
-                            <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
-                                Place Order
-                            </button>
-                        </div>
+						  </div>
+						  <button role="button" id="arrow-right" class="arrow-right border-0 text-secondary p-1 rounded">
+							<i class="fa fa-chevron-right"></i>
+						  </button>
 						</div>
-                    </form>
+					  </div>
+					  <div class="flex-w flex-tr w-full-md m-lr-70 mb-5" style="width: 150px;">
+						<a href="/addaddress?userid=<%= userid._id %>">
+						  <button class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+							Add Address
+						  </button>
+						</a>
+					  </div>
+					</div>
+				  </div>
+				  <div class="m-t-20" style="display: flex; justify-content: center; align-items: center;">
+					<input type="hidden" name="amount" value="<%= totalamount %>">
+					<input type="hidden" name="name" value="<%= userid.name %>">
+					<input type="hidden" name="orderid" value="<%= order_id %>">
+			  
+					<div class="size-30 p-t-2" style="justify-content: center; align-items: center;">
+					  <div class="container bg-light mt-5 rounded">
+						<h3 class="text-muted">ADDRESS</h3>
+						<div class="container main-carousel container mb-5 pb-4">
+						  <div class="main-container">
+							<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0" style="width: 300px;" checked>
+							  <input type="radio" id="case1" name="mode" value="Cash On Delivery" />
+							  <label for="case1" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+								<div class="mb-1 mt-1">
+								  <div class="text-sm">
+									<h3><i class="fab fa-ubuntu"></i></h3>
+									<span>C O D</span>
+								  </div>
+								</div>
+							  </label>
+							</div>
+							<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0" style="width: 300px;">
+							  <input type="radio" id="case2" name="mode" value="Online Payment" />
+							  <label for="case2" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+								<div class="mb-1 mt-1">
+								  <div class="text-sm">
+									<h3><i class="fab fa-windows"></i></h3>
+									<span>Card</span>
+								  </div>
+								</div>
+							  </label>
+							</div>
+							<div class="optionItem shadow-sm rounded bg-light col-12 col-md-4 mx-1 mx-md-2 px-0" style="width: 300px;">
+							  <input type="radio" id="case3" name="mode" value="Wallet" />
+							  <label for="case3" class="w-100 h-100 pl-3 pt-1 pb-0 rounded option-label" style="display: inline-block; width: 100%;">
+								<div class="mb-1 mt-1">
+								  <div class="text-sm">
+									<h3><i class="fab fa-apple"></i></h3>
+									<span>Wallet</span>
+								  </div>
+								</div>
+							  </label>
+							</div>
+						  </div>
+						</div>
+					  </div>
+					  <div class="mb-3">
+						<% if (message) { %>
+						  <p class="text-danger"><%= message %></p>
+						<% } %>
+					  </div>
+					  <button type="submit" class="flex-c-m stext-101 cl0 size-121 bg3 bor1 hov-btn3 p-lr-15 trans-04 pointer">
+						Place Order
+					  </button>
+					</div>
+				  </div>
+				</div>
+			  </form>
+			  
                 
 		</div>
 	</section>	
@@ -277,6 +284,8 @@
 	<script src="js/map-custom.js"></script>
 <!--===============================================================================================-->
 	<script src="js/main.js"></script>
+
+
 	
 	<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
@@ -295,7 +304,7 @@ $(document).ready(function(){
 				if(res.success){
 					if(res.cod==true){
 						console.log('cod');
-						window.location.href = "/success"
+						window.location.href = "/success?orderid=<%= order_id %>"
 					}else{
 						var options = {
 						"key": ""+res.key_id+"",
@@ -307,7 +316,29 @@ $(document).ready(function(){
 						"image": "https://dummyimage.com/600x400/000/fff",
 						"order_id": ""+res.order_id+"",
 						"handler": function (response){
-							window.location.href = "/success"
+							$.ajax({
+							url: "/paidsuccess",
+							type: "POST",
+							data: {
+								response,
+								amount: res.amount,
+								mode: res.mode,
+								address: res.address,
+								order_id: res.order_id,
+							
+							},
+							success: function(res){
+								if(res.success){
+								window.location.href = "/success";
+								alert("Payment Succeeded");
+								} else {
+								alert("Payment Failed");
+								}
+							},
+							error: function(){
+								alert("An error occurred while processing the payment.");
+							}
+							});
 							alert("Payment Succeeded");
 							// window.open("/","_self")
 						},
@@ -337,7 +368,47 @@ $(document).ready(function(){
 });
 
 </script>
+<script>
+	let count = 0;
+	var totalAmount
+    const coupon = document.getElementById("coupon").value.trim();
+		  
+		function couponApply(id, totalAmount) {
+  const coupon = document.getElementById("coupon").value.trim();
+  console.log(coupon);
+
+  $.ajax({
+    type: "POST",
+    url: "/coupon",
+    data: {
+      code: coupon
+    },
+    success: (response) => {
+      console.log('hjgg');
+      if (response.success) {
+        const total = document.getElementById("totalamount").innerHTML;
+        count++;
+        if (count == 1) {
+          console.log(total);
+          if (response.success.coupon_type === "Flat" && response.success.min_purchase < total) {
+            document.getElementById("totalamount").innerHTML = Number(total) - Number(response.success.coupon_value);
+			document.getElementById("totalamnt").value = document.getElementById("totalamount").innerHTML;
+
+            console.log(coupon);
+          } else if (response.success.coupon_type === "Percentage" && response.success.min_purchase < total) {
+            document.getElementById("totalamount").innerHTML = Number(total) - (Number(total) * Number(response.success.coupon_value)) / 100;
+            document.getElementById("totalamnt").value = document.getElementById("totalamount").innerHTML;
+          }
+        } else {
+          console.log('already taken');
+        }
+      } else {
+        console.log('success not working');
+      }
+    }
+  });
+}
+</script>
 
 </body>
 </html>
-

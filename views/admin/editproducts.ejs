@@ -53,13 +53,13 @@
                                                 </div>
                                                 <div class="col-12 col-md-7">
                                                     <select name="product_category" id="select" class="form-control">
-                                                        <option value="0">Please select</option>
-                                                        <option value="men">Men</option>
-                                                        <option value="women">Women</option>
-                                                        <option value="bag">Bag</option>
-                                                        <option value="shoes">Shoes</option>
-                                                        <option value="watches">Watches</option>
-                                                    </select>
+                                                        <option value="0" <% if (product.product_category === '0') { %>selected<% } %>>Please select</option>
+                                                        <option value="men" <% if (product.product_category === 'men') { %>selected<% } %>>Men</option>
+                                                        <option value="women" <% if (product.product_category === 'women') { %>selected<% } %>>Women</option>
+                                                        <option value="bag" <% if (product.product_category === 'bag') { %>selected<% } %>>Bag</option>
+                                                        <option value="shoes" <% if (product.product_category === 'shoes') { %>selected<% } %>>Shoes</option>
+                                                        <option value="watches" <% if (product.product_category === 'watches') { %>selected<% } %>>Watches</option>
+                                                      </select>                                                      
                                                 </div>
                                             </div>
                                             <div class="row form-group">
@@ -69,36 +69,28 @@
                                                 <div class="col col-md-7">
                                                     <div class="form-check">
                                                         <div class="checkbox">
-                                                            <label for="checkbox1" class="form-check-label ">
-                                                                <input type="checkbox" id="checkbox1" name="product_size" value="36" class="form-check-input">36
-                                                            </label>
+                                                          <label for="checkbox1" class="form-check-label">
+                                                            <input type="checkbox" id="checkbox1" name="product_size" value="36" class="form-check-input" <% if (product.product_size.includes('36')) { %>checked<% } %>>36
+                                                          </label>
                                                         </div>
                                                         <div class="checkbox">
-                                                            <label for="checkbox2" class="form-check-label ">
-                                                                <input type="checkbox" id="checkbox2" name="product_size" value="38" class="form-check-input"> 38
-                                                            </label>
+                                                          <label for="checkbox2" class="form-check-label">
+                                                            <input type="checkbox" id="checkbox2" name="product_size" value="38" class="form-check-input" <% if (product.product_size.includes('38')) { %>checked<% } %>>38
+                                                          </label>
                                                         </div>
                                                         <div class="checkbox">
-                                                            <label for="checkbox3" class="form-check-label ">
-                                                                <input type="checkbox" id="checkbox3" name="product_size" value="40" class="form-check-input"> 40
-                                                            </label>
+                                                          <label for="checkbox3" class="form-check-label">
+                                                            <input type="checkbox" id="checkbox3" name="product_size" value="40" class="form-check-input" <% if (product.product_size.includes('40')) { %>checked<% } %>>40
+                                                          </label>
                                                         </div>
-                                                    </div>
+                                                      </div>
+                                                      
                                                 </div>
                                             </div>
                                             <div class="row form-group">
-                                                <div class="col col-md-5">
-                                                    <label for="file-input" class=" form-control-label">Product Image</label>
-                                                </div>
-                                                <div class="col-12 col-md-7">
-                                                    <input type="file" id="file-input" name="product_img" class="form-control-file" value="<%= product.product_img[0] %>">
-                                                </div>
-                                                <div class="col-12 col-md-7">
-                                                    <input type="file" id="file-input" name="product_img" class="form-control-file" value="<%= product.product_img[1] %>">
-                                                </div>
-                                                <div class="col-12 col-md-7">
-                                                    <input type="file" id="file-input" name="product_img" class="form-control-file" value="<%= product.product_img[2] %>">
-                                                </div>
+                                                <button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#exampleModal" data-mdb-whatever="@getbootstrap" >
+                                                    Edit Image
+                                                    </button>
                                             </div>
                                             <div class="card-footer">
                                                 <button type="submit" class="btn btn-primary btn-sm">
@@ -124,6 +116,53 @@
             </div>
         </div>
 
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="" id="exampleModalLabel">Change Image</h5>
+              <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="/admin/edit_product_image" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                      <input type="hidden" name="productID" value="<%= product._id %>">
+                      <label class="col-form-label">Product Image:</label>
+                      <div class="row form-group">
+                        <div class="col col-md-5">
+                          <label for="file-input-1" class="form-control-label">Product Image 1</label>
+                        </div>
+                        <div class="col-12 col-md-7">
+                          <input type="file" id="file-input-1" name="product_img" class="form-control-file">
+                        </div>
+                      </div>
+                      <div class="row form-group">
+                        <div class="col col-md-5">
+                          <label for="file-input-2" class="form-control-label">Product Image 2</label>
+                        </div>
+                        <div class="col-12 col-md-7">
+                          <input type="file" id="file-input-2" name="product_img" class="form-control-file">
+                        </div>
+                      </div>
+                      <div class="row form-group">
+                        <div class="col col-md-5">
+                          <label for="file-input-3" class="form-control-label">Product Image 3</label>
+                        </div>
+                        <div class="col-12 col-md-7">
+                          <input type="file" id="file-input-3" name="product_img" class="form-control-file">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button>
+                      <button type="submit" class="btn btn-primary" data-mdb-dismiss="modal">Send message</button>
+                    </div>
+                  </form>                  
+          </div>
+        </div>
+      </div>
     </div>
                         
                         
