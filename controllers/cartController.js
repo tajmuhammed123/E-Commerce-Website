@@ -3,7 +3,6 @@ const Products=require('../models/productModels')
 const User = require("../models/usermodals");
 const Order=require('../models/orderModels')
 const Coupon=require('../models/couponModels')
-const mongoose=require('mongoose')
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -11,10 +10,12 @@ const { v4: uuidv4 } = require('uuid');
     try {
       const id = req.query.id;
       const userid = req.query.userid;
+      const session=req.session.user_id
 
       // Retrieve product and user data
       const productData = await Products.findById(id);
       const userData = await User.findById(userid);
+      const total_price=req.body.product_quantity * productData.product_price
 
       // Create a cart item object
       const cartItem = {
@@ -25,6 +26,7 @@ const { v4: uuidv4 } = require('uuid');
         product_size: req.body.product_size,
         product_quantity: req.body.product_quantity,
         product_brand: productData.product_brand,
+        total_price:total_price
       };
 
       // Find or create a cart for the user
@@ -42,7 +44,7 @@ const { v4: uuidv4 } = require('uuid');
       const savedCart = await cart.save();
 
       if (savedCart) {
-        res.render("product-detail", { message: "Success", product: productData, userData: userData });
+        res.render("product-detail", { message: "Success", product: productData, userData: userData, session });
       }
     } catch (error) {
       console.log(error.message);
@@ -68,6 +70,7 @@ const { v4: uuidv4 } = require('uuid');
       const userid = req.session.user_id;
       console.log(userid);
       var cartPrd = await Cart.findOne({ user_id: userid })
+      const title='Cart'
   
       // Check if cart data exists
       if (cartPrd) {
@@ -83,10 +86,10 @@ const { v4: uuidv4 } = require('uuid');
           // cartPrd.count++;
           await cartPrd.save();
   
-        res.render('shoping-cart', { products: cartPrd, userid: userid, product:cartPrd.product });
+        res.render('shoping-cart', { products: cartPrd, userid: userid, product:cartPrd.product, cart:cartPrd, title, session:userid });
       }else{
         cartPrd=null
-        res.render('shoping-cart', { products: cartPrd, userid: userid, product:cartPrd });
+        res.render('shoping-cart', { products: cartPrd, userid: userid, product:cartPrd, cart:cartPrd, title, session:userid });
       }
     } catch (error) {
       console.error(error);
@@ -101,30 +104,56 @@ const couponCode = async (req, res) => {
     const code = req.body.code;
     req.session.coupon_status =false
     const cartData = await Cart.findOne({ user_id: userid }).populate("product.product_id");
+    const userData = await User.findOne({ _id: userid })
     const orderData = await Order.find({ customer_id: userid });
     console.log(cartData);
 
     if (cartData) {
       let totalPrice = cartData.product.map((product) => product.total_price).reduce((acc, cur) => acc += cur);
 
-      await Coupon.findOne({coupon_status:false, coupon_code: { $regex: new RegExp(code, 'i') } })
+      await Coupon.findOne({coupon_code: { $regex: new RegExp(code, 'i') } })
         .then((coupon) => {
           console.log('Coupon:', coupon);
-          if (coupon.coupon_type === "Flat" && coupon.min_purchase < totalPrice) {
-            console.log('flat');
-            totalPrice = totalPrice - coupon.coupon_value;
-            req.session.coupon_status = true;
-            req.session.totalPrice = totalPrice;
-          } else if (coupon.coupon_type === "Percentage" && coupon.min_purchase < totalPrice) {
-            console.log('percentage');
-            totalPrice = totalPrice - ((totalPrice * coupon.coupon_value) / 100);
-            req.session.coupon_status = true;
-            req.session.totalPrice = totalPrice;
+          if (userData.used_coupon && userData.used_coupon.includes(coupon.coupon_code)) {
+            console.log('Already used');
+            res.json({ success: false })
+          }else{
+            if (coupon.coupon_type === "Flat" && coupon.min_purchase < totalPrice) {
+              console.log('flat');
+              const val =  coupon.coupon_value;
+              if(val > coupon.max_discount){
+                totalPrice -= coupon.max_discount;
+              }else{
+                totalPrice -= val;
+              }
+              // req.session.coupon_status = true;
+              console.log(totalPrice);
+              userData.used_coupon.push(coupon.coupon_code)
+              userData.save({ upsert: true })
+              cartData.cart_amount=totalPrice
+              cartData.save()
+            } else if (coupon.coupon_type === "Percentage" && coupon.min_purchase < totalPrice) {
+              console.log('percentage');
+              const val = (totalPrice * coupon.coupon_value) / 100;
+            console.log(val);
+
+            if (val > coupon.max_discount) {
+              totalPrice -= coupon.max_discount;
+            } else {
+              totalPrice -= val;
+            }
+            console.log(totalPrice);
+            userData.used_coupon.push(coupon.coupon_code)
+            userData.save({ upsert: true })
+            cartData.cart_amount=totalPrice
+            cartData.save()
+              // req.session.coupon_status = true;
+            }
+            res.json({ success: coupon });
           }
-          res.json({ success: coupon });
+          
         });
 
-        console.log(req.session.totalPrice);
     } else {
       res.redirect('/cart');
     }
@@ -273,14 +302,20 @@ const updateCart = async (req, res) => {
   const loadPayment=async(req,res)=>{
     try{
       message=null
-      console.log(req.session.totalPrice);
       const userid=req.session.user_id
-      const user= await Cart.findOne({user_id:userid})
-      const totalamount=user.cart_amount
+      let cart_amount = 0
+      const cart= await Cart.findOne({user_id:userid})
+      cart.product.forEach((product) => {
+        cart_amount += product.total_price;
+      });
+
+      await Cart.findOneAndUpdate({user_id:userid},{ $set:{cart_amount:cart_amount} })
+      console.log('jk');
       const userData = await User.findOne({ _id: userid });
-      console.log(userData);
+      const title='Payment'
+      console.log(cart_amount);
       const randomId = uuidv4();
-      res.render('payment',{ userid:userData, message, totalamount:totalamount, order_id:randomId })
+      res.render('payment',{ userid:userData, message, totalamount:cart_amount, cart:cart, order_id:randomId, title, session:userid })
     }catch(err){
       console.log(err.message);
     }
@@ -290,7 +325,9 @@ const updateCart = async (req, res) => {
     try{
       const userid=req.query.userid
       console.log(userid);
-      res.render('addaddress',{userid:userid})
+      const cartData = await Cart.findOne({ user_id: userid })
+      const title='Add Address'
+      res.render('addaddress',{userid:userid, cart:cartData, title, session:userid})
     }catch(err){
       console.log(err.message);
     }

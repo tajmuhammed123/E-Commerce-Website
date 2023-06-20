@@ -26,6 +26,7 @@
     "multer": "^1.4.5-lts.1",
     "nocache": "^3.0.4",
     "node-fetch": "^3.3.1",
+    "nodemailer": "^6.9.3",
     "paypal-rest-sdk": "^1.8.1",
     "pdf-creator-node": "^2.3.5",
     "pdf-lib": "^1.17.1",

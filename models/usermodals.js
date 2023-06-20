@@ -47,6 +47,10 @@ const user=mongoose.Schema({
 
 address:[addressSchema],
 
+used_coupon:{
+    type:Array
+},
+
 name:{
     type:String,
     required:true
@@ -74,6 +78,10 @@ is_admin: {
     required: true,
 },
 id_disable:{
+    type:Boolean,
+    default:false
+},
+is_verified:{
     type:Boolean,
     default:false
 }

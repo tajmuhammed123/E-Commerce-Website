@@ -160,10 +160,11 @@ const orderHistory=async(req,res)=>{
 
   const createOrder = async (req, res) => {
     try {
-      const amount = req.body.amount * 100;
+      
       const userid = req.session.user_id;
       const cartData = await Cart.findOne({ user_id: userid });
       const customer = await User.findOne({ _id: userid });
+      const amount = cartData.cart_amount * 100;
       const addressid = req.body.address;
       const orderid = req.body.orderid
       

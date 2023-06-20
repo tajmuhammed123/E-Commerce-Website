@@ -9,8 +9,9 @@ const bcrypt = require("bcrypt");
 const fs= require('fs')
 const pdf=require('pdf-creator-node')
 const path=require('path')
-
 const Razorpay = require('razorpay'); 
+const nodemailer = require('nodemailer')
+const config= require('../config/config')
 const { RAZORPAY_ID_KEY, RAZORPAY_SECRET_KEY } = process.env;
 
 const razorpayInstance = new Razorpay({
@@ -55,20 +56,17 @@ const loadSignup = async(req,res)=>{
 
 const insertUser = async (req, res) => {
   try {
+    console.log('hjg');
     const spassword = await securePassword(req.body.password);
 
-    const existingUser = await User.findOne({ email: req.body.email });
-    if (existingUser) {
-      return res.render("signup", {
-        message: "Email already registered",
-      });
+    const existingMail = await User.findOne({ email: req.body.email });
+    const existingUser = await User.findOne({ username: req.body.username });
+    if (existingUser || existingMail) {
+      return res.status(200).json({ message: "Email or Userid already registered" });
     }
 
-  
     if (!req.body.name || req.body.name.trim().length === 0) {
-      return res.render("signup", {
-        message: "Please enter a valid name",
-      });
+      return res.status(200).json({ message: "Please enter a valid name" });
     }
 
     const user = new User({
@@ -83,14 +81,80 @@ const insertUser = async (req, res) => {
     const userData = await user.save();
 
     if (userData) {
-      res.render("signup", { message: "Registration Success" });
+      sendVerifyMail(req.body.name, req.body.email, userData._id);
+      return res.status(200).json({ message: "Registration Success" });
     } else {
-      res.render("signup", { message: "Registration Failed" });
+      return res.status(200).json({ message: "Registration Failed" });
     }
   } catch (err) {
     console.log(err.message);
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
+const userVerify= async(req,res)=>{
+
+  const userid= req.session.user_id
+  console.log(userid);
+  const userData= await User.findById({_id:userid})
+  console.log(req.query.name);
+  console.log(req.query.email);
+  console.log(userData);
+  sendVerifyMail(req.query.name, req.query.email, userid);
+  const cartData = await Cart.findOne({ user_id: userid });
+  const title= 'Profile'
+  res.render('userprofile',{user:userData, cart:cartData, title, session:userid,  message:"Check your Mail" })
+}
+
+
+const sendVerifyMail= async(name, email, user_id)=>{
+  try{
+      const transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port:587,
+        secure:false,
+        requireTLS:true,
+        auth:{
+          user:config.emailUser,
+          pass:config.emailPassword
+        }
+      })
+
+      const mailOptions={
+        from:config.emailUser,
+        to:email,
+        subject:"For verification mail",
+        html:'<p>Hii' + name + ', Please click here to <a href="http://localhost:3000/verify?id=' + user_id + '"> Verify </a> your mail.</p>'
+      }
+      transporter.sendMail(mailOptions, function(error,info){
+        if(error){
+          console.log(error);
+          res.render("login", { message: "Email verification Failed" });
+        }else{
+          console.log("Email has been sent to ", info.response);
+        }
+      })
+
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+const verifyMail= async(req,res)=>{
+  try {
+    console.log(req.query.id);
+    await User.updateOne(
+      { _id: req.query.id },
+      { $set: { is_verified: true } },
+      { upsert: true }
+    );
+    const user_id=req.session.user_id
+    const cartData = null
+    res.render('email-verified',{session:null, title:'Verify', cart:cartData})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
 
 
 const verifyLogin = async(req,res) => {
@@ -138,6 +202,60 @@ const verifyLogin = async(req,res) => {
     }
 }
 
+const editUser=async(req,res)=>{
+  try{
+    const userid=req.session.user_id
+    const userData= await User.findById({_id:userid})
+    res.render('edituserdetails',{user:userData})
+
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
+
+const updateUser=async(req,res)=>{
+  try{
+    console.log('hjg');
+    const userid= req.session.user_id
+    const userData= await User.findById({_id:userid})
+    const spassword = await securePassword(req.body.password);
+    const existingMail = await User.findOne({ $and: [
+                                                { email: req.body.email },
+                                                { email: { $ne: userData.email } }
+                                              ] });
+    const existingUser = await User.findOne({
+                                              $and: [
+                                                { username: req.body.username },
+                                                { username: { $ne: userData.username } }
+                                              ] });
+    if (existingUser || existingMail) {
+      return res.render('edituserdetails',{ message: "Email or Userid already registered" });
+    }
+
+    if (!req.body.name || req.body.name.trim().length === 0) {
+      return res.render('edituserdetails',{ message: "Please enter a valid name" });
+    }
+
+    const updateUser = await User.updateOne({_id:req.session.user_id}, {
+                    name: req.body.name,
+                    email: req.body.email,
+                    mobile: req.body.mob,
+                    username: req.body.username,
+                    is_admin: 0 })
+
+    const cartData = await Cart.findOne({ user_id: userid });
+    const title= 'Profile'
+    if (updateUser) {
+      return res.render('userprofile',{ user:userData, title, cart:cartData,  message: "Registration Success", session:userid });
+    } else {
+      return res.render('userprofile',{ user:userData, title, cart:cartData, message: "Registration Failed", session:userid });
+    }
+  }catch(err){
+    console.log(err.message);
+  }
+}
+
 const loadHome = async (req,res)=> {
 
         try {
@@ -177,35 +295,94 @@ const loadHome = async (req,res)=> {
             console.log(error.message);
         }
 }
+const loadShop = async (req,res)=> {
 
-const filterProduct= async(req,res)=>{
-    try{
-        const filterproduct=req.query.filterproduct
-        console.log(filterproduct);
-        const productData = await Products.find({ product_brand: filterproduct });
+        try {
+            if(req.session.user_id){
+              const session=req.session.user_id
+              const category = await Category.find({ id_disable: false });
+              const categoryIds = category.map(c => c.product_category); // Extract category IDs
+
+              const productData = await Products.find({
+                id_disable: false,
+                product_category: { $in: categoryIds }
+              }).limit(8);
+              console.log(productData);
+              
+            const id=req.session.user_id
+            const cartData = await Cart.findOne({ user_id: id })
+            const userData = await User.findById({_id : req.session.user_id});
+            console.log(id);
+            res.render('product',{products:productData, user:userData, session, cart: cartData, category:category});
+            }else{
+              const session=null
+              const category = await Category.find({ id_disable: false });
+              const categoryIds = category.map(c => c.product_category); // Extract category IDs
+              console.log(categoryIds);
+              const productData = await Products.find({
+                id_disable: false,
+                product_category: { $in: categoryIds }
+              }).limit(8);
+              res.render('product',{products:productData, session, cart: null, category:category})
+            }
+
+        } catch (error) {
+
+            console.log(error.message);
+        }
+}
+
+// const filterProduct= async(req,res)=>{
+//     try{
+//         const filterproduct=req.query.filterproduct
+//         console.log(filterproduct);
+//         const productData = await Products.find({ product_brand: filterproduct });
         // const userData = await User.findById({_id : req.session.user_id});
 
-        console.log(productData);
+//         console.log(productData);
         
-        res.render('home',{products:productData});
-    }catch(err){
-        console.log(err.message);
-    }
-}
+//         res.render('home',{products:productData});
+//     }catch(err){
+//         console.log(err.message);
+//     }
+// }
 
 const productDetail = async(req,res)=>{
     try{
+      
+      const title='Product Details'
+
+      if(req.session.user_id){
+        const session=req.session.user_id
         const id = req.query.id;
-      const productData = await Products.findById({ _id: id });
-      const userid= req.session.user_id
-  
-      if (productData) {
-        console.log(productData);
-        // const adminData = await User.findOne({ is_admin: 1 });
-        const userData = await User.findById({ _id: userid })
-        res.render("product-detail", { product: productData, userData: userData });
-      } else {
-        res.redirect("/dashboard");
+        const productData = await Products.findById({ _id: id });
+        const userid= req.session.user_id
+        const cartData = await Cart.findOne({ user_id: userid })
+    
+        if (productData) {
+          console.log(productData);
+          // const adminData = await User.findOne({ is_admin: 1 });
+          const userData = await User.findById({ _id: userid })
+          res.render("product-detail", { product: productData, userData: userData, session, cart:cartData, title });
+        } else {
+          res.redirect("/dashboard");
+        }
+      }else{
+        const session=null
+        const id = req.query.id;
+        const productData = await Products.findById({ _id: id });
+        const userid= null
+        const cartData = await Cart.findOne({ user_id: userid })
+        const userData = null
+    
+        if (productData) {
+          console.log(productData);
+          // const adminData = await User.findOne({ is_admin: 1 });
+          
+          res.render("product-detail", { product: productData, session, cart:cartData, title });
+        } else {
+          res.redirect("/dashboard");
+        }
       }
     }catch(err){
         console.log(err.message);
@@ -215,8 +392,12 @@ const productDetail = async(req,res)=>{
 const userProfile=async(req,res)=>{
   try {
     const userid=req.session.user_id
+    const cartData = await Cart.findOne({ user_id: userid });
+    const title= 'Profile'
+    console.log(cartData);
+    message=null
     const user= await User.findById({_id: userid})
-        res.render('userprofile',{user:user})
+        res.render('userprofile',{user:user, cart:cartData, title, message, session:userid })
   } catch (error) {
     console.log(error.message);
   }
@@ -225,9 +406,11 @@ const userProfile=async(req,res)=>{
 const searchProduct = async (req, res) => {
   try {
     var session = req.session.user_id;
+    const banner= await Banner.find({})
+    const category = await Category.find({ id_disable: false });
 
     if (session) {
-      const cartData = await Cart.find({ user_id: session });
+      const cartData = await Cart.findOne({ user_id: session });
       session = null;
       
       var search = '';
@@ -237,7 +420,7 @@ const searchProduct = async (req, res) => {
 
       const userData = await Products.find({ product_name: { $regex: '.*' + search + '.*', $options: 'i' } });
 
-      res.render('home', { products: userData, cart: cartData, session });
+      res.render('home', { products: userData, cart: cartData, session, banner:banner, category:category });
     } else {
       const cart = null;
       session = null;
@@ -250,7 +433,7 @@ const searchProduct = async (req, res) => {
 
       const userData = await Products.find({ product_name: { $regex: '.*' + search + '.*', $options: 'i' } });
 
-      res.render('home', { products: userData, cart, session });
+      res.render('home', { products: userData, cart, session, banner:banner, category:category });
     }
   } catch (error) {
     console.log(error.message);
@@ -274,6 +457,8 @@ const loadWallet = async (req, res) => {
     const user_id = req.session.user_id;
   const userData= await User.findById({_id:user_id})
     let wallet = await Wallet.findOne({ user_id: user_id });
+    const cartData = await Cart.findOne({ user_id: user_id })
+    const title='Wallet'
 
     if (!wallet) {
       const walletUser = new Wallet({
@@ -284,7 +469,7 @@ const loadWallet = async (req, res) => {
       wallet = await walletUser.save();
     }
 
-    res.render('wallet', { wallet: wallet, userData:userData });
+    res.render('wallet', { wallet: wallet, userData:userData, cart:cartData, title, session:user_id });
   } catch (error) {
     console.log(error.message);
   }
@@ -411,6 +596,7 @@ const loadMore=async(req,res)=>{
       const category = await Category.find({ id_disable: false });
       const categoryIds = category.map(c => c.product_category); 
       const banner= await Banner.find({})
+    const title='Wallet'
       const session=req.session.user_id
       const productData = await Products.find({
         id_disable: false,
@@ -420,7 +606,7 @@ const loadMore=async(req,res)=>{
     const cartData = await Cart.findOne({ user_id: id })
     const userData = await User.findById({_id : req.session.user_id});
     console.log(id);
-    res.render('home',{products:productData, user:userData, session, cart: cartData, category:category, banner:banner});
+    res.render('home',{products:productData, user:userData, session, cart: cartData, category:category, banner:banner, title});
     }else{
       console.log('hjk');
       const banner= await Banner.find({})
@@ -442,8 +628,10 @@ const loadMore=async(req,res)=>{
 const loadAddress=async(req,res)=>{
   try{
     const userid=req.session.user_id
+    const cartData = await Cart.findOne({ user_id: userid })
+    const title='Address'
     const userData = await User.findOne({ _id: userid });
-      res.render('addresslist',{userid:userData})
+      res.render('addresslist',{userid:userData, cart:cartData, title, session:userid })
   }catch(err){
     console.log(err.message);
   }
@@ -454,9 +642,11 @@ const loadEditAddress=async(req,res)=>{
     const addressid = req.body.address
     const userid=req.session.user_id
     const userData = await User.findOne({ _id: userid });
+    const cartData = await Cart.findOne({ user_id: userid })
+    const title='Edit Address'
     const address = userData.address.id(addressid)
     console.log(address);
-      res.render('editaddress',{ userid:userData, address:address })
+      res.render('editaddress',{ userid:userData, address:address, cart:cartData, title, session:userid })
   }catch(err){
     console.log(err.message);
   }
@@ -500,9 +690,11 @@ const loadOrderDetails=async(req,res)=>{
     const user= await User.findById(id)
     console.log(user);
     const orderData = await Order.findOne({ customer_id: id });
+    const cartData = await Cart.findOne({ user_id: id })
+    const title='Order'
     const order = orderData.product_details.find((product) => product._id.toString() === productid);
     console.log(order);
-      res.render('orderdetails',{ order:order, user:user })
+      res.render('orderdetails',{ order:order, user:user, cart:cartData, title })
   }catch(err){
     console.log(err.message);
   }
@@ -622,9 +814,13 @@ module.exports ={
     loginLoad,
     loadSignup,
     insertUser,
+    verifyMail,
+    userVerify,
     verifyLogin,
+    editUser,
+    updateUser,
     loadHome,
-    filterProduct,
+    loadShop,
     productDetail,
     userProfile,
     searchProduct,

@@ -33,13 +33,23 @@ user_route.get('/login',auth.isLogout,userController.loginLoad)
 
 user_route.post("/signup", userController.insertUser);
 
-user_route.get('/signup',auth.isLogout,userController.loadSignup)
+// user_route.get('/signup',auth.isLogout,userController.loadSignup),
+
+user_route.get('/verify',userController.verifyMail)
+
+user_route.get('/userverify',userController.userVerify)
 
 user_route.post('/login',userController.verifyLogin)
+
+user_route.get('/edituser',userController.editUser)
+
+user_route.post('/edituser',userController.updateUser)
 
 user_route.get('/',auth.isLogin, userController.loadHome)
 
 user_route.get('/dashboard', userController.loadHome)
+
+user_route.get('/shop', userController.loadShop)
 
 // user_route.get('/filter',userController.filterProduct)
 
