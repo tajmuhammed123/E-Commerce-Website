@@ -5,6 +5,7 @@ const Order=require('../models/orderModels')
 const Coupon=require('../models/couponModels')
 const Dashboard=require('../models/dashboardModels')
 const Banner=require('../models/bannerModels')
+const Offer=require('../models/offerModels')
 const bcrypt = require("bcrypt");
 const mime = require('mime-types');
 
@@ -175,6 +176,7 @@ const addProduct = async (req, res) => {
     const adminData = await User.findOne({ _id:adminid });
     const productsData = await products.save();
     if (productsData) {
+      await Dashboard.updateOne( {}, { $inc: {total_products:1} });
       res.redirect('/product-details')
       console.log("success");
     } else {
@@ -196,11 +198,12 @@ const editProduct = async (req, res) => {
     const id = req.query.id;
     const productData = await Products.findById({ _id: id });
     const categoryData = await Category.find({ id_disable:false })
+    const offerData = await Offer.find({ })
 
     if (productData) {
       console.log(productData);
       const adminData = await User.findOne({ _id:adminid });
-      res.render("editproducts", { product: productData, admin: adminData, category: categoryData, message });
+      res.render("editproducts", { product: productData, admin: adminData, category: categoryData, message, offer:offerData });
     } else {
       res.redirect(`/admin/product-details?adminid=${adminid}&&id=${id}`);
     }
@@ -211,7 +214,7 @@ const editProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    console.log(req.query.id);
+    console.log(req.body.product_stock);
     const productData = await Products.findByIdAndUpdate(
       { _id: req.query.id },
       {
@@ -223,7 +226,8 @@ const updateProduct = async (req, res) => {
           product_brand: req.body.product_brand,
           product_size: req.body.product_size,
           id_disable: false,
-          product_stock: req.body.product_stock
+          product_stock: req.body.product_stock,
+          product_offer:req.body.product_offer
         },
       }
     );
@@ -242,6 +246,13 @@ const editProductImage = async (req, res) => {
     console.log(productId);
     const productFiles = req.files.map((file) => file.filename);
     const adminId = req.session.admin_id;
+
+    if (!mimeType || !mimeType.startsWith('image/')) {
+      return res.render("addproduct", {
+        message: "Invalid file format. Please upload an image.",
+        admin: adminData,
+      });
+    }
 
     console.log(productFiles);
 
@@ -841,7 +852,25 @@ const editBanner = async (req, res) => {
   }
 };
 
+const loadaddOffer=async(req,res)=>{
+  const adminid=req.session.admin_id
+  res.render('add-offer',{admin:adminid})
+}
 
+const addOffer=async(req,res)=>{
+  try{
+    const adminid=req.session.admin_id
+    const offer= new Offer({
+      offer_code:req.body.offer_code,
+      offer_amount:req.body.offer_amount
+    })
+    console.log(offer);
+    await offer.save()
+    res.render('add-offer',{admin:adminid, message:'Offer added successfully'})
+  }catch(err){
+    console.log(err.message);
+  }
+}
 
 
 module.exports = {
@@ -884,5 +913,7 @@ module.exports = {
   addBanner,
   bannerList,
   loadEditBanner,
-  editBanner
+  editBanner,
+  loadaddOffer,
+  addOffer
 };

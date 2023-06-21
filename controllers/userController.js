@@ -80,7 +80,9 @@ const insertUser = async (req, res) => {
 
     const userData = await user.save();
 
+
     if (userData) {
+      await Dashboard.updateOne( {}, { $inc: {total_users:1} });
       sendVerifyMail(req.body.name, req.body.email, userData._id);
       return res.status(200).json({ message: "Registration Success" });
     } else {

@@ -41,6 +41,9 @@ id_disable:{
 product_stock:{
     type:Number,
     required:true
+},
+product_offer:{
+    type:Number
 }
 
 });

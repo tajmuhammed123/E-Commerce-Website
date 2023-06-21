@@ -14,7 +14,7 @@
                                         <strong>Add Product</strong>
                                     </div>
                                     <div class="card-body card-block">
-                                        <form action="" method="post" enctype="multipart/form-data">
+                                        <form action="" method="post">
                                             <div class="row form-group">
                                                 <div class="col col-md-5">
                                                     <label for="text-input" class=" form-control-label">Product Name</label>
@@ -47,6 +47,14 @@
                                                     <textarea name="product_discription" id="textarea-input" rows="9" placeholder="Content..." class="form-control"><%= product.product_discription %></textarea>
                                                 </div>
                                             </div>
+                                            <div class="row form-group">
+                                              <div class="col col-md-5">
+                                                  <label for="text-input" class=" form-control-label">Stock</label>
+                                              </div>
+                                              <div class="col-12 col-md-7">
+                                                  <input type="number" id="text-input" name="product_stock" value="<%= product.product_stock %>" placeholder="Stock" class="form-control">
+                                              </div>
+                                          </div>
                                             <div class="row form-group">
                                                 <div class="col col-md-5">
                                                     <label for="select" class=" form-control-label">Category</label>
@@ -92,6 +100,22 @@
                                                     Edit Image
                                                     </button>
                                             </div>
+                                            <div class="col-12 col-md-7">
+                                              <select class="form-control" name="product_offer" id="selectoffer" >
+                                                <% if (offer && offer.length > 0) { %>
+                                                  <% for (let i = 0; i < offer.length; i++) { %>
+                                                    <script>
+                                                      console.log('<%= offer[i].offer_amount %>');
+                                                    </script>
+                                                    <option value="<%= offer[i].offer_amount %>"><%= offer[i].offer_code %></option>
+                                                  <% } %>
+                                                  <% } else { %>
+                                                  <tr>
+                                                    <td colspan="5">Offer Not found</td>
+                                                  </tr>
+                                                  <% } %>
+                                                </select>                                                      
+                                          </div>
                                             <div class="card-footer">
                                                 <button type="submit" class="btn btn-primary btn-sm">
                                                     <i class="fa fa-dot-circle-o"></i> Submit

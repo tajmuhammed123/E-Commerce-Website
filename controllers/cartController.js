@@ -15,26 +15,38 @@ const { v4: uuidv4 } = require('uuid');
       // Retrieve product and user data
       const productData = await Products.findById(id);
       const userData = await User.findById(userid);
-      const total_price=req.body.product_quantity * productData.product_price
+      var total_price=req.body.product_quantity * productData.product_price
+      var product_price=productData.product_price
+      var cartexist= await Cart.findOne({user_id:userid, product:{_id:id}})
+
+      if(cartexist){
+        res.redirect('/product-detail')
+      }
+      if(productData.product_offer){
+        const id = req.query.id;
+        const productData = await Products.findById(id);
+        product_price= (productData.product_offer * productData.product_price)/100
+        total_price=req.body.product_quantity * product_price
+      }
 
       // Create a cart item object
       const cartItem = {
         product_id: productData._id,
         product_name: productData.product_name,
-        product_price: productData.product_price,
+        product_price: product_price,
         product_img: productData.product_img[0],
         product_size: req.body.product_size,
         product_quantity: req.body.product_quantity,
         product_brand: productData.product_brand,
-        total_price:total_price
+        total_price: total_price
       };
 
       // Find or create a cart for the user
-      let cart = await Cart.findOneAndUpdate({ user_id: req.session.user_id },{$inc:{cart_amount: productData.product_price}});
+      let cart = await Cart.findOneAndUpdate({ user_id: req.session.user_id },{$inc:{cart_amount: total_price}});
 
       if (!cart) {
         // Create a new cart if it doesn't exist
-        cart = new Cart({ user_id: req.session.user_id, cart_amount: productData.product_price});
+        cart = new Cart({ user_id: req.session.user_id, cart_amount: total_price});
       }
 
       // Add the cart item to the cart's product array
@@ -44,7 +56,9 @@ const { v4: uuidv4 } = require('uuid');
       const savedCart = await cart.save();
 
       if (savedCart) {
-        res.render("product-detail", { message: "Success", product: productData, userData: userData, session });
+        const userid=req.session.user_id
+        const cartData=await Cart.findOne({ user_id:userid })
+        res.render("product-detail", { message: "Success", product: productData, userData: userData, session, cart:cartData });
       }
     } catch (error) {
       console.log(error.message);
@@ -170,6 +184,10 @@ const deleteCartProduct = async (req, res) => {
     console.log('fdsf');
     console.log(userid);
 
+    const prdData = await Cart.findOne({ user_id: userid, 'product._id': id } )
+    console.log(prdData.product[0].product_price);
+    await Cart.findOneAndUpdate({ user_id: userid }, { $inc:{cart_amount: -prdData.product[0].product_price } })
+
     // if (!mongoose.isValidObjectId(id)) {
     //   console.log('err');
     //   return res.status(400).send({ success: false, error: 'Invalid product ID' });
@@ -225,7 +243,15 @@ const updateCart = async (req, res) => {
     const updatedCartData = await Cart.findOne({ user_id: userData });
     const updatedProduct = updatedCartData.product.find((product) => product.product_id === proId);
     const updatedQuantity = updatedProduct.product_quantity;
-    const price = updatedQuantity * productData.product_price;
+    var price = updatedQuantity * productData.product_price;
+    
+    if(productData.product_offer){
+      const proId = req.body.product;
+      const productData = await Products.findOne({ _id: proId });
+      product_price= (productData.product_offer * productData.product_price)/100
+      price=updatedQuantity * product_price
+    }
+    await Cart.findOneAndUpdate({ user_id: userData }, { $inc:{cart_amount: product_price } })
 
     await Cart.updateOne(
       { user_id: userData, 'product.product_id': proId },
@@ -303,11 +329,15 @@ const updateCart = async (req, res) => {
     try{
       message=null
       const userid=req.session.user_id
-      let cart_amount = 0
-      const cart= await Cart.findOne({user_id:userid})
-      cart.product.forEach((product) => {
+      const cartData=await Cart.findOne({user_id:userid})
+      const cart_amount= cartData.cart_amount
+      if(cart_amount==null || cart_amount==0){
+        let cart_amount = 0
+        const cart= await Cart.findOne({user_id:userid})
+        cart.product.forEach((product) => {
         cart_amount += product.total_price;
       });
+      }
 
       await Cart.findOneAndUpdate({user_id:userid},{ $set:{cart_amount:cart_amount} })
       console.log('jk');
@@ -315,7 +345,7 @@ const updateCart = async (req, res) => {
       const title='Payment'
       console.log(cart_amount);
       const randomId = uuidv4();
-      res.render('payment',{ userid:userData, message, totalamount:cart_amount, cart:cart, order_id:randomId, title, session:userid })
+      res.render('payment',{ userid:userData, message, totalamount:cart_amount, cart:cartData, order_id:randomId, title, session:userid })
     }catch(err){
       console.log(err.message);
     }

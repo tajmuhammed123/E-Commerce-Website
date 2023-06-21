@@ -120,6 +120,10 @@ admin_route.get('/bannerlist',auth.isLogin, adminController.bannerList);
 
 admin_route.get('/editbanner',auth.isLogin, adminController.loadEditBanner);
 
+admin_route.get('/addoffer',auth.isLogin, adminController.loadaddOffer);
+
+admin_route.post('/addoffer',auth.isLogin, adminController.addOffer);
+
 admin_route.post('/editbanner',upload.single('banner_img'), adminController.editBanner);
 
 module.exports = admin_route

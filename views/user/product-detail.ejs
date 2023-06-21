@@ -74,12 +74,17 @@
 					<div id="myresult" class="img-zoom-result"></div>
 					<div class="p-r-50 p-t-5 p-lr-0-lg">
 						<h4 class="mtext-105 cl2 js-name-detail p-b-14">
-							<%= product.product_name %>
+							<%= product.product_name %>	
 						</h4>
 
-						<span class="mtext-106 cl2">
-							$<%= product.product_price %>
-						</span>
+						<div class="mtext-106 cl2">
+							<% if (product.product_offer) { %>
+							  <% let product_price = (product.product_price * product.product_offer) / 100; %>
+							  <span class="text-danger" style="text-decoration: line-through;">$<%= product.product_price %></span><span>     $<%= product_price %></span>
+							<% } else { %>
+							  <span>$<%= product.product_price %></span>
+							<% } %>
+						  </div>						  
 
 						<p class="stext-102 cl3 p-t-23">
 							<%= product.product_discription %>
@@ -377,20 +382,20 @@
 
 
 	<!-- Related Products -->
-	<section class="sec-relate-product bg0 p-t-45 p-b-105">
+	<!-- <section class="sec-relate-product bg0 p-t-45 p-b-105">
 		<div class="container">
 			<div class="p-b-45">
 				<h3 class="ltext-106 cl5 txt-center">
 					Related Products
 				</h3>
-			</div>
+			</div> -->
 
 			<!-- Slide2 -->
-			<div class="wrap-slick2">
+			<!-- <div class="wrap-slick2">
 				<div class="slick2">
-					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15"> -->
 						<!-- Block2 -->
-						<div class="block2">
+						<!-- <div class="block2">
 							<div class="block2-pic hov-img0">
 								<img src="images/product-01.jpg" alt="IMG-PRODUCT">
 
@@ -420,9 +425,9 @@
 						</div>
 					</div>
 
-					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15"> -->
 						<!-- Block2 -->
-						<div class="block2">
+						<!-- <div class="block2">
 							<div class="block2-pic hov-img0">
 								<img src="images/product-02.jpg" alt="IMG-PRODUCT">
 
@@ -452,9 +457,9 @@
 						</div>
 					</div>
 
-					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15"> -->
 						<!-- Block2 -->
-						<div class="block2">
+						<!-- <div class="block2">
 							<div class="block2-pic hov-img0">
 								<img src="images/product-03.jpg" alt="IMG-PRODUCT">
 
@@ -484,9 +489,9 @@
 						</div>
 					</div>
 
-					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15"> -->
 						<!-- Block2 -->
-						<div class="block2">
+						<!-- <div class="block2">
 							<div class="block2-pic hov-img0">
 								<img src="images/product-04.jpg" alt="IMG-PRODUCT">
 
@@ -516,9 +521,9 @@
 						</div>
 					</div>
 
-					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15"> -->
 						<!-- Block2 -->
-						<div class="block2">
+						<!-- <div class="block2">
 							<div class="block2-pic hov-img0">
 								<img src="images/product-05.jpg" alt="IMG-PRODUCT">
 
@@ -548,9 +553,9 @@
 						</div>
 					</div>
 
-					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15"> -->
 						<!-- Block2 -->
-						<div class="block2">
+						<!-- <div class="block2">
 							<div class="block2-pic hov-img0">
 								<img src="images/product-06.jpg" alt="IMG-PRODUCT">
 
@@ -580,9 +585,9 @@
 						</div>
 					</div>
 
-					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15"> -->
 						<!-- Block2 -->
-						<div class="block2">
+						<!-- <div class="block2">
 							<div class="block2-pic hov-img0">
 								<img src="images/product-07.jpg" alt="IMG-PRODUCT">
 
@@ -612,9 +617,9 @@
 						</div>
 					</div>
 
-					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15">
+					<div class="item-slick2 p-l-15 p-r-15 p-t-15 p-b-15"> -->
 						<!-- Block2 -->
-						<div class="block2">
+						<!-- <div class="block2">
 							<div class="block2-pic hov-img0">
 								<img src="images/product-08.jpg" alt="IMG-PRODUCT">
 
@@ -646,7 +651,7 @@
 				</div>
 			</div>
 		</div>
-	</section>
+	</section> -->
 		
 
 	<!-- Footer -->
