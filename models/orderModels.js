@@ -1,6 +1,50 @@
 const { ObjectId } = require("mongodb");
 const mongoose = require("mongoose");
 
+const addressSchema= new mongoose.Schema({
+    firstName:{
+        
+        type:String,
+        required:true
+    },
+    secondName:{
+        
+        type:String,
+        required:true
+    },
+    email:{
+        
+        type:String,
+        required:true
+    },
+    mobNumber:{
+        
+        type:Number,
+        required:true
+    },
+    houseNumber:{
+        
+        type:String,
+        required:true
+    },
+    city:{
+        
+        type:String,
+        required:true
+    },
+    state:{
+        
+        type:String,
+        required:true
+    },
+    pincode:{
+        
+        type:Number,
+        required:true
+    },
+})
+
+
 const productSchema= mongoose.Schema({
 
     addressId:{
@@ -59,7 +103,9 @@ const productSchema= mongoose.Schema({
     order_id:{
         type:String
     },
+    address: [addressSchema]
 })
+
 
 
 const orderSchema = mongoose.Schema({
@@ -75,7 +121,8 @@ const orderSchema = mongoose.Schema({
         type:String,
         required:true
     },
-    product_details: [productSchema]
+    product_details: [productSchema],
+
     // is_delivered:{
     //     type:Boolean,
     //     default: false

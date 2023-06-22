@@ -279,83 +279,83 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-const loadAddUser = async (req, res) => {
-  try {
-    const id = req.session.admin_id
-    message = null;
-    const adminData = await User.findOne({ _id:id })
-    res.render("adduser", { admin: adminData, message });
-  } catch (err) {
-    console.log(err.message);
-  }
-};
+// const loadAddUser = async (req, res) => {
+//   try {
+//     const id = req.session.admin_id
+//     message = null;
+//     const adminData = await User.findOne({ _id:id })
+//     res.render("adduser", { admin: adminData, message });
+//   } catch (err) {
+//     console.log(err.message);
+//   }
+// };
 
-const addUser = async (req, res) => {
-  try {
-    const id = req.session.admin_id
-    const adminData = await User.findOne({ _id:id })
-    const spassword = await securePassword(req.body.password);
+// const addUser = async (req, res) => {
+//   try {
+//     const id = req.session.admin_id
+//     const adminData = await User.findOne({ _id:id })
+//     const spassword = await securePassword(req.body.password);
 
-    const existingUser = await User.findOne({ email: req.body.email });
-    if (existingUser) {
-      return res.render("adduser", {
-        message: "Email already registered",
-        admin: adminData,
-      });
-    }
+//     const existingUser = await User.findOne({ email: req.body.email });
+//     if (existingUser) {
+//       return res.render("adduser", {
+//         message: "Email already registered",
+//         admin: adminData,
+//       });
+//     }
 
-    if (!req.body.name || req.body.name.trim().length === 0) {
-      return res.render("adduser", {
-        message: "Please enter a valid name",
-        admin: adminData,
-      });
-    }
+//     if (!req.body.name || req.body.name.trim().length === 0) {
+//       return res.render("adduser", {
+//         message: "Please enter a valid name",
+//         admin: adminData,
+//       });
+//     }
 
-    const user = new User({
-      name: req.body.name,
-      email: req.body.email,
-      mobile: req.body.mob,
-      username: req.body.username,
-      password: spassword,
-      is_admin: 0,
-    });
+//     const user = new User({
+//       name: req.body.name,
+//       email: req.body.email,
+//       mobile: req.body.mob,
+//       username: req.body.username,
+//       password: spassword,
+//       is_admin: 0,
+//     });
 
-    const userData = await user.save();
+//     const userData = await user.save();
 
-    if (userData) {
-      console.log("success");
-      res.render("adduser", {
-        message: "Registration Success",
-        admin: adminData,
-      });
-    } else {
-      res.render("adduser", {
-        message: "Registration Failed",
-        admin: adminData,
-      });
-    }
-  } catch (err) {
-    console.log(err.message);
-  }
-};
+//     if (userData) {
+//       console.log("success");
+//       res.render("adduser", {
+//         message: "Registration Success",
+//         admin: adminData,
+//       });
+//     } else {
+//       res.render("adduser", {
+//         message: "Registration Failed",
+//         admin: adminData,
+//       });
+//     }
+//   } catch (err) {
+//     console.log(err.message);
+//   }
+// };
 
-const editUser = async (req, res) => {
-  try {
-    const adminid = req.session.admin_id
-    const id = req.query.id;
-    const userData = await User.findById({ _id: id });
+// const editUser = async (req, res) => {
+//   try {
+//     const adminid = req.session.admin_id
+//     const id = req.query.id;
+//     const userData = await User.findById({ _id: id });
 
-    if (userData) {
-      console.log(userData);
-      const adminData = await User.findOne({ _id:adminid });
-      res.render("editusers", { user: userData, admin: adminData });
-    } else {
-      res.redirect("/admin/user-details");
-    }
-  } catch (error) {
-    console.log(error.message);
-  }
-};
+//     if (userData) {
+//       console.log(userData);
+//       const adminData = await User.findOne({ _id:adminid });
+//       res.render("editusers", { user: userData, admin: adminData });
+//     } else {
+//       res.redirect("/admin/user-details");
+//     }
+//   } catch (error) {
+//     console.log(error.message);
+//   }
+// };
 
 // const updateUser = async (req, res) => {
 //   try {
@@ -886,9 +886,6 @@ module.exports = {
   updateProduct,
   editProductImage,
   deleteProduct,
-  loadAddUser,
-  addUser,
-  editUser,
   enableProduct,
   disableProduct,
   loadOrders,

@@ -34,6 +34,8 @@ const adminController=require('../controllers/adminController');
 const orderController=require('../controllers/orderController');
 // const { path } = require('./userRouter');
 
+////////////////////////           LOGIN                 ////////////////////////
+
 admin_route.get('/',auth.isLogout,adminController.loadLogin)
 
 admin_route.post('/',adminController.verifyLogin)
@@ -41,6 +43,8 @@ admin_route.post('/',adminController.verifyLogin)
 admin_route.get('/logout',auth.isLogin,adminController.logout)
 
 admin_route.get('/user-details',auth.isLogin,adminController.loadUser)
+
+////////////////////////           PRODUCTS                 ////////////////////////
 
 admin_route.get('/product-details',auth.isLogin,adminController.loadProducts)
 
@@ -58,9 +62,9 @@ admin_route.post("/edit_product_image",upload.array('product_img'), adminControl
 
 // admin_route.get('/deleteproduct',adminController.deleteProduct)
 
-admin_route.get('/adduser',auth.isLogin,adminController.loadAddUser)
+// admin_route.get('/adduser',auth.isLogin,adminController.loadAddUser)
 
-admin_route.post('/adduser',upload.single('product_img'),adminController.addUser)
+// admin_route.post('/adduser',upload.single('product_img'),adminController.addUser)
 
 // admin_route.get('/editusers',auth.isLogin,adminController.editUser)
 
@@ -68,17 +72,41 @@ admin_route.post('/adduser',upload.single('product_img'),adminController.addUser
 
 // admin_route.get('/deleteusers',adminController.deleteUser)
 
-admin_route.get('/id_disable',auth.isLogin,adminController.disableProduct)
-
-admin_route.get('/id_undisable',auth.isLogin,adminController.enableProduct)
+////////////////////////           ORDER                 ////////////////////////
 
 admin_route.get('/orders',auth.isLogin,adminController.loadOrders)
 
 admin_route.get('/orderaddress',auth.isLogin,adminController.loadOrderAddress)
 
+////////////////////////           PRODUCTS                 ////////////////////////
+
+admin_route.get('/id_disable',auth.isLogin,adminController.disableProduct)
+
+admin_route.get('/id_undisable',auth.isLogin,adminController.enableProduct)
+
 admin_route.get('/orderproducts',auth.isLogin,adminController.loadOrderProducts)
 
 admin_route.post('/orderproducts',auth.isLogin,orderController.productStatus)
+
+////////////////////////         USER BLOCK/UNBLOCK          ////////////////////////
+
+admin_route.get('/user_disable',auth.isLogin,adminController.disableUser)
+
+admin_route.get('/user_undisable',auth.isLogin,adminController.enableUser)
+
+////////////////////////           COUPON                 ////////////////////////
+
+admin_route.get('/couponlist',auth.isLogin,adminController.listCoupon)
+
+admin_route.get('/addcoupon',auth.isLogin,adminController.loadAddCoupon)
+
+admin_route.post('/addcoupon',adminController.addCoupon)
+
+admin_route.get('/editcoupon',auth.isLogin,adminController.loadeditCoupon)
+
+admin_route.put('/editcoupon',adminController.editCoupon)
+
+////////////////////////           CATEGOREY                 ////////////////////////
 
 admin_route.get('/addcategorey',auth.isLogin,adminController.loadAddCategorey)
 
@@ -92,25 +120,15 @@ admin_route.get('/category_disable',auth.isLogin,adminController.disableCategory
 
 admin_route.get('/category_undisable',auth.isLogin,adminController.enableCategory)
 
-admin_route.get('/user_disable',auth.isLogin,adminController.disableUser)
-
-admin_route.get('/user_undisable',auth.isLogin,adminController.enableUser)
-
-admin_route.get('/couponlist',auth.isLogin,adminController.listCoupon)
-
-admin_route.get('/addcoupon',auth.isLogin,adminController.loadAddCoupon)
-
-admin_route.post('/addcoupon',adminController.addCoupon)
-
-admin_route.get('/editcoupon',auth.isLogin,adminController.loadeditCoupon)
-
-admin_route.put('/editcoupon',adminController.editCoupon)
-
 admin_route.get('/editcategory',auth.isLogin,adminController.loadeditCategorey)
 
 admin_route.put('/editcategory',adminController.editCategorey)
 
+////////////////////////           REPORT                 ////////////////////////
+
 admin_route.get('/pdfdownload',auth.isLogin,adminController.saleReport)
+
+////////////////////////           BANNER                 ////////////////////////
 
 admin_route.get('/banner',auth.isLogin, adminController.loadAddBanner);
 
@@ -120,10 +138,14 @@ admin_route.get('/bannerlist',auth.isLogin, adminController.bannerList);
 
 admin_route.get('/editbanner',auth.isLogin, adminController.loadEditBanner);
 
+admin_route.post('/editbanner',upload.single('banner_img'), adminController.editBanner);
+
+////////////////////////           OFFER                 ////////////////////////
+
 admin_route.get('/addoffer',auth.isLogin, adminController.loadaddOffer);
 
 admin_route.post('/addoffer',auth.isLogin, adminController.addOffer);
 
-admin_route.post('/editbanner',upload.single('banner_img'), adminController.editBanner);
+
 
 module.exports = admin_route

@@ -5,10 +5,12 @@ const Order=require('../models/orderModels')
 const Wallet=require('../models/walletModels')
 const Category=require('../models/categoreyModels')
 const Banner=require('../models/bannerModels')
+const Wishlist=require('../models/wishlistModels')
 const bcrypt = require("bcrypt");
 const fs= require('fs')
 const pdf=require('pdf-creator-node')
 const path=require('path')
+const randomstring =require('randomstring')
 const Razorpay = require('razorpay'); 
 const nodemailer = require('nodemailer')
 const config= require('../config/config')
@@ -512,7 +514,7 @@ const addWallet= async(req,res)=>{
       let wallet_history={
         transaction_amount:'+$'+req.body.addamount
       }
-      wallet.wallet_history.push(wallet_history)
+      wallet.wallet_history.shift(wallet_history)
       await wallet.save()
         
       } else {
@@ -685,6 +687,24 @@ const editAddress=async(req,res)=>{
   
 }
 
+const deleteAddress=async(req,res)=>{
+  try {
+      const addressid= req.query.addressid
+      const userid=req.session.user_id
+      const userData = await User.findOne({ _id: userid });
+      userData.address.pull({ _id: addressid });
+      await userData.save();
+      const cartData = await Cart.findOne({ user_id: userid })
+      const title='Address'
+      res.render('addresslist',{userid:userData, cart:cartData, title, session:userid })
+
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+
+
 const loadOrderDetails=async(req,res)=>{
   try{
     const id=req.session.user_id
@@ -806,7 +826,159 @@ const loadDownload=async(req,res)=>{
   }
 }
 
+const sentResetPassword = async (name, email, token) => {
+  try {
+      const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false,
+          requireTLS: true,
+          auth: {
+              user: config.emailUser,
+              pass: config.emailPassword
+          }
+      })
+      const mailOptions = {
+          from: config.emailUser,
+          to: email,
+          subject: "For Reset Password",
+          html: '<p>Hii ' + name + ',Please click here to <a href="http://localhost:3000/forget-password?token=' + token + '"> Reset </a> your Password.</p>'
 
+      }
+      transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+              console.log(error);
+          } else {
+              console.log("Email has been sent:- ", info.response);
+          }
+      })
+
+
+  } catch (error) {
+      console.log(error.message);
+  }
+
+
+}
+
+
+// for get password
+
+const forgetLoad = async (req, res) => {
+  try {
+      res.render('forget');
+
+  } catch (error) {
+      console.log(error.message);
+  }
+}
+
+const forgetVerify = async (req, res) => {
+  try {
+
+      const email = req.body.email;
+      const userData = await User.findOne({ email: email });
+      if (userData) {
+
+          if (userData.is_verifed === 0) {
+              res.render("forget", { message: "Please Verify Your Mail" })
+          }
+          else {
+              const randomString = randomstring.generate();
+              const updateData = await User.updateOne({ email: email }, { $set: { token: randomString } })
+              sentResetPassword(userData.name, userData.email, randomString)
+              res.render('forget', { message: "Please check your mail to reset your password." })
+
+          }
+      } else {
+          res.render('forget', { message: "user email is incorrect." });
+      }
+
+  } catch (error) {
+      console.log(error.message);
+  }
+}
+
+const forgetPasswordLoad = async (req, res) => {
+  try {
+
+      const token = req.query.token;
+      const tokenData = await User.findOne({ token: token })
+      if (tokenData) {
+          res.render('forget-password', { user_id: tokenData._id })
+      } else {
+          res.render('404', { message: "Token is invalid" })
+      }
+
+  } catch (error) {
+      console.log(error.message);
+  }
+}
+
+const resetPassword = async (req, res) => {
+  try {
+
+      const password = req.body.password;
+      const user_id = req.body.user_id
+
+      const secure_Password = await securePassword(password)
+
+
+      const updateData = await User.findByIdAndUpdate({ _id: user_id }, { $set: { password: secure_Password, token: '' } })
+
+      res.redirect("/")
+
+  } catch (error) {
+      console.log(error.message);
+  }
+}
+
+const loadWishlist=async(req,res)=>{
+  try {
+    const userid=req.session.user_id
+
+    const wishlistData = await Wishlist.findOne({ customer_id: userid });
+    const productIds = Array.from(new Set(wishlistData.product_id)); 
+    const products = await Products.find({ _id: { $in: productIds } });
+    
+    
+      const cartData=await Cart.findOne({ user_id: userid })
+      res.render('wishlist',{products:products,session:userid, cart:cartData})
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+const addWishlist=async(req,res)=>{
+    try{
+      console.log(req.body.productid);
+        const productid = req.body.productid
+        const wishlistData = await Wishlist.findOne({ customer_id: req.session.user_id, product_id: productid });
+        const productIdToDelete = req.body.productid;
+        console.log(wishlistData);
+        
+        if (wishlistData) {
+          const productIds = wishlistData.product_id;
+          const updatedProductIds = productIds.filter((productId) => productId !== productIdToDelete);
+        
+          wishlistData.product_id = updatedProductIds;
+          await wishlistData.save();
+          res.status(200).send({ success: false, message: 'Product removed from wishlist.' });
+        } else {
+          console.log('ghfg');
+          await Wishlist.findOneAndUpdate(
+            { customer_id: req.session.user_id },
+            { $push: { product_id: productid } },
+            { new: true, upsert: true }
+          );
+
+          res.status(200).send({ success: true, message: 'Product added to wishlist' });
+        }  
+
+    }catch(err){
+      console.log(err.message);
+    }
+}
 
 
 
@@ -835,9 +1007,17 @@ module.exports ={
     loadAddress,
     loadEditAddress,
     editAddress,
+    deleteAddress,
     loadOrderDetails,
     generatePdf,
-    loadDownload
+    loadDownload,
+    sentResetPassword,
+    forgetLoad,
+    forgetVerify,
+    forgetPasswordLoad,
+    resetPassword,
+    loadWishlist,
+    addWishlist
 }
 
 

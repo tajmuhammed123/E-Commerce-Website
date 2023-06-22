@@ -233,6 +233,7 @@ $(document).ready(function(){
 						"address": ""+res.address+"",
 						"image": "https://dummyimage.com/600x400/000/fff",
 						"order_id": ""+res.order_id+"",
+						"odrerid": ""+res.odrerid+"",
 						"handler": function (response){
 							$.ajax({
 							url: "/paidsuccess",
@@ -243,11 +244,12 @@ $(document).ready(function(){
 								mode: res.mode,
 								address: res.address,
 								order_id: res.order_id,
+								orderid: res.odrerid,
 							
 							},
 							success: function(res){
 								if(res.success){
-								window.location.href = "/success";
+								window.location.href = "/success?orderid=<%= order_id %>";
 								alert("Payment Succeeded");
 								} else {
 								alert("Payment Failed");
@@ -257,7 +259,6 @@ $(document).ready(function(){
 								alert("An error occurred while processing the payment.");
 							}
 							});
-							alert("Payment Succeeded");
 							// window.open("/","_self")
 						},
 						"prefill": {

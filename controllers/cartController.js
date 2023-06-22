@@ -15,31 +15,37 @@ const { v4: uuidv4 } = require('uuid');
       // Retrieve product and user data
       const productData = await Products.findById(id);
       const userData = await User.findById(userid);
-      var total_price=req.body.product_quantity * productData.product_price
-      var product_price=productData.product_price
-      var cartexist= await Cart.findOne({user_id:userid, product:{_id:id}})
-
-      if(cartexist){
-        res.redirect('/product-detail')
+      var product_price = productData.product_price;
+      var rounded_product_price = Number(product_price.toFixed(2));
+      var rounded_product_quantity = Number(req.body.product_quantity);
+      var total_price = Number((rounded_product_quantity * rounded_product_price).toFixed(2));
+      var cartexist = await Cart.findOne({ user_id: userid, product: { _id: id } });
+      
+      console.log(typeof total_price);
+      
+      if (cartexist) {
+        res.redirect('/product-detail');
       }
-      if(productData.product_offer){
+      
+      if (productData.product_offer) {
         const id = req.query.id;
         const productData = await Products.findById(id);
-        product_price= (productData.product_offer * productData.product_price)/100
-        total_price=req.body.product_quantity * product_price
+        product_price = (productData.product_offer * productData.product_price) / 100;
+        rounded_product_price = Number(product_price.toFixed(2));
+        total_price = Number((rounded_product_quantity * rounded_product_price).toFixed(2));
+        console.log(typeof total_price);
       }
-
-      // Create a cart item object
+      
       const cartItem = {
         product_id: productData._id,
         product_name: productData.product_name,
-        product_price: product_price,
+        product_price: rounded_product_price,
         product_img: productData.product_img[0],
         product_size: req.body.product_size,
-        product_quantity: req.body.product_quantity,
+        product_quantity: rounded_product_quantity,
         product_brand: productData.product_brand,
         total_price: total_price
-      };
+      };            
 
       // Find or create a cart for the user
       let cart = await Cart.findOneAndUpdate({ user_id: req.session.user_id },{$inc:{cart_amount: total_price}});
@@ -345,6 +351,7 @@ const updateCart = async (req, res) => {
       const title='Payment'
       console.log(cart_amount);
       const randomId = uuidv4();
+      console.log();
       res.render('payment',{ userid:userData, message, totalamount:cart_amount, cart:cartData, order_id:randomId, title, session:userid })
     }catch(err){
       console.log(err.message);

@@ -105,15 +105,29 @@ user_route.get('/loadmore', userController.loadMore);
 
 user_route.post('/editaddress', userController.loadEditAddress);
 
-user_route.get('/addresslist', userController.loadAddress);
+user_route.get('/addresslist',auth.isLogin, userController.loadAddress);
 
 user_route.post('/updateaddress', userController.editAddress);
 
-user_route.get('/orderdetails', userController.loadOrderDetails);
+user_route.get('/deleteaddress', userController.deleteAddress);
+
+user_route.get('/orderdetails',auth.isLogin, userController.loadOrderDetails);
 
 user_route.post('/downloadinvoice', userController.generatePdf);
 
 user_route.get('/download', userController.loadDownload);
+
+user_route.get('/forget',userController.forgetLoad)
+
+user_route.post('/forget',userController.forgetVerify)
+
+user_route.get('/forget-password',userController.forgetPasswordLoad)
+
+user_route.post('/forget-password',userController.resetPassword)
+
+user_route.get('/wishlist',userController.loadWishlist)
+
+user_route.post('/addwishlist',auth.isLogin,userController.addWishlist)
 
 
 

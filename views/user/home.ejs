@@ -30,7 +30,7 @@
 							</div>
 							
 							<div class="layer-slick1 animated visible-false" data-appear="<%= banner[i].button_effect %>" data-delay="1600">
-								<a href="product.html" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
+								<a href="/shop" class="flex-c-m stext-101 cl0 size-101 bg1 bor1 hov-btn1 p-lr-15 trans-04">
 									<%= banner[i].button_text %>
 								</a>
 							</div>
@@ -452,7 +452,7 @@
 				<div class="row isotope-grid">
 				  <% if (products.length > 0) {
 					for (let i = 0; i < products.length; i++) { %>
-					  <div class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item <%= products[i].product_category %> <%= products[i].product_brand %>">
+					  <div id="wishrefresh" class="col-sm-6 col-md-4 col-lg-3 p-b-35 isotope-item <%= products[i].product_category %> <%= products[i].product_brand %>">
 						<div class="block2">
 						  <div class="block2-pic hov-img0">
 							<img src="/admin/images/<%= products[i].product_img[0] %>" alt="IMG-PRODUCT">
@@ -467,7 +467,7 @@
 							  </span>
 							</div>
 							<div class="block2-txt-child2 flex-r p-t-3">
-							  <a href="#" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2">
+							  <a href="/addwishlist?id=<%= products[i]._id %>" class="btn-addwish-b2 dis-block pos-relative js-addwish-b2" id="wishlist">
 								<img class="icon-heart1 dis-block trans-04" src="images/icons/icon-heart-01.png" alt="ICON">
 								<img class="icon-heart2 dis-block trans-04 ab-t-l" src="images/icons/icon-heart-02.png" alt="ICON">
 							  </a>
@@ -711,15 +711,40 @@
 			e.preventDefault();
 		});
 
-		$('.js-addwish-b2').each(function(){
+		$('.js-addwish-b2').each(function() {
 			var nameProduct = $(this).parent().parent().find('.js-name-b2').html();
-			$(this).on('click', function(){
-				swal(nameProduct, "is added to wishlist !", "success");
+			var productID = $(this).attr('href').split('=')[1]; // Extract product ID from href
 
-				$(this).addClass('js-addedwish-b2');
-				$(this).off('click');
+			$(this).on('click', function() {
+
+				$.ajax({
+				method: "POST",
+				url: "/addwishlist",
+				data: {
+					productid: productID // Pass the product ID to the AJAX request
+				},
+				success: function(response) {
+					if (response.success) {
+						swal(nameProduct, "is added to wishlist!", "success");
+						$(this).addClass('js-addedwish-b2');
+						$('#wishrefresh').html($(response).find('#wishrefresh').html());
+					} else {
+						$(this).off('click');
+						$('#wishrefresh').html($(response).find('#wishrefresh').html());
+					}
+				},
+				error: function(error) {
+					console.log(error);
+					alert('Error occurred while searching product');
+				},
+				error: function(error) {
+					console.log(error);
+					alert('Error occurred while searching product');
+				}
+				});
 			});
-		});
+			});
+
 
 		$('.js-addwish-detail').each(function(){
 			var nameProduct = $(this).parent().parent().parent().find('.js-name-detail').html();
@@ -730,6 +755,7 @@
 				$(this).addClass('js-addedwish-detail');
 				$(this).off('click');
 			});
+
 		});
 
 		/*---------------------------------------------*/
@@ -835,6 +861,7 @@
     }
   });
 })
+
 	</script>
 
 </body>

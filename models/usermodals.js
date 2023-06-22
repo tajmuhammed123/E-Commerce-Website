@@ -84,6 +84,10 @@ id_disable:{
 is_verified:{
     type:Boolean,
     default:false
+},
+token:{
+    type:String,
+    default:''
 }
   
 
